@@ -102,7 +102,7 @@ src/agent/           Day 5 实现
 tests/               离线测试
 ```
 
-详细范围见 [docs/project_scope.md](docs/project_scope.md)，Schema 见 [docs/kg_schema.md](docs/kg_schema.md)。
+详细范围见 [docs/project_scope.md](docs/project_scope.md)，Schema 见 [docs/kg_schema.md](docs/kg_schema.md)。面向项目成员的成果解释、环境接收、分工和 Git 协作流程见 [Day 1 AI 工作交付与队友协作手册](docs/day1_handoff_manual.md)。
 
 ## Day 1 验收清单
 
@@ -115,4 +115,3 @@ tests/               离线测试
 - [ ] 运行完整样例并检查四条目标关系。
 
 最后三项需要在本地 `.env` 中配置真实云服务凭据后执行。
-
