@@ -15,6 +15,14 @@ build/
 data/raw/*
 !data/raw/.gitkeep
 !data/raw/sample_nanyue.txt
+!data/raw/culture/
+!data/raw/exhibition/
+!data/raw/history/
+!data/raw/museum/
+!data/raw/person/
+!data/raw/relic/
+!data/raw/tomb/
+!data/raw/**/*.json
 data/processed/*
 !data/processed/.gitkeep
 data/graph/*
