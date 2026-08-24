@@ -84,6 +84,30 @@ data/raw/sample_nanyue.txt
 
 模型输出若违反 Schema、缺少证据、引用不存在的实体或使用错误关系方向，将在写入 Neo4j 之前被拒绝。
 
+## 运行 Day 2 批量抽取
+
+先验证队友整理的原始语料：
+
+```powershell
+python -m scripts.validate_corpus
+```
+
+再逐文档调用 DeepSeek；成功结果默认保存在 `data/graph/by_document/`，运行报告保存在 `data/processed/batch_extraction_report.json`：
+
+```powershell
+python -m scripts.run_batch_extraction
+```
+
+批处理会隔离单篇失败、重试临时网络错误、对 Schema 错误进行一次纠错，并在二次纠错失败时保守删除非法关系。重复运行默认跳过已有合法结果；需要重新抽取全部资料时使用 `--force`。
+
+完成后执行来源与证据审计：
+
+```powershell
+python -m scripts.audit_extractions
+```
+
+审计要求每份资料都有合法输出、实体包含当前文档来源、关系引用正确文档，并且关系证据逐字存在于原文。
+
 ## 项目结构
 
 ```text
@@ -110,8 +134,20 @@ tests/               离线测试
 - [x] Schema V1 文档与代码枚举一致。
 - [x] Git 友好的目录、依赖和环境模板。
 - [x] 非法抽取结果在入库前被拦截。
-- [ ] 使用个人凭据完成 DeepSeek 实际调用。
-- [ ] 使用个人 Aura 凭据完成 Neo4j 实际连接。
-- [ ] 运行完整样例并检查四条目标关系。
+- [x] 使用个人凭据完成 DeepSeek 实际调用。
+- [x] 使用个人 Aura 凭据完成 Neo4j 实际连接。
+- [x] 运行完整样例并检查四条目标关系。
 
-最后三项需要在本地 `.env` 中配置真实云服务凭据后执行。
+云端验收已于 2026-08-24 完成：DeepSeek 样例抽取、Neo4j 连接与幂等写入、端到端关系查询均通过。
+
+## Day 2 验收结果
+
+- [x] 36 份原始资料通过格式与重复 ID 校验。
+- [x] 覆盖 25 份代表性文物资料。
+- [x] 批量抽取支持失败隔离、临时错误重试和断点续跑。
+- [x] 36 份资料全部生成 Schema V1 合法结果。
+- [x] 关系证据和文档来源审计无遗留问题。
+- [x] 人工抽查 10 份核心资料并收紧保守过滤规则。
+- [x] 29 项离线测试全部通过。
+
+详细统计和已知边界见 [Day 2 批量抽取与质量报告](docs/day2_extraction_report.md)。

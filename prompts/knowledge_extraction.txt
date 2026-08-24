@@ -19,9 +19,15 @@
 - HistoricalEvent -INVOLVES_PERSON-> Person
 - HistoricalEvent -OCCURRED_IN-> Dynasty
 
+关系端点是硬约束，关系名称相似也不能改变端点类型。特别注意：
+- EXCAVATED_FROM 的目标只能是 TombChamber，不能是 Tomb；原文只说“墓中出土”而没有具体墓室时，不生成这条关系。
+- CREATED_IN 的源只能是 Relic，不能用于 Tomb、Person、Exhibition 或其他实体。
+- BELONGS_TO_CATEGORY 的源只能是具体 Relic，不能让 RelicCategory 指向 Tomb。
+- 原文表达了事实但上表没有合法关系时，只保留实体，不要借用含义接近的关系。
+- 输出前逐条检查 source 实体类型和 target 实体类型；任何一端不匹配就删除该关系。
+
 实体字段必须完整：id、name、type、aliases、description、source_ids、confidence。id 使用“实体类型小写:规范中文名”，例如 person:赵眜。source_ids 必须包含用户给出的 document_id。
 
 关系字段必须完整：source_id、relation、target_id、evidence、document_id、confidence。evidence 必须是输入文本中的直接证据。关系两端的实体必须同时出现在 entities 数组中。
 
 不要使用常识补全原文没有表达的事实。无法确定时不要抽取。confidence 必须在 0 到 1 之间。
-
