@@ -10,6 +10,8 @@ Day 1 已提供以下技术底座：
 - Neo4j Aura 约束、幂等写入和局部关系查询。
 - DeepSeek、Neo4j 及端到端样例验证脚本。
 
+Day 2 与 Day 3 已在此基础上完成 36 份官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。
+
 ## 环境要求
 
 - Python 3.11 或更高版本。
@@ -108,11 +110,30 @@ python -m scripts.audit_extractions
 
 审计要求每份资料都有合法输出、实体包含当前文档来源、关系引用正确文档，并且关系证据逐字存在于原文。
 
+## 构建和写入 Day 3 图谱 V1
+
+使用受版本控制的人工消歧决策，将逐文档抽取合并为统一图谱：
+
+```powershell
+python -m scripts.build_graph_v1
+```
+
+该命令默认读取 `data/curated/entity_resolution_v1.json`，生成 `data/graph/knowledge_graph_v1.json` 和融合报告。构建过程会拒绝映射环、缺失目标、跨类型映射、删除后仍被关系引用的实体，以及来源或证据不合法的关系。
+
+将统一图谱写入当前 `.env` 配置的 Neo4j Aura：
+
+```powershell
+python -m scripts.load_graph_v1
+```
+
+入库命令不会清空数据库。它会连续执行两次幂等写入，逐项检查实体和关系是否存在，并查询赵眜、南越文王墓和文帝行玺的核心路径。验收报告保存在 `data/processed/graph_v1_load_report.json`。
+
 ## 项目结构
 
 ```text
 app/                 Day 6 Streamlit 应用
 data/raw/            原始资料及 Day 1 样例
+data/curated/        受版本控制的人工消歧与审核决策
 data/processed/      清洗和切分结果
 data/graph/          经过校验的图谱数据
 docs/                项目范围与 KG Schema
@@ -151,3 +172,14 @@ tests/               离线测试
 - [x] 29 项离线测试全部通过。
 
 详细统计和已知边界见 [Day 2 批量抽取与质量报告](docs/day2_extraction_report.md)。
+
+## Day 3 验收结果
+
+- [x] 12 个非规范实体 ID 按人工映射完成融合。
+- [x] 删除 4 个误分类展览章节实体和 2 条证据不足关系。
+- [x] 统一图谱包含 78 个实体、87 条关系，来源与证据审计问题为 0。
+- [x] 图谱实际写入 Neo4j Aura，78 个实体和 87 条关系逐项验证无缺失。
+- [x] 第二次写入前后均为 80 个节点、93 条关系，幂等性通过。
+- [x] 36 项离线测试全部通过。
+
+详细决策、验收数据和 Day 4 输入见 [Day 3 可靠知识图谱 V1 报告](docs/day3_graph_v1_report.md)。
