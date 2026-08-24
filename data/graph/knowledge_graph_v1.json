@@ -1,0 +1,1707 @@
+{
+  "entities": [
+    {
+      "id": "culture:南越丧葬文化",
+      "name": "南越丧葬文化",
+      "type": "Culture",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_007"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "culture:岭南文化",
+      "name": "岭南文化",
+      "type": "Culture",
+      "aliases": [],
+      "description": "反映当时岭南地区较发达的水上交通。",
+      "source_ids": [
+        "DOC_028"
+      ],
+      "confidence": 0.8
+    },
+    {
+      "id": "dynasty:秦朝",
+      "name": "秦朝",
+      "type": "Dynasty",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_009",
+        "DOC_010"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "dynasty:西汉",
+      "name": "西汉",
+      "type": "Dynasty",
+      "aliases": [
+        "汉代",
+        "汉朝"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_003",
+        "DOC_008",
+        "DOC_009",
+        "DOC_013",
+        "DOC_014",
+        "DOC_015",
+        "DOC_016",
+        "DOC_017",
+        "DOC_018",
+        "DOC_019",
+        "DOC_020",
+        "DOC_021",
+        "DOC_022",
+        "DOC_023",
+        "DOC_024",
+        "DOC_025",
+        "DOC_026",
+        "DOC_027",
+        "DOC_028",
+        "DOC_029",
+        "DOC_030",
+        "DOC_031",
+        "DOC_032",
+        "DOC_033",
+        "DOC_034",
+        "DOC_035",
+        "DOC_036"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "exhibition:南越藏珍",
+      "name": "南越藏珍",
+      "type": "Exhibition",
+      "aliases": [
+        "南越藏珍——西汉南越王墓出土文物陈列"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_001",
+        "DOC_003"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "exhibition:杨永德伉俪捐赠藏枕",
+      "name": "杨永德伉俪捐赠藏枕",
+      "type": "Exhibition",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_001"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "exhibition:王墓展区",
+      "name": "王墓展区",
+      "type": "Exhibition",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_012"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "historicalevent:南越国建立",
+      "name": "南越国建立",
+      "type": "HistoricalEvent",
+      "aliases": [],
+      "description": "秦朝末期赵佗为保岭南地区安定建立南越国",
+      "source_ids": [
+        "DOC_009"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "historicalevent:汉武帝灭南越国",
+      "name": "汉武帝灭南越国",
+      "type": "HistoricalEvent",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_009"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "material:丝缕",
+      "name": "丝缕",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_014"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:木",
+      "name": "木",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_016"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:水晶",
+      "name": "水晶",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_006"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "material:玉",
+      "name": "玉",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_006",
+        "DOC_016",
+        "DOC_024",
+        "DOC_026"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:玉片",
+      "name": "玉片",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_014"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:玛瑙",
+      "name": "玛瑙",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_006"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "material:绿松石",
+      "name": "绿松石",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_006"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "material:象牙",
+      "name": "象牙",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_006"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "material:金",
+      "name": "金",
+      "type": "Material",
+      "aliases": [
+        "金箔片"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_006",
+        "DOC_013",
+        "DOC_016",
+        "DOC_020",
+        "DOC_026",
+        "DOC_031",
+        "DOC_035"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:鎏金铜",
+      "name": "鎏金铜",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_030"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:铁",
+      "name": "铁",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_019"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:铜",
+      "name": "铜",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_006",
+        "DOC_016",
+        "DOC_025",
+        "DOC_026",
+        "DOC_031",
+        "DOC_035",
+        "DOC_036"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:银",
+      "name": "银",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_016"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:青玉",
+      "name": "青玉",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_015",
+        "DOC_018",
+        "DOC_019",
+        "DOC_020",
+        "DOC_025"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "material:麻布",
+      "name": "麻布",
+      "type": "Material",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_014"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:S形游龙",
+      "name": "S形游龙",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_013"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:兽面",
+      "name": "兽面",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_031"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:兽首形",
+      "name": "兽首形",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_026"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:凤纹",
+      "name": "凤纹",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_017"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:夔龙纹",
+      "name": "夔龙纹",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_015"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:朱雀",
+      "name": "朱雀",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_030"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:船纹",
+      "name": "船纹",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_028"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:虎头形",
+      "name": "虎头形",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_020"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:虎斑纹",
+      "name": "虎斑纹",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_035"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:龙纹",
+      "name": "龙纹",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_017"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "pattern:龙虎并体形",
+      "name": "龙虎并体形",
+      "type": "Pattern",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_019"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "person:右夫人",
+      "name": "右夫人",
+      "type": "Person",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_023"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "person:汉武帝",
+      "name": "汉武帝",
+      "type": "Person",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_009"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "person:赵佗",
+      "name": "赵佗",
+      "type": "Person",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_009",
+        "DOC_010"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "person:赵婴齐",
+      "name": "赵婴齐",
+      "type": "Person",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_011"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "person:赵眜",
+      "name": "赵眜",
+      "type": "Person",
+      "aliases": [
+        "南越文帝",
+        "南越文王",
+        "南越王"
+      ],
+      "description": "南越国第二代国王",
+      "source_ids": [
+        "DOC_003",
+        "DOC_005",
+        "DOC_007",
+        "DOC_008",
+        "DOC_011",
+        "DOC_013",
+        "DOC_017"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:丝缕玉衣",
+      "name": "丝缕玉衣",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_007",
+        "DOC_014"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:人操蛇鎏金铜托座",
+      "name": "人操蛇鎏金铜托座",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_032"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:八节铁芯龙虎玉带钩",
+      "name": "八节铁芯龙虎玉带钩",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_019"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:双凤涡纹玉璧",
+      "name": "双凤涡纹玉璧",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_022"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "relic:双面兽首鎏金铜顶饰",
+      "name": "双面兽首鎏金铜顶饰",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_031"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:右夫人组玉佩（A组）",
+      "name": "右夫人组玉佩（A组）",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_023"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "relic:右夫人组玉佩（B组）",
+      "name": "右夫人组玉佩（B组）",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_024"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:四连体铜熏炉",
+      "name": "四连体铜熏炉",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_029"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:圆雕玉舞人",
+      "name": "圆雕玉舞人",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_021"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:墓主人组玉佩",
+      "name": "墓主人组玉佩",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_022"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "relic:帝印",
+      "name": "帝印",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_005"
+      ],
+      "confidence": 0.98
+    },
+    {
+      "id": "relic:平板玻璃铜牌饰",
+      "name": "平板玻璃铜牌饰",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_004"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:文帝行玺",
+      "name": "文帝行玺",
+      "type": "Relic",
+      "aliases": [
+        "文帝行玺金印",
+        "文帝行玺龙钮金印"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_004",
+        "DOC_005",
+        "DOC_013"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:朱雀鎏金铜顶饰",
+      "name": "朱雀鎏金铜顶饰",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_030"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:犀形玉璜",
+      "name": "犀形玉璜",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_022"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "relic:犀角形玉杯",
+      "name": "犀角形玉杯",
+      "type": "Relic",
+      "aliases": [
+        "玉角杯"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_004",
+        "DOC_015"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:玉盒",
+      "name": "玉盒",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_018"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:船纹铜提筒",
+      "name": "船纹铜提筒",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_028"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:虎头金钩扣龙形玉佩",
+      "name": "虎头金钩扣龙形玉佩",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_020"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:赵眜印",
+      "name": "赵眜印",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_005"
+      ],
+      "confidence": 0.98
+    },
+    {
+      "id": "relic:透雕龙凤纹重环玉佩",
+      "name": "透雕龙凤纹重环玉佩",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_017"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:鎏金铜框玉卮",
+      "name": "鎏金铜框玉卮",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_026"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:鎏金铜框玉盖杯",
+      "name": "鎏金铜框玉盖杯",
+      "type": "Relic",
+      "aliases": [],
+      "description": "西汉南越国文物，高16厘米，南越文王墓出土。杯体呈八棱筒形，杯身为铜铸窗棂形框架，分上下两截嵌入青玉片，盖顶镶一整块青玉。",
+      "source_ids": [
+        "DOC_025"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:铜印花板模",
+      "name": "铜印花板模",
+      "type": "Relic",
+      "aliases": [
+        "印板",
+        "印花铜板模"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_004",
+        "DOC_036"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:铜弩机",
+      "name": "铜弩机",
+      "type": "Relic",
+      "aliases": [
+        "弩机"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_027"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "relic:铜承盘高足玉杯",
+      "name": "铜承盘高足玉杯",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_016"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:铜烤炉",
+      "name": "铜烤炉",
+      "type": "Relic",
+      "aliases": [],
+      "description": "西汉南越国文物，高11厘米、长61厘米、宽52.5厘米，南越文王墓出土。烤炉平面略呈长方形，四角微翘，底设四个带轴轮的足，可以推动。",
+      "source_ids": [
+        "DOC_034"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:铜釜甑",
+      "name": "铜釜甑",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_033"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "relic:错金铭文铜虎节",
+      "name": "错金铭文铜虎节",
+      "type": "Relic",
+      "aliases": [
+        "错金铭文虎节"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_004",
+        "DOC_035"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "relic:龙凤涡纹玉璧",
+      "name": "龙凤涡纹玉璧",
+      "type": "Relic",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_022"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "id": "reliccategory:印染工具",
+      "name": "印染工具",
+      "type": "RelicCategory",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_036"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "id": "reliccategory:漆木屏风构件",
+      "name": "漆木屏风构件",
+      "type": "RelicCategory",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_030",
+        "DOC_031"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "reliccategory:熏炉",
+      "name": "熏炉",
+      "type": "RelicCategory",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_029"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "reliccategory:玺印",
+      "name": "玺印",
+      "type": "RelicCategory",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_006"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "id": "reliccategory:组玉佩",
+      "name": "组玉佩",
+      "type": "RelicCategory",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_024"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "state:南越国",
+      "name": "南越国",
+      "type": "State",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_003",
+        "DOC_005",
+        "DOC_006",
+        "DOC_009",
+        "DOC_010",
+        "DOC_011",
+        "DOC_013",
+        "DOC_014",
+        "DOC_015",
+        "DOC_016",
+        "DOC_017",
+        "DOC_018",
+        "DOC_019",
+        "DOC_020",
+        "DOC_021",
+        "DOC_022",
+        "DOC_023",
+        "DOC_024",
+        "DOC_025",
+        "DOC_026",
+        "DOC_027",
+        "DOC_028",
+        "DOC_029",
+        "DOC_030",
+        "DOC_031",
+        "DOC_032",
+        "DOC_033",
+        "DOC_034",
+        "DOC_035",
+        "DOC_036"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "tomb:南越文王墓",
+      "name": "南越文王墓",
+      "type": "Tomb",
+      "aliases": [
+        "南越王墓",
+        "西汉南越王墓",
+        "赵眜墓"
+      ],
+      "description": "",
+      "source_ids": [
+        "DOC_001",
+        "DOC_003",
+        "DOC_004",
+        "DOC_005",
+        "DOC_007",
+        "DOC_008",
+        "DOC_012",
+        "DOC_013",
+        "DOC_014",
+        "DOC_015",
+        "DOC_016",
+        "DOC_017",
+        "DOC_018",
+        "DOC_019",
+        "DOC_020",
+        "DOC_021",
+        "DOC_022",
+        "DOC_023",
+        "DOC_024",
+        "DOC_025",
+        "DOC_026",
+        "DOC_027",
+        "DOC_028",
+        "DOC_029",
+        "DOC_030",
+        "DOC_031",
+        "DOC_032",
+        "DOC_033",
+        "DOC_034",
+        "DOC_035",
+        "DOC_036"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "id": "tombchamber:西耳室",
+      "name": "西耳室",
+      "type": "TombChamber",
+      "aliases": [],
+      "description": "",
+      "source_ids": [
+        "DOC_036"
+      ],
+      "confidence": 0.9
+    }
+  ],
+  "relations": [
+    {
+      "source_id": "historicalevent:南越国建立",
+      "relation": "INVOLVES_PERSON",
+      "target_id": "person:赵佗",
+      "evidence": "赵佗为保岭南地区安定建立南越国",
+      "document_id": "DOC_009",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "historicalevent:南越国建立",
+      "relation": "OCCURRED_IN",
+      "target_id": "dynasty:秦朝",
+      "evidence": "秦朝末期赵佗为保岭南地区安定建立南越国",
+      "document_id": "DOC_009",
+      "confidence": 0.9
+    },
+    {
+      "source_id": "historicalevent:汉武帝灭南越国",
+      "relation": "INVOLVES_PERSON",
+      "target_id": "person:汉武帝",
+      "evidence": "汉武帝灭南越国",
+      "document_id": "DOC_009",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "person:赵佗",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "evidence": "赵佗为保岭南地区安定建立南越国",
+      "document_id": "DOC_009",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "person:赵佗",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "evidence": "赵佗为保岭南地区的安定和人民的安宁建立南越国",
+      "document_id": "DOC_010",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "person:赵婴齐",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "evidence": "赵婴齐为第三代南越王",
+      "document_id": "DOC_011",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "evidence": "南越国第二代国王赵眜",
+      "document_id": "DOC_003",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "evidence": "南越国第二代王赵眜",
+      "document_id": "DOC_005",
+      "confidence": 0.98
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "evidence": "南越文王赵眜之子",
+      "document_id": "DOC_011",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "evidence": "南越国第二代国王赵眜之墓",
+      "document_id": "DOC_003",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "evidence": "证实墓主人是南越国第二代王赵眜",
+      "document_id": "DOC_005",
+      "confidence": 0.98
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "evidence": "南越文王墓原址为1983年发掘的南越国第二代王赵眜之墓",
+      "document_id": "DOC_008",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:丝缕玉衣",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "丝缕玉衣为西汉南越国文物",
+      "document_id": "DOC_014",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:丝缕玉衣",
+      "relation": "MADE_OF",
+      "target_id": "material:丝缕",
+      "evidence": "由2291片玉片、丝缕和麻布粘贴编缀而成",
+      "document_id": "DOC_014",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:丝缕玉衣",
+      "relation": "MADE_OF",
+      "target_id": "material:玉片",
+      "evidence": "由2291片玉片、丝缕和麻布粘贴编缀而成",
+      "document_id": "DOC_014",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:丝缕玉衣",
+      "relation": "MADE_OF",
+      "target_id": "material:麻布",
+      "evidence": "由2291片玉片、丝缕和麻布粘贴编缀而成",
+      "document_id": "DOC_014",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:丝缕玉衣",
+      "relation": "REFLECTS_CULTURE",
+      "target_id": "culture:南越丧葬文化",
+      "evidence": "南越王身着丝缕玉衣，并以珠玉敛葬，凸显南越文帝尊贵的身份与地位。南越文王墓还发现有15个殉人，体现了南越独特的丧葬文化。",
+      "document_id": "DOC_007",
+      "confidence": 0.85
+    },
+    {
+      "source_id": "relic:丝缕玉衣",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "evidence": "南越王身着丝缕玉衣",
+      "document_id": "DOC_007",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "relic:人操蛇鎏金铜托座",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "人操蛇鎏金铜托座为西汉南越国文物",
+      "document_id": "DOC_032",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:八节铁芯龙虎玉带钩",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "八节铁芯龙虎玉带钩为西汉南越国文物",
+      "document_id": "DOC_019",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:八节铁芯龙虎玉带钩",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:龙虎并体形",
+      "evidence": "龙虎并体形",
+      "document_id": "DOC_019",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:八节铁芯龙虎玉带钩",
+      "relation": "MADE_OF",
+      "target_id": "material:铁",
+      "evidence": "用一根铁芯串联",
+      "document_id": "DOC_019",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:八节铁芯龙虎玉带钩",
+      "relation": "MADE_OF",
+      "target_id": "material:青玉",
+      "evidence": "带钩为青玉质",
+      "document_id": "DOC_019",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:双面兽首鎏金铜顶饰",
+      "relation": "BELONGS_TO_CATEGORY",
+      "target_id": "reliccategory:漆木屏风构件",
+      "evidence": "此为漆木屏风构件之一",
+      "document_id": "DOC_031",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:双面兽首鎏金铜顶饰",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "双面兽首鎏金铜顶饰为西汉南越国文物",
+      "document_id": "DOC_031",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:双面兽首鎏金铜顶饰",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:兽面",
+      "evidence": "正中为兽面",
+      "document_id": "DOC_031",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:双面兽首鎏金铜顶饰",
+      "relation": "MADE_OF",
+      "target_id": "material:金",
+      "evidence": "鎏金",
+      "document_id": "DOC_031",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:双面兽首鎏金铜顶饰",
+      "relation": "MADE_OF",
+      "target_id": "material:铜",
+      "evidence": "铜顶饰",
+      "document_id": "DOC_031",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:右夫人组玉佩（A组）",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "为西汉南越国文物",
+      "document_id": "DOC_023",
+      "confidence": 0.9
+    },
+    {
+      "source_id": "relic:右夫人组玉佩（A组）",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:右夫人",
+      "evidence": "墓中右夫人随葬有两套组玉佩",
+      "document_id": "DOC_023",
+      "confidence": 0.9
+    },
+    {
+      "source_id": "relic:右夫人组玉佩（B组）",
+      "relation": "BELONGS_TO_CATEGORY",
+      "target_id": "reliccategory:组玉佩",
+      "evidence": "右夫人组玉佩（B组）",
+      "document_id": "DOC_024",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:右夫人组玉佩（B组）",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "西汉南越国文物",
+      "document_id": "DOC_024",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:右夫人组玉佩（B组）",
+      "relation": "MADE_OF",
+      "target_id": "material:玉",
+      "evidence": "玉环、玉璜、玉管各2件和玉舞人1件",
+      "document_id": "DOC_024",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:四连体铜熏炉",
+      "relation": "BELONGS_TO_CATEGORY",
+      "target_id": "reliccategory:熏炉",
+      "evidence": "熏炉是燃熏香料的器具",
+      "document_id": "DOC_029",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:四连体铜熏炉",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "四连体铜熏炉为西汉南越国文物",
+      "document_id": "DOC_029",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:圆雕玉舞人",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "圆雕玉舞人为西汉南越国文物",
+      "document_id": "DOC_021",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:墓主人组玉佩",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "墓主人组玉佩为西汉南越国文物",
+      "document_id": "DOC_022",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "relic:帝印",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "evidence": "证实墓主人是南越国第二代王赵眜",
+      "document_id": "DOC_005",
+      "confidence": 0.98
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "“文帝行玺”龙钮金印为西汉南越国文物",
+      "document_id": "DOC_013",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:S形游龙",
+      "evidence": "印钮为S形游龙",
+      "document_id": "DOC_013",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "MADE_OF",
+      "target_id": "material:金",
+      "evidence": "“文帝行玺”龙钮金印",
+      "document_id": "DOC_013",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "evidence": "证实墓主人是南越国第二代王赵眜",
+      "document_id": "DOC_005",
+      "confidence": 0.98
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "evidence": "金印出土于墓主胸部，证实墓主为南越文帝",
+      "document_id": "DOC_013",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:朱雀鎏金铜顶饰",
+      "relation": "BELONGS_TO_CATEGORY",
+      "target_id": "reliccategory:漆木屏风构件",
+      "evidence": "此为漆木屏风构件之一",
+      "document_id": "DOC_030",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:朱雀鎏金铜顶饰",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "西汉南越国文物",
+      "document_id": "DOC_030",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:朱雀鎏金铜顶饰",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:朱雀",
+      "evidence": "朱雀昂首展翅",
+      "document_id": "DOC_030",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:朱雀鎏金铜顶饰",
+      "relation": "MADE_OF",
+      "target_id": "material:鎏金铜",
+      "evidence": "朱雀鎏金铜顶饰",
+      "document_id": "DOC_030",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:犀角形玉杯",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "犀角形玉杯为西汉南越国文物",
+      "document_id": "DOC_015",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:犀角形玉杯",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:夔龙纹",
+      "evidence": "器身纹饰自口沿起为一立姿夔龙向后展开",
+      "document_id": "DOC_015",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:犀角形玉杯",
+      "relation": "MADE_OF",
+      "target_id": "material:青玉",
+      "evidence": "玉杯为青玉质",
+      "document_id": "DOC_015",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:玉盒",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "玉盒为西汉南越国文物",
+      "document_id": "DOC_018",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:玉盒",
+      "relation": "MADE_OF",
+      "target_id": "material:青玉",
+      "evidence": "玉盒由青玉雕成",
+      "document_id": "DOC_018",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:船纹铜提筒",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "船纹铜提筒为西汉南越国文物",
+      "document_id": "DOC_028",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:船纹铜提筒",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:船纹",
+      "evidence": "铜提筒上刻有四组船纹",
+      "document_id": "DOC_028",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:船纹铜提筒",
+      "relation": "REFLECTS_CULTURE",
+      "target_id": "culture:岭南文化",
+      "evidence": "反映当时岭南地区较发达的水上交通",
+      "document_id": "DOC_028",
+      "confidence": 0.8
+    },
+    {
+      "source_id": "relic:虎头金钩扣龙形玉佩",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "西汉南越国文物",
+      "document_id": "DOC_020",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:虎头金钩扣龙形玉佩",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:虎头形",
+      "evidence": "钩首和钩尾均作虎头形",
+      "document_id": "DOC_020",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:虎头金钩扣龙形玉佩",
+      "relation": "MADE_OF",
+      "target_id": "material:金",
+      "evidence": "由青玉镂雕玉龙和金质虎头带钩组合而成",
+      "document_id": "DOC_020",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:虎头金钩扣龙形玉佩",
+      "relation": "MADE_OF",
+      "target_id": "material:青玉",
+      "evidence": "由青玉镂雕玉龙和金质虎头带钩组合而成",
+      "document_id": "DOC_020",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:赵眜印",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "evidence": "证实墓主人是南越国第二代王赵眜",
+      "document_id": "DOC_005",
+      "confidence": 0.98
+    },
+    {
+      "source_id": "relic:透雕龙凤纹重环玉佩",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "透雕龙凤纹重环玉佩为西汉南越国文物",
+      "document_id": "DOC_017",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:透雕龙凤纹重环玉佩",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:凤纹",
+      "evidence": "外圈透雕凤鸟",
+      "document_id": "DOC_017",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:透雕龙凤纹重环玉佩",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:龙纹",
+      "evidence": "内圈透雕游龙",
+      "document_id": "DOC_017",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉卮",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "鎏金铜框玉卮为西汉南越国文物",
+      "document_id": "DOC_026",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉卮",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:兽首形",
+      "evidence": "下附兽首形三短足",
+      "document_id": "DOC_026",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉卮",
+      "relation": "MADE_OF",
+      "target_id": "material:玉",
+      "evidence": "九块玉片",
+      "document_id": "DOC_026",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉卮",
+      "relation": "MADE_OF",
+      "target_id": "material:金",
+      "evidence": "鎏金",
+      "document_id": "DOC_026",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉卮",
+      "relation": "MADE_OF",
+      "target_id": "material:铜",
+      "evidence": "鎏金铜框",
+      "document_id": "DOC_026",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉盖杯",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "鎏金铜框玉盖杯为西汉南越国文物",
+      "document_id": "DOC_025",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉盖杯",
+      "relation": "MADE_OF",
+      "target_id": "material:铜",
+      "evidence": "杯身为铜铸窗棂形框架",
+      "document_id": "DOC_025",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:鎏金铜框玉盖杯",
+      "relation": "MADE_OF",
+      "target_id": "material:青玉",
+      "evidence": "嵌入青玉片，盖顶镶一整块青玉",
+      "document_id": "DOC_025",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜印花板模",
+      "relation": "BELONGS_TO_CATEGORY",
+      "target_id": "reliccategory:印染工具",
+      "evidence": "这两件印板是在丝织物上印染图案的工具",
+      "document_id": "DOC_036",
+      "confidence": 0.9
+    },
+    {
+      "source_id": "relic:铜印花板模",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "铜印花板模为西汉南越国文物",
+      "document_id": "DOC_036",
+      "confidence": 0.9
+    },
+    {
+      "source_id": "relic:铜印花板模",
+      "relation": "EXCAVATED_FROM",
+      "target_id": "tombchamber:西耳室",
+      "evidence": "西耳室出土丝织品中发现了与印板图案相同的印花织物",
+      "document_id": "DOC_036",
+      "confidence": 0.8
+    },
+    {
+      "source_id": "relic:铜印花板模",
+      "relation": "MADE_OF",
+      "target_id": "material:铜",
+      "evidence": "铜印花板模",
+      "document_id": "DOC_036",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "relic:铜弩机",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "铜弩机为西汉南越国文物",
+      "document_id": "DOC_027",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "relic:铜承盘高足玉杯",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "铜承盘高足玉杯为西汉南越国文物",
+      "document_id": "DOC_016",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜承盘高足玉杯",
+      "relation": "MADE_OF",
+      "target_id": "material:木",
+      "evidence": "整器由金、银、玉、铜、木五种材料制成",
+      "document_id": "DOC_016",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜承盘高足玉杯",
+      "relation": "MADE_OF",
+      "target_id": "material:玉",
+      "evidence": "整器由金、银、玉、铜、木五种材料制成",
+      "document_id": "DOC_016",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜承盘高足玉杯",
+      "relation": "MADE_OF",
+      "target_id": "material:金",
+      "evidence": "整器由金、银、玉、铜、木五种材料制成",
+      "document_id": "DOC_016",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜承盘高足玉杯",
+      "relation": "MADE_OF",
+      "target_id": "material:铜",
+      "evidence": "整器由金、银、玉、铜、木五种材料制成",
+      "document_id": "DOC_016",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜承盘高足玉杯",
+      "relation": "MADE_OF",
+      "target_id": "material:银",
+      "evidence": "整器由金、银、玉、铜、木五种材料制成",
+      "document_id": "DOC_016",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜烤炉",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "铜烤炉为西汉南越国文物",
+      "document_id": "DOC_034",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:铜釜甑",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "铜釜甑为西汉南越国文物",
+      "document_id": "DOC_033",
+      "confidence": 0.95
+    },
+    {
+      "source_id": "relic:错金铭文铜虎节",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "evidence": "错金铭文铜虎节为西汉南越国文物",
+      "document_id": "DOC_035",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:错金铭文铜虎节",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:虎斑纹",
+      "evidence": "并镶以金箔片作虎斑纹",
+      "document_id": "DOC_035",
+      "confidence": 1.0
+    },
+    {
+      "source_id": "relic:错金铭文铜虎节",
+      "relation": "MADE_OF",
+      "target_id": "material:金",
+      "evidence": "正面有错金铭文“王命命车驲”，并镶以金箔片作虎斑纹",
+      "document_id": "DOC_035",
+      "confidence": 1.0
+    }
+  ]
+}

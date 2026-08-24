@@ -1,0 +1,154 @@
+{
+  "input_file": "data/graph/knowledge_graph_v1.json",
+  "expected_entities": 78,
+  "expected_relations": 87,
+  "counts_before": {
+    "entities": 6,
+    "relations": 6
+  },
+  "counts_after_first_write": {
+    "entities": 80,
+    "relations": 93
+  },
+  "counts_after_second_write": {
+    "entities": 80,
+    "relations": 93
+  },
+  "first_verification": {
+    "missing_entities": [],
+    "missing_relations": []
+  },
+  "second_verification": {
+    "missing_entities": [],
+    "missing_relations": []
+  },
+  "idempotent": true,
+  "core_paths": [
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "document_id": "DOC_SAMPLE_001",
+      "evidence": "南越国第二代王赵眜"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "document_id": "DOC_003",
+      "evidence": "南越国第二代国王赵眜"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "document_id": "DOC_005",
+      "evidence": "南越国第二代王赵眜"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "document_id": "DOC_011",
+      "evidence": "南越文王赵眜之子"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "document_id": "DOC_SAMPLE_001",
+      "evidence": "南越文王墓是南越国第二代王赵眜的墓葬"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "document_id": "DOC_003",
+      "evidence": "南越国第二代国王赵眜之墓"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "document_id": "DOC_005",
+      "evidence": "证实墓主人是南越国第二代王赵眜"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "document_id": "DOC_008",
+      "evidence": "南越文王墓原址为1983年发掘的南越国第二代王赵眜之墓"
+    },
+    {
+      "source_id": "relic:丝缕玉衣",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "document_id": "DOC_007",
+      "evidence": "南越王身着丝缕玉衣"
+    },
+    {
+      "source_id": "relic:帝印",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "document_id": "DOC_005",
+      "evidence": "证实墓主人是南越国第二代王赵眜"
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "CREATED_IN",
+      "target_id": "dynasty:西汉",
+      "document_id": "DOC_013",
+      "evidence": "“文帝行玺”龙钮金印为西汉南越国文物"
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "HAS_PATTERN",
+      "target_id": "pattern:S形游龙",
+      "document_id": "DOC_013",
+      "evidence": "印钮为S形游龙"
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "MADE_OF",
+      "target_id": "material:金",
+      "document_id": "DOC_013",
+      "evidence": "“文帝行玺”龙钮金印"
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "document_id": "DOC_005",
+      "evidence": "证实墓主人是南越国第二代王赵眜"
+    },
+    {
+      "source_id": "relic:文帝行玺",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "document_id": "DOC_013",
+      "evidence": "金印出土于墓主胸部，证实墓主为南越文帝"
+    },
+    {
+      "source_id": "relic:文帝行玺金印",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "document_id": "DOC_SAMPLE_001",
+      "evidence": "为确认墓主人身份提供了重要证据"
+    },
+    {
+      "source_id": "relic:赵眜印",
+      "relation": "RELATED_TO_PERSON",
+      "target_id": "person:赵眜",
+      "document_id": "DOC_005",
+      "evidence": "证实墓主人是南越国第二代王赵眜"
+    },
+    {
+      "source_id": "tomb:南越文王墓",
+      "relation": "CONTAINS",
+      "target_id": "tombchamber:主棺室",
+      "document_id": "DOC_SAMPLE_001",
+      "evidence": "墓葬包含主棺室"
+    }
+  ]
+}

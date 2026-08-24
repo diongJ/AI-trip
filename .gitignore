@@ -25,6 +25,10 @@ data/raw/*
 !data/raw/**/*.json
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/batch_extraction_report.json
+!data/processed/graph_v1_fusion_report.json
+!data/processed/graph_v1_load_report.json
 data/graph/*
 !data/graph/.gitkeep
+!data/graph/knowledge_graph_v1.json
 
