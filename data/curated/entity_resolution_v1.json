@@ -1,0 +1,36 @@
+{
+  "canonical_id_map": {
+    "person:南越王": "person:赵眜",
+    "person:南越文帝": "person:赵眜",
+    "tomb:南越王墓": "tomb:南越文王墓",
+    "tomb:赵眜墓": "tomb:南越文王墓",
+    "exhibition:南越藏珍——西汉南越王墓出土文物陈列": "exhibition:南越藏珍",
+    "dynasty:汉朝": "dynasty:西汉",
+    "dynasty:汉代": "dynasty:西汉",
+    "relic:文帝行玺金印": "relic:文帝行玺",
+    "relic:文帝行玺龙钮金印": "relic:文帝行玺",
+    "relic:错金铭文虎节": "relic:错金铭文铜虎节",
+    "relic:印花铜板模": "relic:铜印花板模",
+    "relic:玉角杯": "relic:犀角形玉杯"
+  },
+  "drop_entity_ids": [
+    "exhibition:南越鸿门宴",
+    "exhibition:南越明王",
+    "exhibition:南越王子",
+    "exhibition:长安为质"
+  ],
+  "drop_relation_keys": [
+    {
+      "source_id": "person:赵眜",
+      "relation": "BELONGS_TO_STATE",
+      "target_id": "state:南越国",
+      "document_id": "DOC_017"
+    },
+    {
+      "source_id": "person:赵眜",
+      "relation": "BURIED_IN",
+      "target_id": "tomb:南越文王墓",
+      "document_id": "DOC_017"
+    }
+  ]
+}
