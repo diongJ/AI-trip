@@ -36,6 +36,68 @@ class Neo4jKnowledgeGraph:
         with self.driver.session(database=self.settings.neo4j_database) as session:
             session.execute_write(self._write_extraction, result)
 
+    def get_counts(self) -> dict[str, int]:
+        records, _, _ = self.driver.execute_query(
+            """
+            CALL () { MATCH (n:Entity) RETURN count(n) AS entities }
+            CALL () { MATCH (:Entity)-[r]->(:Entity) RETURN count(r) AS relations }
+            RETURN entities, relations
+            """,
+            database_=self.settings.neo4j_database,
+        )
+        if not records:
+            return {"entities": 0, "relations": 0}
+        return {
+            "entities": records[0]["entities"],
+            "relations": records[0]["relations"],
+        }
+
+    def verify_extraction(self, result: ExtractionResult) -> dict[str, list[object]]:
+        entity_ids = [entity.id for entity in result.entities]
+        relation_rows = [
+            {
+                "source_id": relation.source_id,
+                "relation": relation.relation.value,
+                "target_id": relation.target_id,
+                "document_id": relation.document_id,
+                "evidence": relation.evidence,
+            }
+            for relation in result.relations
+        ]
+        entity_records, _, _ = self.driver.execute_query(
+            """
+            UNWIND $entity_ids AS entity_id
+            OPTIONAL MATCH (n:Entity {id: entity_id})
+            WITH entity_id, n WHERE n IS NULL
+            RETURN collect(entity_id) AS missing_entities
+            """,
+            entity_ids=entity_ids,
+            database_=self.settings.neo4j_database,
+        )
+        relation_records, _, _ = self.driver.execute_query(
+            """
+            UNWIND $relations AS expected
+            OPTIONAL MATCH (source:Entity {id: expected.source_id})-[r]->
+                           (target:Entity {id: expected.target_id})
+            WHERE type(r) = expected.relation
+              AND r.document_id = expected.document_id
+              AND r.evidence = expected.evidence
+            WITH expected, count(r) AS matches
+            WHERE matches = 0
+            RETURN collect(expected) AS missing_relations
+            """,
+            relations=relation_rows,
+            database_=self.settings.neo4j_database,
+        )
+        return {
+            "missing_entities": (
+                entity_records[0]["missing_entities"] if entity_records else entity_ids
+            ),
+            "missing_relations": (
+                relation_records[0]["missing_relations"] if relation_records else relation_rows
+            ),
+        }
+
     @classmethod
     def _write_extraction(cls, tx: object, result: ExtractionResult) -> None:
         for entity in result.entities:
