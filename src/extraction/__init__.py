@@ -10,6 +10,9 @@ from src.extraction.models import (
 )
 
 __all__ = [
+    "BatchExtractionRunner",
+    "BatchItemResult",
+    "BatchReport",
     "DocumentMetadata",
     "Entity",
     "EntityType",
@@ -18,3 +21,15 @@ __all__ = [
     "RelationType",
 ]
 
+
+def __getattr__(name: str) -> object:
+    if name in {"BatchExtractionRunner", "BatchItemResult", "BatchReport"}:
+        from src.extraction.batch import BatchExtractionRunner, BatchItemResult, BatchReport
+
+        exports = {
+            "BatchExtractionRunner": BatchExtractionRunner,
+            "BatchItemResult": BatchItemResult,
+            "BatchReport": BatchReport,
+        }
+        return exports[name]
+    raise AttributeError(name)

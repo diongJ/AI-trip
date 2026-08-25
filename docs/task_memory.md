@@ -73,3 +73,10 @@
 - `data/processed/rag/**` 与 `data/graph/knowledge_graph_v1.json` 是可重复生成产物，不提交 Git。
 - PowerShell 中文输出偶尔乱码，但 UTF-8 文件内容和 JSON 校验正常。
 - 当前本地图谱是 Day 4 检索降级用核心图，不宣称替代 Day 3 完整 78/87 图谱口径。
+
+### 冲突修复记录
+
+- `feature/day4-retrieval` 与最新 `origin/dev` 合并时，`README.md`、`scripts/build_graph_v1.py`、`src/graph/__init__.py` 出现冲突。
+- 解决原则：保留 Day 3 正式融合图谱构建逻辑，Day 4 检索层只读取 `data/graph/knowledge_graph_v1.json`，不覆盖 78/87 的正式图谱口径。
+- `src/graph/__init__.py` 同时导出 Day 3 fusion API 和 Day 4 retriever API，并延迟导入 `Neo4jKnowledgeGraph`。
+- `scripts.verify_retrieval` 在缺少 `data/graph/by_document` 时允许使用已有本地图或 smoke-test fallback 图，保证轻量设备也能跑检索验证。

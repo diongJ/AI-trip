@@ -82,3 +82,76 @@ def test_extract_rejects_invalid_model_output(tmp_path) -> None:
         with pytest.raises(DeepSeekError, match="Schema V1"):
             extractor.extract("测试文本", "DOC_SAMPLE_001")
 
+
+def test_extract_repairs_schema_invalid_output_once(tmp_path) -> None:
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text("Return JSON.", encoding="utf-8")
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        body = json.loads(request.content)
+        if calls == 1:
+            invalid = {
+                "entities": VALID_RESULT["entities"],
+                "relations": [
+                    {
+                        **VALID_RESULT["relations"][0],
+                        "source_id": "tomb:南越文王墓",
+                        "target_id": "person:赵眜",
+                    }
+                ],
+            }
+            return httpx.Response(
+                200,
+                json={"choices": [{"message": {"content": json.dumps(invalid)}}]},
+            )
+        assert "未通过 Schema V1 校验" in body["messages"][-1]["content"]
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(VALID_RESULT)}}]},
+        )
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        extractor = DeepSeekExtractor(settings(), prompt_path=prompt, http_client=client)
+        result = extractor.extract("测试文本", "DOC_SAMPLE_001")
+
+    assert calls == 2
+    assert result.relations[0].source_id == "person:赵眜"
+
+
+def test_extract_drops_invalid_relation_after_failed_repair(tmp_path) -> None:
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text("Return JSON.", encoding="utf-8")
+    invalid = {
+        "entities": VALID_RESULT["entities"],
+        "relations": [
+            {
+                **VALID_RESULT["relations"][0],
+                "source_id": "tomb:南越文王墓",
+                "target_id": "person:赵眜",
+            }
+        ],
+    }
+
+    def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(invalid)}}]},
+        )
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        extractor = DeepSeekExtractor(settings(), prompt_path=prompt, http_client=client)
+        result = extractor.extract("测试文本", "DOC_SAMPLE_001")
+
+    assert len(result.entities) == 2
+    assert result.relations == []
+
+
+def test_extractor_rejects_negative_schema_repair_count(tmp_path) -> None:
+    prompt = tmp_path / "prompt.txt"
+    prompt.write_text("Return JSON.", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="schema_repair_attempts"):
+        DeepSeekExtractor(settings(), prompt_path=prompt, schema_repair_attempts=-1)
