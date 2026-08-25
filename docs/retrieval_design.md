@@ -105,7 +105,7 @@ python -m scripts.build_graph_v1
 data/graph/knowledge_graph_v1.json
 ```
 
-该文件是可重复生成产物，默认不进入 Git。
+该文件可以通过 Day 3 流程重复生成，同时作为后续检索、Agent 和 Demo 的版本化基线进入 Git。
 
 KG 检索支持：
 

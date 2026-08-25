@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from src.extraction.models import Entity, ExtractionResult, Relation
+from src.graph.fusion import ResolutionConfig
 from src.rag.models import GraphEntity, GraphHit
 
 if TYPE_CHECKING:
@@ -17,6 +18,7 @@ except ModuleNotFoundError:  # pragma: no cover - exercised in minimal installs
     Neo4jError = Exception
 
 DEFAULT_GRAPH_PATH = Path("data/graph/knowledge_graph_v1.json")
+DEFAULT_RESOLUTION_PATH = Path("data/curated/entity_resolution_v1.json")
 
 
 class GraphRetrievalError(RuntimeError):
@@ -116,18 +118,34 @@ class LocalGraphRetriever:
 
 
 class Neo4jGraphRetriever:
-    def __init__(self, graph: "Neo4jKnowledgeGraph") -> None:
+    def __init__(
+        self,
+        graph: "Neo4jKnowledgeGraph",
+        *,
+        resolution_path: str | Path = DEFAULT_RESOLUTION_PATH,
+    ) -> None:
         self.graph = graph
+        path = Path(resolution_path)
+        self.canonical_id_map = (
+            ResolutionConfig.from_path(path).canonical_id_map if path.exists() else {}
+        )
 
     def search_entities(self, query: str, *, limit: int = 5) -> list[GraphEntity]:
         records, _, _ = self.graph.driver.execute_query(
             """
             MATCH (entity:Entity)
             WHERE toLower(entity.name) CONTAINS toLower($query)
-               OR any(alias IN coalesce(entity.aliases, []) WHERE toLower(alias) CONTAINS toLower($query))
+               OR toLower($query) CONTAINS toLower(entity.name)
+               OR any(
+                   alias IN coalesce(entity.aliases, [])
+                   WHERE toLower(alias) CONTAINS toLower($query)
+                      OR toLower($query) CONTAINS toLower(alias)
+               )
             RETURN entity.id AS id, entity.name AS name, entity.entity_type AS type,
                    coalesce(entity.aliases, []) AS aliases
-            ORDER BY name
+            ORDER BY CASE WHEN toLower(entity.name) = toLower($query) THEN 0 ELSE 1 END,
+                     size(entity.name) DESC,
+                     name
             LIMIT $limit
             """,
             query=query,
@@ -135,6 +153,12 @@ class Neo4jGraphRetriever:
             database_=self.graph.settings.neo4j_database,
         )
         return [GraphEntity.model_validate(record.data()) for record in records]
+
+    def resolve_entity_id(self, query: str) -> str | None:
+        matches = self.search_entities(query, limit=5)
+        if not matches:
+            return None
+        return _resolve_canonical_id(matches[0].id, self.canonical_id_map)
 
     def get_neighbors(
         self,
@@ -145,17 +169,22 @@ class Neo4jGraphRetriever:
     ) -> list[GraphHit]:
         if depth not in {1, 2}:
             raise ValueError("depth must be 1 or 2")
-        matches = self.search_entities(entity_query, limit=1)
-        if not matches:
+        entity_id = self.resolve_entity_id(entity_query)
+        if entity_id is None:
             return []
         max_hops = "1..2" if depth == 2 else "1"
         records, _, _ = self.graph.driver.execute_query(
             f"""
             MATCH (start:Entity {{id: $entity_id}})
             MATCH path = (start)-[*{max_hops}]-(neighbor:Entity)
-            WITH relationships(path)[0] AS r, start
+            UNWIND relationships(path) AS r
+            WITH DISTINCT r, start
             WITH startNode(r) AS source, r, endNode(r) AS target,
-                 CASE WHEN startNode(r).id = start.id THEN 'outgoing' ELSE 'incoming' END AS direction
+                 CASE
+                     WHEN startNode(r).id = start.id THEN 'outgoing'
+                     WHEN endNode(r).id = start.id THEN 'incoming'
+                     ELSE 'outgoing'
+                 END AS direction
             RETURN source.id AS source_id, source.name AS source_name, source.entity_type AS source_type,
                    coalesce(source.aliases, []) AS source_aliases,
                    type(r) AS relation,
@@ -164,9 +193,10 @@ class Neo4jGraphRetriever:
                    direction AS direction,
                    r.document_id AS document_id,
                    r.evidence AS evidence
+            ORDER BY source_id, relation, target_id, document_id
             LIMIT $limit
             """,
-            entity_id=matches[0].id,
+            entity_id=entity_id,
             limit=limit,
             database_=self.graph.settings.neo4j_database,
         )
@@ -230,3 +260,14 @@ def _graph_entity(entity: Entity) -> GraphEntity:
 
 def _normalize_name(value: str) -> str:
     return value.strip().lower().replace("“", "").replace("”", "").replace('"', "")
+
+
+def _resolve_canonical_id(entity_id: str, canonical_id_map: dict[str, str]) -> str:
+    current = entity_id
+    visited: set[str] = set()
+    while current in canonical_id_map:
+        if current in visited:
+            raise GraphRetrievalError(f"canonical entity mapping contains a cycle at {current}")
+        visited.add(current)
+        current = canonical_id_map[current]
+    return current

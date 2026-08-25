@@ -70,7 +70,7 @@
 
 ### 注意事项
 
-- `data/processed/rag/**` 与 `data/graph/knowledge_graph_v1.json` 是可重复生成产物，不提交 Git。
+- `data/processed/rag/**` 是可重复生成产物，不提交 Git；`data/graph/knowledge_graph_v1.json` 作为后续阶段的版本化基线提交。
 - PowerShell 中文输出偶尔乱码，但 UTF-8 文件内容和 JSON 校验正常。
 - 当前本地图谱是 Day 4 检索降级用核心图，不宣称替代 Day 3 完整 78/87 图谱口径。
 
@@ -96,7 +96,7 @@
 - 新增受证据约束回答服务：默认离线抽取式生成；配置 DeepSeek 后可用 LLM 组织语言。
 - 新增引用聚合：KG 关系通过 `document_id` 回查 Day 2 语料，补齐标题、来源和 URL。
 - 新增 CLI：`python -m scripts.ask "问题"`。
-- 新增 15 题 Agent 冒烟测试脚本和记录。
+- 新增并加强为 16 题 Agent 冒烟测试，检查预期工具、答案要点、关键关系、引用和拒答。
 - 新增 `docs/agent_design.md` 与 README Day 5 说明。
 
 ### 验证记录
@@ -104,8 +104,8 @@
 - `python -m scripts.validate_corpus` 通过：36 docs。
 - `python -m scripts.verify_rag` 通过：9/10，1 个为超范围低相关问题。
 - `python -m scripts.verify_retrieval` 通过。
-- `python -m scripts.verify_agent` 通过：15/15。
-- `python -m pytest` 通过：50 passed。
+- `python -m scripts.verify_agent` 通过：16/16。
+- `python -m pytest` 通过：54 passed。
 
 ### 注意事项
 

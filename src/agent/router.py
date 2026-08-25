@@ -12,10 +12,13 @@ class EntityResolver(Protocol):
 
 OUT_OF_SCOPE_RE = re.compile(
     r"(今天|现在|实时|当前).*(游客|人数|客流|天气|交通|排队|开放|票价|门票|预约)|"
-    r"(天气|路线导航|停车|餐厅|酒店|公交|地铁|打车)"
+    r"(天气|路线导航|停车|餐厅|酒店|公交|地铁|打车|火星|月球|外星)"
 )
-RELATION_RE = re.compile(r"(关系|谁|属于|出土|材料|材质|纹饰|制作|反映|关联|葬|建立)")
+RELATION_RE = re.compile(r"(关系|谁|属于|出土|材料|材质|纹饰|制作|反映|关联|葬)")
 DESCRIPTION_RE = re.compile(r"(介绍|讲讲|特点|意义|价值|如何|为什么|背景|过程|展示|展区)")
+HYBRID_RE = re.compile(
+    r"(结合.*(?:文物|资料|证据)|文物证据|建立|创建|创立|开国|反映|观念)"
+)
 
 
 class RuleBasedRouter:
@@ -38,6 +41,13 @@ class RuleBasedRouter:
             )
 
         entity_query = self._find_entity_query(normalized)
+        if entity_query and HYBRID_RE.search(normalized):
+            return RouteDecision(
+                question_type=QuestionType.DESCRIPTION,
+                tool=ToolName.HYBRID_SEARCH,
+                entity_query=entity_query,
+                reason="问题需要结合结构化关系和文档证据，使用混合检索。",
+            )
         if entity_query and RELATION_RE.search(normalized):
             return RouteDecision(
                 question_type=QuestionType.RELATION_EXPLORATION,

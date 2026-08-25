@@ -156,7 +156,7 @@ python -m scripts.verify_rag
 python -m scripts.verify_retrieval
 ```
 
-RAG 索引产物位于 `data/processed/rag/`，本地图谱产物位于 `data/graph/knowledge_graph_v1.json`，二者均可重复生成且默认不提交到 Git。Neo4j Aura 不可用时，检索层可使用本地 JSON 图返回同构 `GraphHit` 结果。
+RAG 索引产物位于 `data/processed/rag/`，属于可重复生成文件，不提交到 Git。统一图谱 `data/graph/knowledge_graph_v1.json` 作为 Day 4～Day 8 的版本化基线随仓库分发。Neo4j Aura 不可用时，检索层可使用该本地 JSON 图返回同构 `GraphHit` 结果。
 
 ## Day 5 Agent MVP
 
@@ -180,7 +180,7 @@ python -m scripts.ask "赵眜是谁？" --json
 python -m scripts.ask "讲讲丝缕玉衣的特点" --llm
 ```
 
-运行 15 题 Agent 冒烟测试：
+运行 16 题 Agent 冒烟测试：
 
 ```powershell
 python -m scripts.verify_agent

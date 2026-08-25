@@ -109,6 +109,8 @@ def test_agent_returns_grounded_answer_with_citations(tmp_path) -> None:
     assert answer.citations
     assert answer.used_tools == [ToolName.SEARCH_KG]
     assert any(citation.doc_id == "DOC_013" for citation in answer.citations)
+    assert {fact.relation for fact in answer.graph_facts} == {"MADE_OF"}
+    assert "金" in answer.answer
 
 
 def test_agent_refuses_out_of_scope_realtime_question(tmp_path) -> None:
@@ -119,6 +121,24 @@ def test_agent_refuses_out_of_scope_realtime_question(tmp_path) -> None:
     assert answer.insufficient_evidence
     assert answer.citations == []
     assert answer.used_tools == []
+
+
+def test_agent_refuses_obvious_false_location_premise(tmp_path) -> None:
+    service = AgentService(build_tools(tmp_path))
+
+    answer = service.answer("火星上的南越王墓是谁建的？")
+
+    assert answer.insufficient_evidence
+    assert answer.citations == []
+    assert answer.used_tools == []
+
+
+def test_router_uses_hybrid_when_document_evidence_is_requested(tmp_path) -> None:
+    tools = build_tools(tmp_path)
+
+    route = RuleBasedRouter(tools.graph_retriever).route("赵眜是谁？请结合文物证据。")
+
+    assert route.tool == ToolName.HYBRID_SEARCH
 
 
 def test_agent_uses_document_search_for_descriptive_question(tmp_path) -> None:

@@ -27,6 +27,9 @@ class AnswerGenerator(Protocol):
 
 class ExtractiveAnswerGenerator:
     def generate(self, question: str, route: RouteDecision, result: ToolResult) -> str:
+        if route.tool in {ToolName.SEARCH_DOCUMENTS, ToolName.HYBRID_SEARCH} and result.documents:
+            snippets = [hit.content for hit in result.documents[:3]]
+            return "\n".join(snippets)
         if result.graph:
             facts = [
                 f"{hit.source_entity.name}{_relation_label(hit.relation)}{hit.target_entity.name}。证据：{hit.evidence}"
@@ -151,7 +154,7 @@ class AgentService:
 
     def _run_tool(self, question: str, route: RouteDecision) -> ToolResult:
         if route.tool == ToolName.SEARCH_KG:
-            return self.tools.search_kg(route.entity_query or question)
+            return self.tools.search_kg(question, entity_query=route.entity_query)
         if route.tool == ToolName.SEARCH_DOCUMENTS:
             return self.tools.search_documents(question)
         if route.tool == ToolName.HYBRID_SEARCH:
