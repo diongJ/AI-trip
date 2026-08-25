@@ -158,6 +158,36 @@ python -m scripts.verify_retrieval
 
 RAG 索引产物位于 `data/processed/rag/`，本地图谱产物位于 `data/graph/knowledge_graph_v1.json`，二者均可重复生成且默认不提交到 Git。Neo4j Aura 不可用时，检索层可使用本地 JSON 图返回同构 `GraphHit` 结果。
 
+## Day 5 Agent MVP
+
+Day 5 提供 KG、RAG 和 Hybrid 三类工具路由，并生成带引用回答。默认使用离线抽取式回答生成器，不需要 DeepSeek；配置 `DEEPSEEK_API_KEY` 后可用 `--llm` 让 DeepSeek 只基于检索证据组织语言。
+
+命令行提问：
+
+```powershell
+python -m scripts.ask "文帝行玺是什么材料？"
+```
+
+输出完整结构化结果：
+
+```powershell
+python -m scripts.ask "赵眜是谁？" --json
+```
+
+使用 DeepSeek 生成回答：
+
+```powershell
+python -m scripts.ask "讲讲丝缕玉衣的特点" --llm
+```
+
+运行 15 题 Agent 冒烟测试：
+
+```powershell
+python -m scripts.verify_agent
+```
+
+Agent 回答包含 `answer`、`citations`、`used_tools`、`route_reason` 和 `insufficient_evidence`。对实时客流、天气、停车、路线导航等超范围问题，Agent 会明确拒答。
+
 ## 项目结构
 
 ```text
