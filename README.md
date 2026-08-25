@@ -128,6 +128,36 @@ python -m scripts.load_graph_v1
 
 入库命令不会清空数据库。它会连续执行两次幂等写入，逐项检查实体和关系是否存在，并查询赵眜、南越文王墓和文帝行玺的核心路径。验收报告保存在 `data/processed/graph_v1_load_report.json`。
 
+## Day 4 检索底座
+
+Day 4 提供设备兼容的 RAG 与 KG 检索底座。默认 RAG 后端为纯 Python `lexical-tfidf-v1`，不依赖 GPU、FAISS 或本地模型下载；后续可以在保持返回模型不变的前提下替换为句向量 + FAISS 后端。
+
+构建 RAG 索引：
+
+```powershell
+python -m scripts.build_rag_index
+```
+
+强制重建：
+
+```powershell
+python -m scripts.build_rag_index --force
+```
+
+验证文档检索：
+
+```powershell
+python -m scripts.verify_rag
+```
+
+验证 RAG + KG 检索：
+
+```powershell
+python -m scripts.verify_retrieval
+```
+
+RAG 索引产物位于 `data/processed/rag/`，本地图谱产物位于 `data/graph/knowledge_graph_v1.json`，二者均可重复生成且默认不提交到 Git。Neo4j Aura 不可用时，检索层可使用本地 JSON 图返回同构 `GraphHit` 结果。
+
 ## 项目结构
 
 ```text
