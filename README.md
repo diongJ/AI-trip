@@ -84,6 +84,42 @@ data/raw/sample_nanyue.txt
 
 模型输出若违反 Schema、缺少证据、引用不存在的实体或使用错误关系方向，将在写入 Neo4j 之前被拒绝。
 
+## Day 4 检索底座
+
+Day 4 提供设备兼容的 RAG 与 KG 检索底座。默认 RAG 后端为纯 Python `lexical-tfidf-v1`，不依赖 GPU、FAISS 或本地模型下载；后续可以在保持返回模型不变的前提下替换为句向量 + FAISS 后端。
+
+构建 RAG 索引：
+
+```powershell
+python -m scripts.build_rag_index
+```
+
+强制重建：
+
+```powershell
+python -m scripts.build_rag_index --force
+```
+
+构建本地只读知识图谱：
+
+```powershell
+python -m scripts.build_graph_v1
+```
+
+验证文档检索：
+
+```powershell
+python -m scripts.verify_rag
+```
+
+验证 RAG + KG 检索：
+
+```powershell
+python -m scripts.verify_retrieval
+```
+
+RAG 索引产物位于 `data/processed/rag/`，本地图谱产物位于 `data/graph/knowledge_graph_v1.json`，二者均可重复生成且默认不提交到 Git。Neo4j Aura 不可用时，检索层可使用本地 JSON 图返回同构 `GraphHit` 结果。
+
 ## 项目结构
 
 ```text
