@@ -80,3 +80,35 @@
 - 解决原则：保留 Day 3 正式融合图谱构建逻辑，Day 4 检索层只读取 `data/graph/knowledge_graph_v1.json`，不覆盖 78/87 的正式图谱口径。
 - `src/graph/__init__.py` 同时导出 Day 3 fusion API 和 Day 4 retriever API，并延迟导入 `Neo4jKnowledgeGraph`。
 - `scripts.verify_retrieval` 在缺少 `data/graph/by_document` 时允许使用已有本地图或 smoke-test fallback 图，保证轻量设备也能跑检索验证。
+
+## 2026-08-25 Day 5 Agent MVP
+
+### 当前状态
+
+- 工作分支：`feature/day5-agent`。
+- 分支基线：`feature/day4-retrieval`，因为 Day 5 依赖 Day 4 的 RAG/KG 检索接口。
+- 后续 PR 应在 Day 4 合入 `dev` 后，以 `dev` 为 base；不要合入 `main`。
+
+### 已完成内容
+
+- 新增规则路由：实体事实、关系探索、描述讲解、超范围拒答。
+- 新增工具封装：`search_kg`、`search_documents`、`hybrid_search`。
+- 新增受证据约束回答服务：默认离线抽取式生成；配置 DeepSeek 后可用 LLM 组织语言。
+- 新增引用聚合：KG 关系通过 `document_id` 回查 Day 2 语料，补齐标题、来源和 URL。
+- 新增 CLI：`python -m scripts.ask "问题"`。
+- 新增 15 题 Agent 冒烟测试脚本和记录。
+- 新增 `docs/agent_design.md` 与 README Day 5 说明。
+
+### 验证记录
+
+- `python -m scripts.validate_corpus` 通过：36 docs。
+- `python -m scripts.verify_rag` 通过：9/10，1 个为超范围低相关问题。
+- `python -m scripts.verify_retrieval` 通过。
+- `python -m scripts.verify_agent` 通过：15/15。
+- `python -m pytest` 通过：50 passed。
+
+### 注意事项
+
+- 默认回答不依赖 DeepSeek，保证无网络/无 API Key 设备也能演示主链路。
+- `--llm` 模式只允许基于检索上下文生成，不允许使用模型自身知识补事实。
+- RAG 索引写入已改为临时文件原子替换，减少并发验证时读到半写入文件的风险。

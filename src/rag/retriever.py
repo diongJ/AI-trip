@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+from json import JSONDecodeError
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -22,7 +23,12 @@ class RagRetriever:
             raise RagIndexError(
                 f"RAG index file is missing: {index_path}. Run python -m scripts.build_rag_index first."
             )
-        payload = json.loads(index_path.read_text(encoding="utf-8"))
+        try:
+            payload = json.loads(index_path.read_text(encoding="utf-8"))
+        except JSONDecodeError as exc:
+            raise RagIndexError(
+                f"RAG index file is not valid JSON: {index_path}. Rebuild the index."
+            ) from exc
         if payload.get("backend") != LEXICAL_BACKEND:
             raise RagIndexError(f"unsupported RAG backend: {payload.get('backend')}")
         self.idf: dict[str, float] = payload["idf"]
