@@ -2,6 +2,7 @@ from neo4j import Driver, GraphDatabase
 
 from src.config.settings import Settings
 from src.extraction.models import Entity, EntityType, ExtractionResult, Relation
+from src.rag.models import GraphEntity, GraphHit
 
 
 class Neo4jKnowledgeGraph:
@@ -123,3 +124,15 @@ class Neo4jKnowledgeGraph:
             database_=self.settings.neo4j_database,
         )
         return [record.data() for record in records]
+
+    def search_entities(self, query: str, *, limit: int = 5) -> list[GraphEntity]:
+        from src.graph.retriever import Neo4jGraphRetriever
+
+        return Neo4jGraphRetriever(self).search_entities(query, limit=limit)
+
+    def fetch_entity_paths(
+        self, entity_query: str, *, depth: int = 1, limit: int = 20
+    ) -> list[GraphHit]:
+        from src.graph.retriever import Neo4jGraphRetriever
+
+        return Neo4jGraphRetriever(self).get_neighbors(entity_query, depth=depth, limit=limit)
