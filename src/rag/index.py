@@ -70,24 +70,18 @@ def build_rag_index(
         for term, weight in vector.items():
             inverted[term].append((index, weight))
 
-    metadata_path.write_text(
-        json.dumps([chunk.model_dump(mode="json") for chunk in chunks], ensure_ascii=False, indent=2)
-        + "\n",
-        encoding="utf-8",
+    _write_json_atomic(
+        metadata_path,
+        [chunk.model_dump(mode="json") for chunk in chunks],
     )
-    index_path.write_text(
-        json.dumps(
-            {
-                "backend": LEXICAL_BACKEND,
-                "idf": idf,
-                "norms": norms,
-                "inverted": {term: postings for term, postings in sorted(inverted.items())},
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+    _write_json_atomic(
+        index_path,
+        {
+            "backend": LEXICAL_BACKEND,
+            "idf": idf,
+            "norms": norms,
+            "inverted": {term: postings for term, postings in sorted(inverted.items())},
+        },
     )
 
     manifest = {
@@ -101,10 +95,7 @@ def build_rag_index(
         "metadata_file": metadata_path.name,
         "source_fingerprint": source_fingerprint(documents),
     }
-    manifest_path.write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    _write_json_atomic(manifest_path, manifest)
     return manifest
 
 
@@ -137,3 +128,12 @@ def _weighted_terms(chunk: DocumentChunk) -> Counter[str]:
 
 def _norm(vector: dict[str, float]) -> float:
     return math.sqrt(sum(value * value for value in vector.values())) or 1.0
+
+
+def _write_json_atomic(path: Path, payload: object) -> None:
+    temp_path = path.with_suffix(path.suffix + ".tmp")
+    temp_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temp_path.replace(path)
