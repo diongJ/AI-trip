@@ -53,6 +53,37 @@ class LocalGraphRetriever:
                 break
         return [_graph_entity(entity) for entity in matches[:limit]]
 
+    def list_entities(
+        self,
+        query: str = "",
+        *,
+        entity_type: str | None = None,
+        limit: int = 100,
+    ) -> list[GraphEntity]:
+        """List graph entities for read-only browsing, with optional filtering."""
+        if limit <= 0:
+            raise ValueError("limit must be positive")
+        normalized = _normalize_name(query)
+        matches = []
+        for entity in self.entities.values():
+            if entity_type and entity.type.value != entity_type:
+                continue
+            searchable = [entity.name, entity.id, *entity.aliases]
+            if normalized and not any(
+                normalized in _normalize_name(value) for value in searchable
+            ):
+                continue
+            matches.append(entity)
+        matches.sort(
+            key=lambda entity: (
+                0 if normalized and _normalize_name(entity.name) == normalized else 1,
+                entity.type.value,
+                entity.name,
+                entity.id,
+            )
+        )
+        return [_graph_entity(entity) for entity in matches[:limit]]
+
     def resolve_entity_id(self, query: str) -> str | None:
         matches = self.search_entities(query, limit=1)
         return matches[0].id if matches else None
@@ -149,6 +180,37 @@ class Neo4jGraphRetriever:
             LIMIT $limit
             """,
             query=query,
+            limit=limit,
+            database_=self.graph.settings.neo4j_database,
+        )
+        return [GraphEntity.model_validate(record.data()) for record in records]
+
+    def list_entities(
+        self,
+        query: str = "",
+        *,
+        entity_type: str | None = None,
+        limit: int = 100,
+    ) -> list[GraphEntity]:
+        """List graph entities for read-only browsing, with optional filtering."""
+        if limit <= 0:
+            raise ValueError("limit must be positive")
+        records, _, _ = self.graph.driver.execute_query(
+            """
+            MATCH (entity:Entity)
+            WHERE ($query = ''
+                   OR toLower(entity.name) CONTAINS toLower($query)
+                   OR any(alias IN coalesce(entity.aliases, [])
+                          WHERE toLower(alias) CONTAINS toLower($query)))
+              AND ($entity_type IS NULL OR entity.entity_type = $entity_type)
+            RETURN entity.id AS id, entity.name AS name, entity.entity_type AS type,
+                   coalesce(entity.aliases, []) AS aliases
+            ORDER BY CASE WHEN toLower(entity.name) = toLower($query) THEN 0 ELSE 1 END,
+                     type, name, id
+            LIMIT $limit
+            """,
+            query=query.strip(),
+            entity_type=entity_type,
             limit=limit,
             database_=self.graph.settings.neo4j_database,
         )

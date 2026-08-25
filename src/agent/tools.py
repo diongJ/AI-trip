@@ -20,6 +20,14 @@ class DocumentRetriever(Protocol):
 
 
 class GraphRetriever(Protocol):
+    def list_entities(
+        self,
+        query: str = "",
+        *,
+        entity_type: str | None = None,
+        limit: int = 100,
+    ) -> list[GraphEntity]: ...
+
     def resolve_entity_id(self, query: str) -> str | None: ...
 
     def get_neighbors(

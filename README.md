@@ -188,6 +188,27 @@ python -m scripts.verify_agent
 
 Agent 回答包含 `answer`、`citations`、`used_tools`、`route_reason` 和 `insufficient_evidence`。对实时客流、天气、停车、路线导航等超范围问题，Agent 会明确拒答。
 
+## Day 6 Streamlit 完整 Demo
+
+Day 6 提供首页、智能问答、AI 深度讲解和图谱探索四个可连续操作的页面。应用优先使用 DeepSeek 组织自然语言；配置缺失或调用失败时自动回退到离线证据摘录，并保留完全相同的检索与引用规则。
+
+安装依赖并启动：
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m streamlit run app/Home.py
+```
+
+请优先使用以上带 `.venv` 的完整命令。Windows 上直接执行 `streamlit run` 可能命中系统 Python 的 Streamlit，而不是本项目虚拟环境，从而出现 `No module named 'app'` 或依赖缺失错误。
+
+图谱探索默认使用仓库中的本地只读图谱，不要求 Neo4j 在线。RAG 索引缺失时会在首次启动自动构建。运行五条固定演示路径：
+
+```powershell
+python -m scripts.verify_demo
+```
+
+完整演示顺序、预期结果和屏幕宽度检查见 [Day 6 演示脚本](docs/demo_script.md)。
+
 ## 项目结构
 
 ```text
