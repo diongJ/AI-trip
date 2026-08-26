@@ -2,7 +2,7 @@
 
 ## 目标
 
-Day 4 将 36 份官方资料和知识图谱 V1 封装成两个稳定工具：
+检索层将 181 份分层可信资料和知识图谱 V1 封装成两个稳定工具：
 
 - RAG 文档检索：返回原文片段、文档编号、标题、来源名称、来源 URL 和分数。
 - KG 图谱检索：返回实体、关系、方向、`document_id` 和 `evidence`。
@@ -11,11 +11,11 @@ Day 4 将 36 份官方资料和知识图谱 V1 封装成两个稳定工具：
 
 ## 数据模型
 
-- `DocumentChunk`：`chunk_id`、`text`、`doc_id`、`title`、`source_name`、`source_url`、`category`。
+- `DocumentChunk`：除原有来源字段外，包含 `source_tier`、主题标签、采集日期、发布日期和内容哈希。
 - `RetrievalHit`：`content`、`score`、`rank`、`backend`、`metadata`。
 - `GraphHit`：`source_entity`、`relation`、`target_entity`、`direction`、`document_id`、`evidence`、`backend`。
 
-`RetrievalHit` 会校验 metadata 中必须含有 `doc_id`、`title`、`source_name`、`source_url`、`category` 和 `chunk_id`。`GraphHit` 会拒绝缺失 `document_id` 或 `evidence` 的关系。
+`RetrievalHit` 会额外校验来源层级、采集日期和融合分数。`GraphHit` 会拒绝缺失 `document_id` 或 `evidence` 的关系。
 
 ## RAG 切分规则
 
@@ -30,14 +30,14 @@ Day 4 将 36 份官方资料和知识图谱 V1 封装成两个稳定工具：
 
 ## 默认索引后端
 
-默认后端为 `lexical-tfidf-v1`，它是纯 Python 的轻量词法检索实现：
+默认后端为 `multi-field-bm25-v2`，它是纯 Python 的轻量 BM25 检索实现：
 
 - 不需要 GPU。
 - 不下载模型。
 - 不依赖 FAISS。
 - 可在 Windows、Linux 和普通云部署环境中稳定运行。
 
-五日计划中的 FAISS/句向量方案可以作为后续增强后端接入；只要继续返回 `RetrievalHit`，Agent 和页面层不需要改接口。
+标题、主题标签和正文采用不同权重，并加入标题双字词覆盖加分。多查询通过倒数排名融合合并，在不增加向量模型的情况下改善口语、同义表达和复杂问题召回。
 
 ## 索引产物
 
@@ -77,6 +77,8 @@ Manifest 字段：
 
 - 默认返回 Top-5。
 - 支持可选 `category` 过滤。
+- 支持 `core` 与 `extended` 来源层级过滤。
+- 支持 `search_many()` 多查询融合与稳定去重。
 - 按 `doc_id + text` 去重。
 - 分数归一化到 0 到 1。
 - 索引缺失时提示运行 `python -m scripts.build_rag_index`。
@@ -105,7 +107,7 @@ python -m scripts.build_graph_v1
 data/graph/knowledge_graph_v1.json
 ```
 
-该文件是可重复生成产物，默认不进入 Git。
+该文件可以通过 Day 3 流程重复生成，同时作为后续检索、Agent 和 Demo 的版本化基线进入 Git。
 
 KG 检索支持：
 

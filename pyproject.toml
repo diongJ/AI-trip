@@ -13,6 +13,7 @@ dependencies = [
   "neo4j>=5.20,<6",
   "pydantic>=2.7,<3",
   "pydantic-settings>=2.2,<3",
+  "streamlit>=1.62,<2",
 ]
 
 [project.optional-dependencies]
@@ -28,4 +29,3 @@ include = ["src*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
-

@@ -1,0 +1,218 @@
+{
+  "answer": "文帝行玺出土于主棺室。证据：“文帝行玺”金印出土于墓主胸部。\n文帝行玺材质为金。证据：“文帝行玺”龙钮金印为西汉南越国文物。\n文帝行玺属于类别印章。证据：南越王墓出土玺印共23枚。\n文帝行玺制作于西汉。证据：“文帝行玺”龙钮金印为西汉南越国文物。",
+  "citations": [
+    {
+      "doc_id": "DOC_013",
+      "title": "“文帝行玺”龙钮金印",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=47",
+      "evidence": "“文帝行玺”金印出土于墓主胸部。"
+    },
+    {
+      "doc_id": "DOC_013",
+      "title": "“文帝行玺”龙钮金印",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=47",
+      "evidence": "“文帝行玺”龙钮金印为西汉南越国文物。"
+    },
+    {
+      "doc_id": "DOC_006",
+      "title": "南越文王墓玺印资料",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+      "evidence": "南越王墓出土玺印共23枚。"
+    },
+    {
+      "doc_id": "DOC_013",
+      "title": "“文帝行玺”龙钮金印",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=47",
+      "evidence": "金印出土于墓主胸部，证实墓主为南越文帝。"
+    },
+    {
+      "doc_id": "DOC_013",
+      "title": "“文帝行玺”龙钮金印",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=47",
+      "evidence": "印钮为S形游龙。"
+    },
+    {
+      "doc_id": "DOC_006",
+      "title": "南越文王墓玺印资料",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+      "evidence": "玺印及其印文为判断墓主及殉人身份提供了直接依据，也体现南越国独特的用印制度。"
+    }
+  ],
+  "used_tools": [
+    "search_kg"
+  ],
+  "route_reason": "问题包含图谱实体和明确关系词，优先查询 KG。",
+  "insufficient_evidence": false,
+  "retrieved_documents": [],
+  "graph_facts": [
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "EXCAVATED_FROM",
+      "target_entity": {
+        "id": "tombchamber:主棺室",
+        "name": "主棺室",
+        "type": "TombChamber",
+        "aliases": []
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_013",
+      "evidence": "“文帝行玺”金印出土于墓主胸部。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "MADE_OF",
+      "target_entity": {
+        "id": "material:金",
+        "name": "金",
+        "type": "Material",
+        "aliases": []
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_013",
+      "evidence": "“文帝行玺”龙钮金印为西汉南越国文物。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "BELONGS_TO_CATEGORY",
+      "target_entity": {
+        "id": "reliccategory:印章",
+        "name": "印章",
+        "type": "RelicCategory",
+        "aliases": [
+          "玺印"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_006",
+      "evidence": "南越王墓出土玺印共23枚。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "CREATED_IN",
+      "target_entity": {
+        "id": "dynasty:西汉",
+        "name": "西汉",
+        "type": "Dynasty",
+        "aliases": []
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_013",
+      "evidence": "“文帝行玺”龙钮金印为西汉南越国文物。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "RELATED_TO_PERSON",
+      "target_entity": {
+        "id": "person:赵眜",
+        "name": "赵眜",
+        "type": "Person",
+        "aliases": [
+          "南越文王",
+          "南越文帝"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_013",
+      "evidence": "金印出土于墓主胸部，证实墓主为南越文帝。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "HAS_PATTERN",
+      "target_entity": {
+        "id": "pattern:龙纹",
+        "name": "龙纹",
+        "type": "Pattern",
+        "aliases": [
+          "游龙"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_013",
+      "evidence": "印钮为S形游龙。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "REFLECTS_CULTURE",
+      "target_entity": {
+        "id": "culture:南越用印制度",
+        "name": "南越用印制度",
+        "type": "Culture",
+        "aliases": [
+          "用印制度"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_006",
+      "evidence": "玺印及其印文为判断墓主及殉人身份提供了直接依据，也体现南越国独特的用印制度。",
+      "backend": "local-json"
+    }
+  ]
+}

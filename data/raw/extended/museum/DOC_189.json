@@ -1,0 +1,15 @@
+{
+  "doc_id": "DOC_189",
+  "title": "服务信息回答边界",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/VisitIndex/Visit",
+  "source_type": "official",
+  "category": "museum",
+  "retrieved_at": "2026-08-26",
+  "text": "场地服务类问题可以回答稳定信息和确认路径，例如参观前应查看官方参观信息页、预约说明和公告。系统不应静态承诺当天服务状态、排队时间、临时活动、停车空位或人工讲解剩余名额。对于服务信息，应给出官方渠道优先的提示，并尽量把问题引导到稳定可验证内容。",
+  "source_tier": "extended",
+  "topic_tags": ["馆内服务", "参观信息", "回答边界", "预约", "官方渠道"],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1
+}

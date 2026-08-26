@@ -1,0 +1,13 @@
+{
+  "input_documents": 36,
+  "input_entity_occurrences": 202,
+  "input_unique_entity_ids": 94,
+  "output_entities": 78,
+  "input_relations": 89,
+  "output_relations": 87,
+  "mapped_entity_ids": 12,
+  "dropped_entity_ids": 4,
+  "dropped_relations": 2,
+  "deduplicated_relations": 0,
+  "source_and_evidence_issues": []
+}

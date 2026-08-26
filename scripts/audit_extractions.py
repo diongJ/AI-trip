@@ -6,7 +6,7 @@ from src.extraction.audit import audit_extractions
 
 
 def main() -> None:
-    report = audit_extractions()
+    report = audit_extractions(source_tier="core")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if report["missing_outputs"] or report["unexpected_outputs"] or report["issues"]:
         raise SystemExit(1)

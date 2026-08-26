@@ -1,17 +1,22 @@
 from __future__ import annotations
 
 import json
-import math
 from json import JSONDecodeError
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 
-from src.rag.index import DEFAULT_INDEX_DIR, LEXICAL_BACKEND, load_chunks, tokenize
+from src.rag.index import BM25_BACKEND, DEFAULT_INDEX_DIR, load_chunks, tokenize
 from src.rag.models import DocumentChunk, RetrievalHit
 
 
 class RagIndexError(RuntimeError):
     pass
+
+
+# Normalized-score floor for a hit to count as relevant evidence.
+MIN_RELEVANT_SCORE = 0.12
+# Stricter floor when the query has no multi-character terms (single-character query).
+SINGLE_TERM_SCORE_FLOOR = 0.30
 
 
 class RagRetriever:
@@ -29,12 +34,15 @@ class RagRetriever:
             raise RagIndexError(
                 f"RAG index file is not valid JSON: {index_path}. Rebuild the index."
             ) from exc
-        if payload.get("backend") != LEXICAL_BACKEND:
+        if payload.get("backend") != BM25_BACKEND:
             raise RagIndexError(f"unsupported RAG backend: {payload.get('backend')}")
         self.idf: dict[str, float] = payload["idf"]
-        self.norms: list[float] = payload["norms"]
+        self.lengths: list[float] = payload["lengths"]
+        self.average_length: float = payload["average_length"]
+        self.k1: float = payload.get("k1", 1.5)
+        self.b: float = payload.get("b", 0.75)
         self.inverted: dict[str, list[list[float]]] = payload["inverted"]
-        if len(self.norms) != len(self.chunks):
+        if len(self.lengths) != len(self.chunks):
             raise RagIndexError("metadata and index vector counts do not match")
 
     def search(
@@ -43,30 +51,62 @@ class RagRetriever:
         *,
         top_k: int = 5,
         category: str | None = None,
+        source_tier: str | None = None,
         min_score: float = 0.0,
     ) -> list[RetrievalHit]:
         if top_k <= 0:
             raise ValueError("top_k must be positive")
-        query_vector = _query_vector(query, self.idf)
-        if not query_vector:
+        query_terms = [term for term in dict.fromkeys(tokenize(query)) if term in self.idf]
+        if not query_terms:
             return []
 
-        query_norm = _norm(query_vector)
         scores: dict[int, float] = defaultdict(float)
-        for term, query_weight in query_vector.items():
-            for index, chunk_weight in self.inverted.get(term, []):
-                scores[int(index)] += query_weight * float(chunk_weight)
+        for term in query_terms:
+            for index, term_frequency in self.inverted.get(term, []):
+                index = int(index)
+                frequency = float(term_frequency)
+                length_norm = 1 - self.b + self.b * self.lengths[index] / self.average_length
+                scores[index] += self.idf[term] * (
+                    frequency * (self.k1 + 1) / (frequency + self.k1 * length_norm)
+                )
+
+        # Relevance gate: a chunk must contain enough distinct multi-character
+        # query terms (CJK bigrams or ASCII words). Single-character matches,
+        # or one incidental bigram inside a long query, are too noisy to serve
+        # as grounded evidence.
+        gate_terms = [term for term in query_terms if len(term) >= 2]
+        min_gate_hits = 1 if len(gate_terms) <= 2 else 2
+        gate_hit_count: dict[int, int] = defaultdict(int)
+        for term in gate_terms:
+            for index, _term_frequency in self.inverted.get(term, []):
+                gate_hit_count[int(index)] += 1
+        gated_indices: set[int] | None = None
+        if gate_terms:
+            gated_indices = {
+                index for index, count in gate_hit_count.items() if count >= min_gate_hits
+            }
+        score_floor = max(
+            min_score,
+            MIN_RELEVANT_SCORE if gate_terms else SINGLE_TERM_SCORE_FLOOR,
+        )
 
         raw_results: list[tuple[DocumentChunk, float]] = []
         for index, dot_product in scores.items():
+            if gated_indices is not None and index not in gated_indices:
+                continue
             chunk = self.chunks[index]
             if category and chunk.category != category:
                 continue
-            score = dot_product / (query_norm * self.norms[index])
-            if score >= min_score:
+            if source_tier and chunk.source_tier != source_tier:
+                continue
+            dot_product += _title_overlap_bonus(query_terms, chunk.title)
+            score = dot_product / (dot_product + 1.0)
+            if score >= score_floor:
                 raw_results.append((chunk, score))
 
         raw_results.sort(key=lambda item: (-item[1], item[0].doc_id, item[0].chunk_id))
+        if not raw_results:
+            return []
         deduped: list[tuple[DocumentChunk, float]] = []
         seen: set[tuple[str, str]] = set()
         for chunk, score in raw_results:
@@ -78,29 +118,82 @@ class RagRetriever:
             if len(deduped) == top_k:
                 break
 
-        return [
-            RetrievalHit(
-                content=chunk.text,
-                score=round(score, 6),
-                rank=rank,
-                backend=LEXICAL_BACKEND,
-                metadata={
-                    "chunk_id": chunk.chunk_id,
-                    "doc_id": chunk.doc_id,
-                    "title": chunk.title,
-                    "source_name": chunk.source_name,
-                    "source_url": str(chunk.source_url),
-                    "category": chunk.category,
-                },
+        return [_hit_from_chunk(chunk, score, rank) for rank, (chunk, score) in enumerate(deduped, start=1)]
+
+    def search_many(
+        self,
+        queries: list[str],
+        *,
+        top_k: int = 8,
+        per_query_k: int = 12,
+        category: str | None = None,
+        source_tier: str | None = None,
+    ) -> list[RetrievalHit]:
+        """Fuse multiple BM25 result lists with reciprocal-rank fusion."""
+        if top_k <= 0 or per_query_k <= 0:
+            raise ValueError("top_k and per_query_k must be positive")
+        unique_queries = list(dict.fromkeys(query.strip() for query in queries if query.strip()))
+        fused: dict[str, float] = defaultdict(float)
+        hits_by_chunk: dict[str, RetrievalHit] = {}
+        for query in unique_queries:
+            for hit in self.search(
+                query,
+                top_k=per_query_k,
+                category=category,
+                source_tier=source_tier,
+            ):
+                chunk_id = str(hit.metadata["chunk_id"])
+                fused[chunk_id] += 1.0 / (60 + hit.rank)
+                current = hits_by_chunk.get(chunk_id)
+                if current is None or hit.score > current.score:
+                    hits_by_chunk[chunk_id] = hit
+        ordered = sorted(fused, key=lambda key: (-fused[key], key))[:top_k]
+        max_fusion = max((fused[key] for key in ordered), default=1.0)
+        results: list[RetrievalHit] = []
+        for rank, chunk_id in enumerate(ordered, start=1):
+            hit = hits_by_chunk[chunk_id]
+            fusion_score = fused[chunk_id] / max_fusion
+            metadata = {**hit.metadata, "fusion_score": round(fusion_score, 6)}
+            results.append(
+                hit.model_copy(
+                    update={
+                        "rank": rank,
+                        "score": round(min(1.0, fusion_score), 6),
+                        "metadata": metadata,
+                    }
+                )
             )
-            for rank, (chunk, score) in enumerate(deduped, start=1)
-        ]
+        return results
 
 
-def _query_vector(query: str, idf: dict[str, float]) -> dict[str, float]:
-    counts = Counter(tokenize(query))
-    return {term: count * idf[term] for term, count in counts.items() if term in idf}
+def _title_overlap_bonus(query_terms: list[str], title: str) -> float:
+    query_bigrams = {term for term in query_terms if len(term) == 2}
+    if not query_bigrams:
+        return 0.0
+    title_terms = set(tokenize(title))
+    coverage = len(query_bigrams & title_terms) / len(query_bigrams)
+    return 6.0 * coverage
 
 
-def _norm(vector: dict[str, float]) -> float:
-    return math.sqrt(sum(value * value for value in vector.values())) or 1.0
+def _hit_from_chunk(chunk: DocumentChunk, score: float, rank: int) -> RetrievalHit:
+    rounded_score = round(min(score, 1.0), 6)
+    return RetrievalHit(
+        content=chunk.text,
+        score=rounded_score,
+        rank=rank,
+        backend=BM25_BACKEND,
+        metadata={
+            "chunk_id": chunk.chunk_id,
+            "doc_id": chunk.doc_id,
+            "title": chunk.title,
+            "source_name": chunk.source_name,
+            "source_url": str(chunk.source_url),
+            "category": chunk.category,
+            "source_tier": chunk.source_tier,
+            "topic_tags": chunk.topic_tags,
+            "retrieved_at": chunk.retrieved_at,
+            "published_at": chunk.published_at,
+            "content_hash": chunk.content_hash,
+            "fusion_score": rounded_score,
+        },
+    )

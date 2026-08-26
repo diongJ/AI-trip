@@ -1,0 +1,105 @@
+{
+  "answer": "赵眜属于南越国。证据：墓主人是南越国第二代王赵眜，自称南越文帝。\n赵眜墓葬于南越文王墓。证据：南越王墓出土的“文帝行玺”、“帝印”、“赵眜”等玺印和史书记载，证实墓主人是南越国第二代王赵眜。\n文帝行玺关联人物为赵眜。证据：金印出土于墓主胸部，证实墓主为南越文帝。",
+  "citations": [
+    {
+      "doc_id": "DOC_005",
+      "title": "南越文王墓墓主人身份",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+      "evidence": "墓主人是南越国第二代王赵眜，自称南越文帝。"
+    },
+    {
+      "doc_id": "DOC_005",
+      "title": "南越文王墓墓主人身份",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+      "evidence": "南越王墓出土的“文帝行玺”、“帝印”、“赵眜”等玺印和史书记载，证实墓主人是南越国第二代王赵眜。"
+    },
+    {
+      "doc_id": "DOC_013",
+      "title": "“文帝行玺”龙钮金印",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=47",
+      "evidence": "金印出土于墓主胸部，证实墓主为南越文帝。"
+    }
+  ],
+  "used_tools": [
+    "search_kg"
+  ],
+  "route_reason": "问题包含图谱实体和明确关系词，优先查询 KG。",
+  "insufficient_evidence": false,
+  "retrieved_documents": [],
+  "graph_facts": [
+    {
+      "source_entity": {
+        "id": "person:赵眜",
+        "name": "赵眜",
+        "type": "Person",
+        "aliases": [
+          "南越文王",
+          "南越文帝"
+        ]
+      },
+      "relation": "BELONGS_TO_STATE",
+      "target_entity": {
+        "id": "state:南越国",
+        "name": "南越国",
+        "type": "State",
+        "aliases": []
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_005",
+      "evidence": "墓主人是南越国第二代王赵眜，自称南越文帝。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "person:赵眜",
+        "name": "赵眜",
+        "type": "Person",
+        "aliases": [
+          "南越文王",
+          "南越文帝"
+        ]
+      },
+      "relation": "BURIED_IN",
+      "target_entity": {
+        "id": "tomb:南越文王墓",
+        "name": "南越文王墓",
+        "type": "Tomb",
+        "aliases": [
+          "南越王墓"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_005",
+      "evidence": "南越王墓出土的“文帝行玺”、“帝印”、“赵眜”等玺印和史书记载，证实墓主人是南越国第二代王赵眜。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:文帝行玺",
+        "name": "文帝行玺",
+        "type": "Relic",
+        "aliases": [
+          "“文帝行玺”龙钮金印",
+          "文帝行玺金印"
+        ]
+      },
+      "relation": "RELATED_TO_PERSON",
+      "target_entity": {
+        "id": "person:赵眜",
+        "name": "赵眜",
+        "type": "Person",
+        "aliases": [
+          "南越文王",
+          "南越文帝"
+        ]
+      },
+      "direction": "incoming",
+      "document_id": "DOC_013",
+      "evidence": "金印出土于墓主胸部，证实墓主为南越文帝。",
+      "backend": "local-json"
+    }
+  ]
+}

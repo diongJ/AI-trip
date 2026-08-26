@@ -10,7 +10,7 @@ Day 1 已提供以下技术底座：
 - Neo4j Aura 约束、幂等写入和局部关系查询。
 - DeepSeek、Neo4j 及端到端样例验证脚本。
 
-Day 2 与 Day 3 已在此基础上完成 36 份官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。
+Day 2 与 Day 3 已在此基础上完成 36 份核心官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。专题升级后，RAG 语料扩展为 181 份分层可信资料，并补充王墓展区参观攻略；核心图谱证据基线保持不变。
 
 ## 环境要求
 
@@ -55,6 +55,24 @@ pytest
 ```
 
 测试覆盖实体与关系字段、置信度、关系方向、实体引用、配置错误和 DeepSeek 响应解析。
+
+## 问答质量评测基线
+
+`data/eval/qa_eval.json` 维护 50 题离线评测集（32 题应回答 + 18 题应拒答），覆盖 KG 关系事实、描述性问题、亲子/研学/讲解等真实游客问法，以及未收录人物/主题/方面、实时信息、荒谬前提等拒答场景。评测全程离线运行（抽取式生成器，不调用 DeepSeek）：
+
+```powershell
+python -m scripts.evaluate_qa                      # 逐题结果 + 汇总指标
+python -m scripts.evaluate_qa --verbose            # 打印每题答案全文
+python -m scripts.evaluate_qa --fail-under 0.9     # 总体准确率低于 90% 时退出码为 1（CI 门禁）
+```
+
+评判标准：
+
+- `expect=answered`：未拒答，且答案包含全部 `must_contain` 子串；
+- `expect=refused`：`insufficient_evidence=True` 且无引用；
+- 汇总指标：回答正确率、拒答正确率、总体准确率、已回答用例平均答案长度。
+
+当前基线：50/50（100%），已回答用例平均答案长度约 165 字。修改提示词、检索参数、路由规则或生成逻辑后必须复跑评测，总体准确率不得低于 90%。
 
 ## 云服务验证
 
@@ -130,7 +148,7 @@ python -m scripts.load_graph_v1
 
 ## Day 4 检索底座
 
-Day 4 提供设备兼容的 RAG 与 KG 检索底座。默认 RAG 后端为纯 Python `lexical-tfidf-v1`，不依赖 GPU、FAISS 或本地模型下载；后续可以在保持返回模型不变的前提下替换为句向量 + FAISS 后端。
+Day 4 检索底座现已升级为纯 Python `multi-field-bm25-v2`，对标题、主题标签和正文分别加权，并支持多查询倒数排名融合；不依赖 GPU、FAISS 或额外模型下载。
 
 构建 RAG 索引：
 
@@ -156,7 +174,7 @@ python -m scripts.verify_rag
 python -m scripts.verify_retrieval
 ```
 
-RAG 索引产物位于 `data/processed/rag/`，本地图谱产物位于 `data/graph/knowledge_graph_v1.json`，二者均可重复生成且默认不提交到 Git。Neo4j Aura 不可用时，检索层可使用本地 JSON 图返回同构 `GraphHit` 结果。
+RAG 索引产物位于 `data/processed/rag/`，属于可重复生成文件，不提交到 Git。统一图谱 `data/graph/knowledge_graph_v1.json` 作为 Day 4～Day 8 的版本化基线随仓库分发。Neo4j Aura 不可用时，检索层可使用该本地 JSON 图返回同构 `GraphHit` 结果。
 
 ## Day 5 Agent MVP
 
@@ -180,13 +198,55 @@ python -m scripts.ask "赵眜是谁？" --json
 python -m scripts.ask "讲讲丝缕玉衣的特点" --llm
 ```
 
-运行 15 题 Agent 冒烟测试：
+运行 20 题 Agent 冒烟测试：
 
 ```powershell
 python -m scripts.verify_agent
 ```
 
-Agent 回答包含 `answer`、`citations`、`used_tools`、`route_reason` 和 `insufficient_evidence`。对实时客流、天气、停车、路线导航等超范围问题，Agent 会明确拒答。
+Agent 回答包含 `answer`、`citations`、`used_tools`、`route_reason` 和 `insufficient_evidence`。稳定的开放时间、预约边界、游览动线和重点文物推荐会进入参观攻略检索；对实时客流、当天余票、天气、停车空位、路线导航等动态或范围外问题，Agent 会明确拒答。配置 DeepSeek 后，如果本地知识库仍没有可引用证据，系统可返回带明确标注的 DeepSeek 通用回答，不把它伪装成本地引用答案。
+
+## Day 6 Streamlit 完整 Demo
+
+Day 6 提供首页、智能问答、AI 深度讲解和图谱探索四个可连续操作的页面。应用优先使用 DeepSeek 组织自然语言；配置缺失或调用失败时自动回退到离线证据摘录，并保留完全相同的检索与引用规则。
+
+安装依赖并启动：
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m streamlit run app/Home.py
+```
+
+请优先使用以上带 `.venv` 的完整命令。Windows 上直接执行 `streamlit run` 可能命中系统 Python 的 Streamlit，而不是本项目虚拟环境，从而出现 `No module named 'app'` 或依赖缺失错误。
+
+图谱探索默认使用仓库中的本地只读图谱，不要求 Neo4j 在线。RAG 索引缺失时会在首次启动自动构建。运行五条固定演示路径：
+
+```powershell
+python -m scripts.verify_demo
+```
+
+完整演示顺序、预期结果和屏幕宽度检查见 [Day 6 演示脚本](docs/demo_script.md)。
+
+## 南越专题知识库升级
+
+- 语料由 36 份核心馆方资料扩展为 181 份：核心资料 36 份、扩展可信资料与参观攻略 145 份，共 9 万余字。
+- 白名单覆盖南越王博物院、广州博物馆、政府文物与考古相关页面；无关页面会进入本地隔离目录且不参与索引。
+- 规则路由会优先识别真实实体名和别名；参观攻略问题使用 `tourism` 资料，多查询检索在无命中时会回退到南越专题基础查询。DeepSeek 模式先生成实体、意图和多查询检索计划，再从 BM25 与 KG 候选中选择证据；回答必须返回真实证据 ID。
+- 核心资料保持不可变，确保原有 78 个实体、87 条关系的逐字证据审计仍可复算。
+
+同步与审核扩展资料：
+
+```powershell
+python -m scripts.sync_trusted_sources --max-pages 20
+python -m scripts.audit_extended_corpus --apply
+python -m scripts.build_rag_index --force
+```
+
+运行 90 题评测：
+
+```powershell
+python -m scripts.run_evaluation_v2
+```
 
 ## 项目结构
 

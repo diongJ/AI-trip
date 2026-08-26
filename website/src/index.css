@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 博物馆纸墨色系：宣纸底、墨色字、朱砂印、青铜点缀 */
+    --background: 43 33% 95%;
+    --foreground: 30 14% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 30 14% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 14% 14%;
+    --primary: 15 72% 30%;
+    --primary-foreground: 43 33% 96%;
+    --secondary: 40 22% 90%;
+    --secondary-foreground: 30 18% 20%;
+    --muted: 40 18% 90%;
+    --muted-foreground: 32 10% 42%;
+    --accent: 152 26% 30%;
+    --accent-foreground: 43 33% 96%;
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 43 33% 96%;
+    --border: 36 14% 82%;
+    --input: 36 14% 82%;
+    --ring: 15 72% 30%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+  .font-serif-sc {
+    font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  }
+}
+
+@layer utilities {
+  /* Aceternity UI 风格 Grid 背景（静态、克制） */
+  .bg-grid-ink {
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.05) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+  .bg-spotlight {
+    background: radial-gradient(ellipse 60% 45% at 50% 0%, hsl(15 60% 40% / 0.10), transparent 70%);
+  }
+}
+
+/* 全站仅两类动效：1) 标题/卡片入场 reveal；2) hover 微浮 */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px -12px hsl(30 14% 14% / 0.18);
+}

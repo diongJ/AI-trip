@@ -38,3 +38,84 @@
 | DOC_034 | 铜烤炉 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=125 |
 | DOC_035 | 错金铭文铜虎节 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=49 |
 | DOC_036 | 铜印花板模 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/zyzb?nid=54 |
+| DOC_153 | 王墓展区参观基础信息 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit |
+| DOC_154 | 王墓展区游览动线建议 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_155 | 王墓展区重点文物速览 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_156 | 亲子和学生参观建议 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_157 | 两小时王墓展区参观安排 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_158 | 参观前准备和信息边界 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/ |
+| DOC_159 | 半日王墓展区参观安排 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_160 | 一小时快速参观建议 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_161 | 王墓展区讲解提问清单 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_162 | 不同游客的参观重点 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_163 | 王墓展区参观避坑提示 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_164 | AI 导览回答边界 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_165 | 南越文王墓发现与保护意义 | history | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_166 | 赵眜身份讲解补充 | person | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_167 | 南越国与岭南文化交流 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/TList/jbcl?type=1 |
+| DOC_168 | 文帝行玺讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=46 |
+| DOC_169 | 丝缕玉衣讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=47 |
+| DOC_170 | 角形玉杯讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=48 |
+| DOC_171 | 船纹铜提筒讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=64 |
+| DOC_172 | 错金铭文铜虎节讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=49 |
+| DOC_173 | 王墓展区与王宫展区区别 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/ |
+| DOC_174 | 玉舞人讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_175 | 承盘高足玉杯讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_176 | 组玉佩讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_177 | 玉剑饰讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_178 | 铜镜讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_179 | 陶俑讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_180 | 铜鼎讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_181 | 漆木屏风构件讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_182 | 雨天参观王墓展区建议 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_183 | 亲子观察任务路线 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_184 | 学生研学问题路线 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_185 | 重点文物打卡顺序 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_186 | 王墓展区场地定位 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_187 | 墓葬原址展示说明 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_188 | 基本陈列与临时展览区分 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/Index/Exhibition |
+| DOC_189 | 服务信息回答边界 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit |
+| DOC_190 | 秦汉岭南历史背景 | history | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/TList/jbcl?type=1 |
+| DOC_191 | 南越国王室制度背景 | history | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_192 | 岭南水上交通文化背景 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=64 |
+| DOC_193 | 汉代丧葬观念背景 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=47 |
+| DOC_194 | 玉璧讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_195 | 玉盒讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=100 |
+| DOC_196 | 玉带钩讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_197 | 玻璃牌饰讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BList/jbcl |
+| DOC_198 | 铜壶讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_199 | 铜勺讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_200 | 铜灯讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_201 | 铜铃讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_202 | 铁剑讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_203 | 印章类文物讲解补充 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=46 |
+| DOC_204 | 玺印文字观察指南 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=46 |
+| DOC_205 | 墓中饮食器组合讲解 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_206 | 墓中玉器组合讲解 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_207 | 墓中交通与权力器物讲解 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Details/?nid=49 |
+| DOC_208 | 墓中工艺观察指南 | relic | 南越王博物院 | https://www.nywmuseum.org.cn/Collection/Index |
+| DOC_209 | 王墓展区两小时亲子路线 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_210 | 王墓展区研学任务卡 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_211 | 王墓展区成人深度参观路线 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_212 | 半小时重点文物路线 | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_213 | 预约和到馆提醒 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit |
+| DOC_214 | 讲解服务使用建议 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit |
+| DOC_215 | 无障碍与爱心服务提示 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit |
+| DOC_216 | 行李寄存和轻装参观建议 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit |
+| DOC_217 | 王墓展区交通确认提示 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit |
+| DOC_218 | 闭馆和延时开放提醒 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/Home/ |
+| DOC_219 | 主体陈列楼场地说明 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_220 | 综合陈列楼场地说明 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_221 | 古墓保护区场地说明 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_222 | 南越藏珍陈列定位 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BList/jbcl |
+| DOC_223 | 秦汉南疆陈列定位 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BList/jbcl |
+| DOC_224 | 王墓展区和王宫展区联动说明 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
+| DOC_225 | 考古遗址类博物馆定位 | museum | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
+| DOC_226 | 赵佗建国背景补充 | history | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BList/jbcl |
+| DOC_227 | 番禺都城背景补充 | history | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BList/jbcl |
+| DOC_228 | 百越与岭南背景补充 | history | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BList/jbcl |
+| DOC_229 | 南越国与汉朝关系补充 | history | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BList/jbcl |
+| DOC_230 | 广州两千年城市史线索 | history | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
+| DOC_231 | 多元一体文明视角补充 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
+| DOC_232 | 海上丝绸之路关联背景 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
+| DOC_233 | 王墓展区文化价值总结 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |

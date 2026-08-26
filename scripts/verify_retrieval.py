@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.build_graph_v1 import main as build_graph
+from scripts.build_graph_v1 import build_graph_v1
 from src.extraction.models import Entity, ExtractionResult, Relation
 from src.graph.retriever import LocalGraphRetriever
 from src.rag.index import build_rag_index
@@ -50,7 +50,7 @@ def _ensure_local_graph() -> str:
     by_document = Path("data/graph/by_document")
     graph_path = Path("data/graph/knowledge_graph_v1.json")
     if by_document.is_dir():
-        build_graph()
+        build_graph_v1()
         return "day3-fused-graph"
     if graph_path.exists():
         return "existing-local-graph"

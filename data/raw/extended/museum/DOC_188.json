@@ -1,0 +1,15 @@
+{
+  "doc_id": "DOC_188",
+  "title": "基本陈列与临时展览区分",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Exhibition/Index/Exhibition",
+  "source_type": "official",
+  "category": "museum",
+  "retrieved_at": "2026-08-26",
+  "text": "王墓展区导览应区分基本陈列和临时展览。基本陈列更稳定，适合作为知识库回答的主要依据；临时展览具有时效性，标题、地点和展期可能变化。系统回答临展问题时应提醒用户确认官方最新公告，回答王墓历史和核心文物时则优先使用稳定基本陈列资料。",
+  "source_tier": "extended",
+  "topic_tags": ["基本陈列", "临时展览", "场地资料", "时效性", "官方公告"],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1
+}

@@ -13,21 +13,26 @@ from src.rag.retriever import RagRetriever
 
 
 QUESTIONS = [
-    ("文帝行玺是什么材料？", "kg_fact", False),
-    ("赵眜和南越文王墓是什么关系？", "kg_fact", False),
-    ("文帝行玺和赵眜有什么关系？", "kg_fact", False),
-    ("丝缕玉衣反映了什么丧葬观念？", "kg_fact", False),
-    ("船纹铜提筒反映了什么？", "kg_fact", False),
-    ("介绍一下文帝行玺。", "document_description", False),
-    ("讲讲丝缕玉衣的特点。", "document_description", False),
-    ("南越王博物院王墓展区在哪里？", "document_description", False),
-    ("南越国是谁建立的？", "document_description", False),
-    ("犀角形玉杯有什么特点？", "document_description", False),
-    ("赵眜是谁？请结合文物证据。", "hybrid", False),
-    ("南越文王墓为什么重要？", "hybrid", False),
-    ("文帝行玺为什么能证明墓主身份？", "hybrid", False),
-    ("今天馆内有多少游客？", "out_of_scope", True),
-    ("广州哪里停车最方便？", "out_of_scope", True),
+    {"question": "文帝行玺是什么材料？", "category": "kg_fact", "tool": "search_kg", "terms": ["金"], "relation": "MADE_OF"},
+    {"question": "赵眜和南越文王墓是什么关系？", "category": "kg_fact", "tool": "search_kg", "terms": ["赵眜", "南越文王墓"]},
+    {"question": "文帝行玺和赵眜有什么关系？", "category": "kg_fact", "tool": "search_kg", "terms": ["文帝行玺", "赵眜"]},
+    {"question": "丝缕玉衣反映了什么丧葬观念？", "category": "hybrid", "tool": "hybrid_search", "terms": ["丝缕玉衣", "玉衣"]},
+    {"question": "船纹铜提筒反映了什么？", "category": "hybrid", "tool": "hybrid_search", "terms": ["船纹铜提筒", "船纹"]},
+    {"question": "介绍一下文帝行玺。", "category": "document_description", "tool": "hybrid_search", "terms": ["文帝行玺"]},
+    {"question": "讲讲丝缕玉衣的特点。", "category": "document_description", "tool": "hybrid_search", "terms": ["丝缕玉衣", "玉衣"]},
+    {"question": "南越王博物院王墓展区在哪里？", "category": "visit_guidance", "tool": "search_documents", "terms": ["解放北路", "王墓展区"]},
+    {"question": "南越国是谁建立的？", "category": "hybrid", "tool": "hybrid_search", "terms": ["赵佗"]},
+    {"question": "犀角形玉杯有什么特点？", "category": "document_description", "tool": "hybrid_search", "terms": ["犀角形玉杯", "玉杯"]},
+    {"question": "赵眜是谁？请结合文物证据。", "category": "hybrid", "tool": "hybrid_search", "terms": ["赵眜", "南越文帝"]},
+    {"question": "南越文王墓为什么重要？", "category": "hybrid", "tool": "hybrid_search", "terms": ["南越文王墓", "南越王墓"]},
+    {"question": "文帝行玺为什么能证明墓主身份？", "category": "hybrid", "tool": "hybrid_search", "terms": ["文帝行玺", "南越文帝"]},
+    {"question": "第一次去王墓展区应该怎么看？", "category": "visit_guidance", "tool": "search_documents", "terms": ["王墓展区", "文帝行玺", "重点"]},
+    {"question": "王墓展区开放时间和预约怎么安排？", "category": "visit_guidance", "tool": "search_documents", "terms": ["9:00-17:30", "预约", "官方"]},
+    {"question": "带学生参观南越王博物院可以讲哪些问题？", "category": "visit_guidance", "tool": "search_documents", "terms": ["学生", "墓主人", "文帝行玺"]},
+    {"question": "今天馆内有多少游客？", "category": "out_of_scope", "tool": "none", "refuse": True},
+    {"question": "今天王墓展区还剩多少预约名额？", "category": "out_of_scope", "tool": "none", "refuse": True},
+    {"question": "广州哪里停车最方便？", "category": "out_of_scope", "tool": "none", "refuse": True},
+    {"question": "火星上的南越王墓是谁建的？", "category": "false_premise", "tool": "none", "refuse": True},
 ]
 
 
@@ -42,20 +47,46 @@ def main() -> None:
     )
     rows = []
     passed = 0
-    for index, (question, category, should_refuse) in enumerate(QUESTIONS, start=1):
+    for index, case in enumerate(QUESTIONS, start=1):
+        question = case["question"]
         started = time.perf_counter()
         answer = service.answer(question)
         latency_ms = round((time.perf_counter() - started) * 1000, 2)
-        ok = answer.insufficient_evidence if should_refuse else bool(answer.citations)
+        actual_tools = [tool.value for tool in answer.used_tools]
+        expected_tool = case["tool"]
+        tool_ok = actual_tools == ([] if expected_tool == "none" else [expected_tool])
+        if case.get("refuse", False):
+            content_ok = answer.insufficient_evidence and not answer.citations
+        else:
+            searchable = "\n".join(
+                [answer.answer, *[citation.evidence for citation in answer.citations]]
+            )
+            terms = case.get("terms", [])
+            terms_ok = any(term in searchable for term in terms) if terms else True
+            required_relation = case.get("relation")
+            relation_ok = (
+                any(hit.relation == required_relation for hit in answer.graph_facts)
+                if required_relation
+                else True
+            )
+            content_ok = (
+                not answer.insufficient_evidence
+                and bool(answer.citations)
+                and terms_ok
+                and relation_ok
+            )
+        ok = tool_ok and content_ok
         passed += int(ok)
         rows.append(
             {
                 "id": index,
                 "question": question,
-                "category": category,
-                "used_tools": [tool.value for tool in answer.used_tools],
+                "category": case["category"],
+                "expected_tool": expected_tool,
+                "used_tools": actual_tools,
                 "citation_count": len(answer.citations),
                 "insufficient_evidence": answer.insufficient_evidence,
+                "content_ok": content_ok,
                 "latency_ms": latency_ms,
                 "passed": ok,
             }
@@ -74,16 +105,18 @@ def _markdown(report: dict[str, object]) -> str:
         "",
         f"通过：{report['passed']}/{report['questions']}。",
         "",
-        "| 编号 | 问题 | 类型 | 工具 | 引用数 | 拒答 | 延迟 ms | 通过 |",
-        "|---|---|---|---|---:|---|---:|---|",
+        "| 编号 | 问题 | 类型 | 预期工具 | 实际工具 | 内容正确 | 引用数 | 拒答 | 延迟 ms | 通过 |",
+        "|---|---|---|---|---|---|---:|---|---:|---|",
     ]
     for item in report["items"]:
         lines.append(
-            "| {id} | {question} | {category} | {tools} | {citations} | {refuse} | {latency} | {passed} |".format(
+            "| {id} | {question} | {category} | {expected} | {tools} | {content} | {citations} | {refuse} | {latency} | {passed} |".format(
                 id=item["id"],
                 question=item["question"],
                 category=item["category"],
+                expected=item["expected_tool"],
                 tools=", ".join(item["used_tools"]) or "none",
+                content="是" if item["content_ok"] else "否",
                 citations=item["citation_count"],
                 refuse="是" if item["insufficient_evidence"] else "否",
                 latency=item["latency_ms"],
