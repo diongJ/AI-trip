@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "文帝行玺适合放在墓主身份、王权象征和制度证据三条线索中讲解。它不是单纯的贵重金器，而是能够把出土地点、印文、墓主称号和南越国王室身份连接起来的关键文物。游客如果只记一件文物，文帝行玺通常可以作为理解南越文王墓的入口。",
   "source_tier": "extended",
-  "topic_tags": ["文帝行玺", "金印", "墓主身份", "王权", "南越文王墓"],
+  "topic_tags": [
+    "文帝行玺",
+    "金印",
+    "墓主身份",
+    "王权",
+    "南越文王墓"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "c4b6353ff1bce6eb6909dd2f75f76fcda17d08a59647538b9a647ea19ade93ab"
 }

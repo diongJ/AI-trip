@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "右夫人组玉佩（B组）为西汉南越国文物，南越文王墓出土。这套组玉佩由7个饰件组成，包含玉环、玉璜、玉管各2件和玉舞人1件。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "ee174b8ab3b077b908b2facf83d3d68590ea993a30228d98a36c938fa994c38c",
+  "review_status": "approved"
 }

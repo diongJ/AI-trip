@@ -27,6 +27,7 @@ class WhitelistSource(BaseModel):
     source_type: str = "official"
     source_tier: str = "extended"
     review_status: str = "approved"
+    evidence_role: str = "factual"
     topic_tags: list[str] = Field(default_factory=list)
     follow_links: bool = False
 
@@ -194,7 +195,9 @@ def sync_sources(
                             retrieved_at=datetime.now(UTC).date().isoformat(),
                             text=text,
                             source_tier=current.source_tier if current else source.source_tier,
+                            evidence_role=current.evidence_role if current else source.evidence_role,
                             topic_tags=_topic_tags(text, source.topic_tags),
+                            content_hash=digest,
                             review_status=current.review_status if current else source.review_status,
                             version=(current.version + 1) if current else 1,
                         )

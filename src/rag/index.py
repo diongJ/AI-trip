@@ -119,6 +119,9 @@ def source_fingerprint(documents: object) -> str:
             "title": document.title,
             "source_url": str(document.source_url),
             "text": document.text,
+            "content_hash": document.content_hash,
+            "review_status": document.review_status,
+            "evidence_role": document.evidence_role,
         }
         for document in sorted(documents, key=lambda item: item.doc_id)
     ]

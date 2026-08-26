@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "person",
   "text": "南越国历史专题陈列中，“守疆营土”重点讲述秦朝末期，赵佗为保岭南地区的安定和人民的安宁建立南越国。历代南越统治者的经营推动岭南政治、经济、文化、民族融合和海外交流发展。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "183b5dee4a26083cad6b84e4bddf755f541eb6257e09a08f7d075af0ff87c4dd",
+  "review_status": "approved"
 }

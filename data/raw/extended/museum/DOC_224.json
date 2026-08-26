@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "南越王博物院分为王墓展区和王宫展区，两者共同展示南越国重要考古遗存。王墓展区偏重南越文王墓和王室墓葬，王宫展区偏重宫署遗址、城市中心和更长时段的广州考古。系统可建议深度游客将两区联动理解，但不把王宫展区内容混入王墓专题答案。",
   "source_tier": "extended",
-  "topic_tags": ["王墓展区", "王宫展区", "联动参观", "南越国遗址", "场地资料"],
+  "topic_tags": [
+    "王墓展区",
+    "王宫展区",
+    "联动参观",
+    "南越国遗址",
+    "场地资料"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "48acb5cee9cc2f169184efdb6ba7136a9022dcde75ea67817843e7524c0f3fe6"
 }

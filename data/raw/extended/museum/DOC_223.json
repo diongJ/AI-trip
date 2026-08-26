@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "“秦汉南疆——南越国历史专题陈列”适合作为理解南越国历史背景的稳定资料。它通过先秦岭南、秦统一岭南、南越国时期遗址墓葬和史籍线索，帮助游客把王墓文物放进更长的历史进程中。系统回答历史背景问题时应优先调用这类陈列资料。",
   "source_tier": "extended",
-  "topic_tags": ["秦汉南疆", "基本陈列", "南越国", "历史背景", "岭南"],
+  "topic_tags": [
+    "秦汉南疆",
+    "基本陈列",
+    "南越国",
+    "历史背景",
+    "岭南"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "2fadb72f4cc0415dff4ed306765e4ba3a63373cb4c5279a85541b7ee0b17cffd"
 }

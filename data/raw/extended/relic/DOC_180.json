@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "铜鼎适合从礼器、饮食和权力象征角度讲解。它能帮助游客理解青铜器在古代并不只是容器，也可能承载礼制和身份意义。将铜鼎与铜釜甑、铜烤炉等饮食相关器物对照，可以从礼仪性饮食和日常性饮食两条线索理解王墓随葬器物。",
   "source_tier": "extended",
-  "topic_tags": ["铜鼎", "青铜器", "礼器", "饮食", "权力象征"],
+  "topic_tags": [
+    "铜鼎",
+    "青铜器",
+    "礼器",
+    "饮食",
+    "权力象征"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "748abbb359262bc043f7920d798eb52638f9207e5f78113e2c166b41bc616658"
 }

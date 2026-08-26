@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "官方参观信息页列出王墓展区地址和公共交通参考，包括广州市越秀区解放北路867号、地铁二号线越秀公园站 E 出口等信息。系统可以回答稳定地址和公共交通参考，但实时导航、拥堵、打车价格和步行路径应交给地图服务确认。",
   "source_tier": "extended",
-  "topic_tags": ["交通", "地址", "越秀公园站", "王墓展区", "导航边界"],
+  "topic_tags": [
+    "交通",
+    "地址",
+    "越秀公园站",
+    "王墓展区",
+    "导航边界"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "22b17acdbb04f85aecdf73e466c02c6165532ece9396e9a5d9468a5d13906e0a"
 }

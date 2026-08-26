@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "铜铃可以从声音、仪式和器物组合角度补充讲解。王墓展区中的乐舞、礼仪和生活主题并非只靠大型器物呈现，小型铜铃也能提示古代仪式和感官经验。它适合与玉舞人、乐舞题材和礼制文物一起解释墓葬中的仪式想象。",
   "source_tier": "extended",
-  "topic_tags": ["铜铃", "声音", "仪式", "礼乐", "青铜器"],
+  "topic_tags": [
+    "铜铃",
+    "声音",
+    "仪式",
+    "礼乐",
+    "青铜器"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "cfb5e53b22aa94798ef48b7e021732e0c81d640ab9bbe1f2a57f2d7abb4c6293"
 }

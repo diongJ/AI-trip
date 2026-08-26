@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "玉带钩适合连接服饰制度、佩饰审美和身份表达。讲解时可以引导游客理解小型佩饰也能反映社会身份与生活方式。它与组玉佩、玉剑饰等文物一起，能补充南越王室成员衣饰、佩戴和礼仪场景的想象。",
   "source_tier": "extended",
-  "topic_tags": ["玉带钩", "服饰", "佩饰", "身份", "玉器"],
+  "topic_tags": [
+    "玉带钩",
+    "服饰",
+    "佩饰",
+    "身份",
+    "玉器"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "30addfe7b72c1852bf0df4f5fc9f85be4152823e278f4c2184625b2ae951a32e"
 }

@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "王墓展区由主体陈列楼、综合陈列楼和古墓保护区三部分组成。主体陈列楼适合承载核心陈列和重点文物观看，是游客理解南越文王墓与出土文物关系的重要场地。系统回答场地问题时可用这组三分结构帮助用户定位展区功能。",
   "source_tier": "extended",
-  "topic_tags": ["主体陈列楼", "王墓展区", "场地资料", "南越藏珍", "展区结构"],
+  "topic_tags": [
+    "主体陈列楼",
+    "王墓展区",
+    "场地资料",
+    "南越藏珍",
+    "展区结构"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "fa73e3c93c6fdd27e2cf83b5291fd3b1162a0182f61d200fb2565574ba26c0bd"
 }

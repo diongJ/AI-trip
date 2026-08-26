@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "先秦岭南和百越背景有助于解释南越国并非凭空出现。秦汉时期的政治整合、地方社会和文化互动，共同塑造了南越国历史。导览回答不宜把岭南简单描述为边缘地区，而应强调它在统一进程、区域交流和广州城市发展中的历史位置。",
   "source_tier": "extended",
-  "topic_tags": ["百越", "先秦岭南", "秦汉", "区域交流", "历史背景"],
+  "topic_tags": [
+    "百越",
+    "先秦岭南",
+    "秦汉",
+    "区域交流",
+    "历史背景"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "48f5938ecfcbe3f733e15f96b8e75c2137f125da5e8a6e2036447eb740974fc5"
 }

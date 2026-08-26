@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "南越文王墓是广州城市考古和秦汉岭南史研究的重要材料。墓葬发现使研究者能够把南越国王室、墓葬制度、随葬器物和岭南地区与中原文化交流联系起来观察。对游客而言，理解这座墓的意义不只是看单件珍贵文物，而是通过一组原址、墓主身份和出土器物认识南越国历史。",
   "source_tier": "extended",
-  "topic_tags": ["南越文王墓", "考古发现", "保护", "广州", "南越国"],
+  "topic_tags": [
+    "南越文王墓",
+    "考古发现",
+    "保护",
+    "广州",
+    "南越国"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "dbd0adffc41623c6413d7f35a72af69ab63aa35a4f95edfb57e4f37cb3b2153d"
 }

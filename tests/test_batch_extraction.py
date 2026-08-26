@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from hashlib import sha256
 
 import pytest
 
@@ -9,6 +10,7 @@ from src.extraction.models import ExtractionResult
 
 
 def document(doc_id: str) -> dict[str, object]:
+    text = "南越文王墓是南越国第二代王赵眜的墓葬，用于批量抽取测试。"
     return {
         "doc_id": doc_id,
         "title": f"资料 {doc_id}",
@@ -17,7 +19,10 @@ def document(doc_id: str) -> dict[str, object]:
         "source_type": "official",
         "category": "tomb",
         "retrieved_at": "2026-08-24",
-        "text": "南越文王墓是南越国第二代王赵眜的墓葬，用于批量抽取测试。",
+        "text": text,
+        "evidence_role": "factual",
+        "content_hash": sha256(text.encode("utf-8")).hexdigest(),
+        "review_status": "approved",
     }
 
 
@@ -219,3 +224,30 @@ def test_batch_rejects_missing_input_directory(tmp_path: Path) -> None:
         BatchExtractionRunner(FakeExtractor()).run(
             tmp_path / "missing", tmp_path / "graph"
         )
+
+
+def test_batch_skips_curated_guidance_without_calling_extractor(tmp_path: Path) -> None:
+    input_dir = tmp_path / "raw"
+    output_dir = tmp_path / "graph"
+    input_dir.mkdir()
+    payload = document("DOC_001")
+    payload.update(
+        {
+            "category": "tourism",
+            "source_name": "AI-trip 项目整理",
+            "source_url": "https://example.com/project-guide",
+            "source_type": "other",
+            "source_tier": "extended",
+            "evidence_role": "curated_guidance",
+        }
+    )
+    (input_dir / "DOC_001.json").write_text(
+        json.dumps(payload, ensure_ascii=False), encoding="utf-8"
+    )
+    extractor = FakeExtractor()
+
+    report = BatchExtractionRunner(extractor).run(input_dir, output_dir)
+
+    assert report.to_dict()["skipped"] == 1
+    assert extractor.calls == []
+    assert not (output_dir / "DOC_001.json").exists()

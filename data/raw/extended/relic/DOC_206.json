@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "墓中玉器组合可把丝缕玉衣、角形玉杯、承盘高足玉杯、组玉佩、玉璧、玉盒和玉剑饰放在一起讲解。不同玉器分别指向丧葬、饮食礼仪、身份佩饰、陈设和武备装饰。组合讲解能让游客理解王墓玉器并非一个功能，而是多种身份和观念的共同表达。",
   "source_tier": "extended",
-  "topic_tags": ["玉器组合", "丝缕玉衣", "角形玉杯", "组玉佩", "身份"],
+  "topic_tags": [
+    "玉器组合",
+    "丝缕玉衣",
+    "角形玉杯",
+    "组玉佩",
+    "身份"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "f0869350b7a72b85d1a521927aa394622029ab99d03e51ad288659f3aa2d9177"
 }

@@ -229,12 +229,17 @@ def fuse_extractions(
     issues: list[dict[str, str]] = []
     for entity in fused.entities:
         for source_id in entity.source_ids:
-            if source_id not in documents:
+            document = documents.get(source_id)
+            if document is None:
                 issues.append({"kind": "unknown_entity_source", "value": source_id})
+            elif document.evidence_role != "factual":
+                issues.append({"kind": "curated_entity_source", "value": source_id})
     for relation in fused.relations:
         document = documents.get(relation.document_id)
         if document is None:
             issues.append({"kind": "unknown_relation_document", "value": relation.document_id})
+        elif document.evidence_role != "factual":
+            issues.append({"kind": "curated_relation_document", "value": relation.document_id})
         elif relation.evidence not in document.text:
             issues.append(
                 {

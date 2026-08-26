@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "赵眜是南越国第二代王，南越文王墓通常与其墓主身份联系讲解。文帝行玺等出土证据使墓主身份说明更具可追溯性。面向游客讲赵眜时，可以把他放在南越国王室、汉代地方政权和岭南地区历史变迁中理解，而不是孤立讲一个人名。",
   "source_tier": "extended",
-  "topic_tags": ["赵眜", "南越文王", "墓主身份", "文帝行玺", "王室"],
+  "topic_tags": [
+    "赵眜",
+    "南越文王",
+    "墓主身份",
+    "文帝行玺",
+    "王室"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "6e8d553ce58dd05225778bb5fb037f6b25af717dd3bb46437f5d987a8fe6201d"
 }

@@ -22,5 +22,6 @@
   "published_at": null,
   "content_hash": "154023acc1a822aabda0863c5f36a7fa67c11b3e0a473ddd354e4a9e51d7a95b",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual"
 }

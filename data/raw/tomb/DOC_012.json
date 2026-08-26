@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "tomb",
   "text": "王墓展区以南越文王墓为核心，通过墓中出土的一千余件套出土文物集中展现岭南地区政治、经济和文化的发展状况。南越文王墓被列入全国重点文物保护单位，入选“百年百大考古发现”。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "185cd4af333edd4dcfc4f4f033c6ff277a0b7fac7d37f7628d7c89d4d5b19895",
+  "review_status": "approved"
 }

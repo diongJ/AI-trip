@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "鎏金铜框玉盖杯为西汉南越国文物，高16厘米，南越文王墓出土。杯体呈八棱筒形，杯身为铜铸窗棂形框架，分上下两截嵌入青玉片，盖顶镶一整块青玉。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "c78f7fbed5f98c13b443170bebf738cde3e550a52b37c96f10efa882603aa405",
+  "review_status": "approved"
 }

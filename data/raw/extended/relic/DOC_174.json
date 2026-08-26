@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "玉舞人适合从汉代礼乐、人物造型和玉器工艺角度讲解。游客观察时可以关注人物姿态、衣袖动态和玉质加工方式，再把它与南越文王墓中其他玉器放在一起理解。它能帮助导览从王权和墓主身份扩展到审美、仪式和日常娱乐想象。",
   "source_tier": "extended",
-  "topic_tags": ["玉舞人", "玉器", "礼乐", "人物造型", "文物讲解"],
+  "topic_tags": [
+    "玉舞人",
+    "玉器",
+    "礼乐",
+    "人物造型",
+    "文物讲解"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "131a8570a84756a4aabd997f94ec34bf55c9fe747122924e9b11647eafc0e1a8"
 }

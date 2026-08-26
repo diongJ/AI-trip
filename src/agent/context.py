@@ -44,6 +44,9 @@ def citations_from_result(
                 evidence=hit.evidence,
                 evidence_id=graph_evidence_id(hit),
                 source_tier=source.source_tier if source else "core",
+                source_type=source.source_type if source else "official",
+                evidence_role=source.evidence_role if source else "factual",
+                content_hash=source.content_hash if source else "",
                 retrieved_at=source.retrieved_at if source else "",
             )
         )
@@ -66,6 +69,9 @@ def citations_from_result(
                 evidence=evidence,
                 evidence_id=document_evidence_id(hit),
                 source_tier=str(hit.metadata.get("source_tier", "core")),
+                source_type=str(hit.metadata.get("source_type", "official")),
+                evidence_role=str(hit.metadata.get("evidence_role", "factual")),
+                content_hash=str(hit.metadata.get("content_hash", "")),
                 retrieved_at=str(hit.metadata.get("retrieved_at", "")),
             )
         )
@@ -94,8 +100,9 @@ def build_grounded_context(result: ToolResult, *, max_chars: int = 3000) -> str:
         )
     for hit in result.documents:
         parts.append(
-            "[EVIDENCE_ID={evidence_id}] [DOC] {title}\n片段：{content}".format(
+            "[EVIDENCE_ID={evidence_id}] [DOC] [EVIDENCE_ROLE={role}] {title}\n片段：{content}".format(
                 evidence_id=document_evidence_id(hit),
+                role=hit.metadata.get("evidence_role", "factual"),
                 title=hit.metadata["title"],
                 content=hit.content,
             )

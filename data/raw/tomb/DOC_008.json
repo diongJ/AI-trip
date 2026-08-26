@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "tomb",
   "text": "南越文王墓原址为1983年发掘的南越国第二代王赵眜之墓，是岭南地区发现规模最大、随葬品最丰富、墓主人等级最高的汉代彩绘石室墓。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "5dd0f7fc512263a4af93605a5bd19a8541b74dfd1d17f3519db4a8641a4e6c3f",
+  "review_status": "approved"
 }

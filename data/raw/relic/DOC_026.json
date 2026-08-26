@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "鎏金铜框玉卮为西汉南越国文物，高14厘米，南越文王墓出土。卮身由九块玉片嵌在鎏金铜框上，整器呈九棱圆筒形，下附兽首形三短足。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "f76db2df034ba228d44adc751786889942b46d095b7c5478a60d8b57fcf19166",
+  "review_status": "approved"
 }

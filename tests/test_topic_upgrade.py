@@ -1,4 +1,5 @@
 import json
+from hashlib import sha256
 
 import httpx
 import pytest
@@ -32,6 +33,9 @@ def _write_doc(root, doc_id: str, title: str, text: str, *, tier: str = "core") 
                 "text": text,
                 "source_tier": tier,
                 "topic_tags": ["南越国"],
+                "evidence_role": "factual",
+                "content_hash": sha256(text.encode("utf-8")).hexdigest(),
+                "review_status": "approved",
             },
             ensure_ascii=False,
         ),
@@ -39,7 +43,8 @@ def _write_doc(root, doc_id: str, title: str, text: str, *, tier: str = "core") 
     )
 
 
-def test_corpus_populates_hash_and_rejects_wrong_hash() -> None:
+def test_corpus_requires_persisted_hash_and_rejects_wrong_hash() -> None:
+    text = "南越国是秦汉时期岭南历史的重要组成部分。"
     payload = {
         "doc_id": "DOC_100",
         "title": "南越国历史",
@@ -48,10 +53,16 @@ def test_corpus_populates_hash_and_rejects_wrong_hash() -> None:
         "source_type": "official",
         "category": "history",
         "retrieved_at": "2026-08-26",
-        "text": "南越国是秦汉时期岭南历史的重要组成部分。",
+        "text": text,
+        "evidence_role": "factual",
+        "content_hash": sha256(text.encode("utf-8")).hexdigest(),
+        "review_status": "approved",
     }
     document = CorpusDocument.model_validate(payload)
     assert len(document.content_hash) == 64
+    missing_hash = {key: value for key, value in payload.items() if key != "content_hash"}
+    with pytest.raises(ValueError, match="content_hash"):
+        CorpusDocument.model_validate(missing_hash)
     with pytest.raises(ValueError, match="content_hash"):
         CorpusDocument.model_validate({**payload, "content_hash": "bad"})
 

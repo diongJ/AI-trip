@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "官方参观信息页显示王墓展区提供自助行李寄存柜。导览回答行李寄存时，可提示用户轻装参观并提前确认现场规则和柜位情况。知识库不判断当天是否有空柜，也不替代现场工作人员指引。",
   "source_tier": "extended",
-  "topic_tags": ["行李寄存", "自助寄存柜", "轻装参观", "王墓展区", "馆内服务"],
+  "topic_tags": [
+    "行李寄存",
+    "自助寄存柜",
+    "轻装参观",
+    "王墓展区",
+    "馆内服务"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "298147c535d90c7a8aaf040478bff04f33e410669094ed2225b8f8ae9134e7e5"
 }

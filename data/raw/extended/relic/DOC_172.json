@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "错金铭文铜虎节适合讲王命、交通凭证和制度管理。它的形制和铭文可以帮助游客理解古代通行凭证并非抽象制度，而是通过具体器物执行。将铜虎节与文帝行玺对照，可以分别说明王权身份确认和王命传达的不同证据类型。",
   "source_tier": "extended",
-  "topic_tags": ["错金铭文铜虎节", "王命", "交通凭证", "铭文", "制度"],
+  "topic_tags": [
+    "错金铭文铜虎节",
+    "王命",
+    "交通凭证",
+    "铭文",
+    "制度"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "58f961b5c4944424232fb315c67808b20fdaf6700d74842214c10ba59adc2307"
 }

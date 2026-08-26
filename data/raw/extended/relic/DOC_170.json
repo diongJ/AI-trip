@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "角形玉杯适合从玉器工艺、器形想象和王室生活三个方向讲解。它能帮助游客理解王墓展区并不只展示政治身份，也展示南越王室使用器物的审美和工艺水平。将角形玉杯与其他玉器、金印和青铜器对比，可以形成更完整的文物观察线索。",
   "source_tier": "extended",
-  "topic_tags": ["角形玉杯", "玉器", "工艺", "王室生活", "文物讲解"],
+  "topic_tags": [
+    "角形玉杯",
+    "玉器",
+    "工艺",
+    "王室生活",
+    "文物讲解"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "9c945dc64ed2b3d2cdbc427f224ac0a6c60871177507325e8ebc6d3d17a8bffa"
 }

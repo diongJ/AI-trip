@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "“南越藏珍——西汉南越王墓出土文物陈列”是王墓展区理解核心文物的稳定陈列。它适合回答王墓出土了哪些重要文物、为什么文帝行玺和丝缕玉衣重要、南越王墓如何呈现王室生活等问题。该陈列应作为知识库回答的优先依据之一。",
   "source_tier": "extended",
-  "topic_tags": ["南越藏珍", "基本陈列", "王墓展区", "出土文物", "稳定资料"],
+  "topic_tags": [
+    "南越藏珍",
+    "基本陈列",
+    "王墓展区",
+    "出土文物",
+    "稳定资料"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "b1848230c91a9bddb459ed3cbd2bdda1d69ca9e7d27446c8020cf08ea377a6be"
 }

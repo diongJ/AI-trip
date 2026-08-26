@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "虎头金钩扣龙形玉佩为西汉南越国文物，通长14.4厘米，南越文王墓出土。该器由青玉镂雕玉龙和金质虎头带钩组合而成，钩首和钩尾均作虎头形。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "99133c88bdb245ce0b9b5d10123962f261930a8c5d5fc5069c214cb8f1ce619e",
+  "review_status": "approved"
 }

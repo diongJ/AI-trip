@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "玉盒为西汉南越国文物，高7.7厘米、口径9.8厘米，南越文王墓出土。玉盒由青玉雕成，盒身深圆圜底，下附小圈足，盖中央隆起，有桥形纽。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "63547bfa936db1814cd41accd8079ce422fc386b73f7428ee67999c1835db936",
+  "review_status": "approved"
 }

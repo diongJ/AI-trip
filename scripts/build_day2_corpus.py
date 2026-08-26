@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from hashlib import sha256
 from pathlib import Path
 
 
@@ -485,6 +486,11 @@ def main() -> None:
     rows = []
     for document in DOCUMENTS:
         payload = {**document, "retrieved_at": RETRIEVED_AT}
+        payload["evidence_role"] = (
+            "curated_guidance" if payload["source_type"] == "other" else "factual"
+        )
+        payload["review_status"] = "approved"
+        payload["content_hash"] = sha256(payload["text"].encode("utf-8")).hexdigest()
         path = raw_root / payload["category"] / f"{payload['doc_id']}.json"
         write_json(path, payload)
         rows.append(

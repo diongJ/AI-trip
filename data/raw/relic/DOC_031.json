@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "双面兽首鎏金铜顶饰为西汉南越国文物，高16.7厘米、宽56.3厘米，南越文王墓出土。此为漆木屏风构件之一，正中为兽面，通体鎏金。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "5d30362a1b5aec2e9811eee6be2ba95185f4fe8338e4ff4e9d46cc94a15a1a02",
+  "review_status": "approved"
 }

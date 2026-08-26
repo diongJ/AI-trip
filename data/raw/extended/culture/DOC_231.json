@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "从中华文明多元一体视角看，南越王博物院展示的墓葬和宫署遗址具有区域文化与统一历史进程并重的意义。王墓文物体现王室制度、地方生活和文化交流，适合解释岭南文化如何参与更大的历史格局。这个视角能补强导览中的文化价值回答。",
   "source_tier": "extended",
-  "topic_tags": ["多元一体", "中华文明", "岭南文化", "南越国", "文化价值"],
+  "topic_tags": [
+    "多元一体",
+    "中华文明",
+    "岭南文化",
+    "南越国",
+    "文化价值"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "551e47ae841d145114897460a49b9922a60aff7a8b9abb0e8ec83716729b57ea"
 }

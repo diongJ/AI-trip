@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "person",
   "text": "南越王墓出土的“文帝行玺”、“帝印”、“赵眜”等玺印和史书记载，证实墓主人是南越国第二代王赵眜，自称南越文帝。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "5476c3b81876c3ea6283bee405722c03e85dfec575ebe9fbf8724ef138c5c380",
+  "review_status": "approved"
 }

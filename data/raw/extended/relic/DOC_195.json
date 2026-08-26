@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "玉盒适合从容器功能、玉器工艺和王室生活角度讲解。它提示游客，南越文王墓中的玉器并非只有礼仪象征，也包括可能与盛放、收藏和生活陈设相关的器物。将玉盒与玉杯、玉佩类文物对照，可以形成“玉器用途多样性”的讲解线索。",
   "source_tier": "extended",
-  "topic_tags": ["玉盒", "玉器", "容器", "王室生活", "工艺"],
+  "topic_tags": [
+    "玉盒",
+    "玉器",
+    "容器",
+    "王室生活",
+    "工艺"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "f4c7f48a7edd04f3f3ed180209c2e50538780c46106c092684b7efd54a34f648"
 }

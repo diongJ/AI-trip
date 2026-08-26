@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "tomb",
   "text": "南越文王墓中出土文物1000多套、一万余件，其中“文帝行玺”金印、玉角杯、错金铭文虎节、印花铜板模、平板玻璃铜牌饰等文物具有重大历史、科学、艺术价值。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "7b148c639f6b71bb43efb4342e6ccf3b559bff2dba6b9701f36ce6a7267f8551",
+  "review_status": "approved"
 }

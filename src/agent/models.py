@@ -22,6 +22,15 @@ class ToolName(StrEnum):
     NONE = "none"
 
 
+class AnswerStatus(StrEnum):
+    ANSWERED = "answered"
+    CLARIFICATION_NEEDED = "clarification_needed"
+    INSUFFICIENT_EVIDENCE = "insufficient_evidence"
+    OUT_OF_SCOPE = "out_of_scope"
+    REALTIME_UNAVAILABLE = "realtime_unavailable"
+    SERVICE_UNAVAILABLE = "service_unavailable"
+
+
 class RouteDecision(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
@@ -46,6 +55,9 @@ class Citation(BaseModel):
     evidence: str = Field(min_length=1)
     evidence_id: str = ""
     source_tier: Literal["core", "extended"] = "core"
+    source_type: str = "official"
+    evidence_role: Literal["factual", "curated_guidance"] = "factual"
+    content_hash: str = ""
     retrieved_at: str = ""
 
 
@@ -73,11 +85,19 @@ class AgentAnswer(BaseModel):
     selected_evidence_ids: list[str] = Field(default_factory=list)
     source_tiers: list[str] = Field(default_factory=list)
     refusal_reason: str | None = None
+    response_status: AnswerStatus = AnswerStatus.ANSWERED
+    suggested_questions: list[str] = Field(default_factory=list, max_length=2)
 
     @model_validator(mode="after")
     def require_citations_unless_insufficient(self) -> "AgentAnswer":
+        if self.response_status == AnswerStatus.ANSWERED and self.insufficient_evidence:
+            raise ValueError("answered response cannot be marked insufficient")
+        if self.response_status != AnswerStatus.ANSWERED and not self.insufficient_evidence:
+            raise ValueError("non-answer response must be marked insufficient")
         if not self.insufficient_evidence and not self.citations:
             raise ValueError("answers with sufficient evidence must include citations")
+        if self.insufficient_evidence and self.citations:
+            raise ValueError("insufficient responses cannot include citations")
         return self
 
 

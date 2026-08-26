@@ -34,13 +34,16 @@
 - 项目整理资料记录为 `source_type=other`，用于把已有可靠资料转写成游客导览、讲解提问和参观动线，不新增实时事实。
 - 所有新增资料均标记为 `source_tier=extended`，不改变 Day 3 核心图谱 78 个实体、87 条关系的基线口径。
 - 开放时间、预约、票务等只保留稳定边界和官方确认提醒；当天客流、实时余票、临时闭馆、天气、停车空位和路线导航不写入静态知识库。
+- 全部有效文档必须持久化与正文一致的 `content_hash`，并显式填写 `review_status` 和 `evidence_role`。
+- 163 份官方或可信资料标记为 `factual`；18 份项目整理攻略标记为 `curated_guidance`。整理攻略不能进入知识图谱，也不能作为博物院规定的引用。
 
 ## 对应系统改动
 
 - 参观攻略意图优先检索 `tourism` 类资料。
-- 文档检索增加多查询扩展和南越专题兜底。
+- 文档检索增加多查询扩展；非参观问题不再使用宽泛的南越专题查询强行兜底。
 - KG 无证据时会尝试文档兜底。
-- 配置 DeepSeek 且本地仍无可引用证据时，可返回 DeepSeek 通用回答，并明确标注“本地知识库未检索到可引用证据”。
+- 历史事实仅检索 `factual`；参观攻略先检索官方稳定资料，再补充带“项目整理建议”标识的 `curated_guidance`。
+- DeepSeek 只能根据选中的本地证据组织回答；本地无可引用证据时返回按原因区分的柔和提示，不再生成通用知识答案。
 
 ## 当前验证
 
@@ -50,4 +53,6 @@
 - `python -m scripts.verify_retrieval`：通过。
 - `python -m scripts.verify_agent`：20/20，覆盖参观攻略、实时拒答和混合检索。
 - `python -m scripts.verify_demo`：5/5。
-- `python -m pytest`：72 passed，6 skipped；覆盖路由、RAG 兜底、DeepSeek 通用兜底和 Demo 状态。
+- `python -m pytest -q`：94 项通过；覆盖信任字段、证据角色隔离、路由、RAG、KG 和 DeepSeek 失败回退。
+- `python -m scripts.evaluate_qa --fail-under 0.9`：50/50，通过率 100%。
+- `python -m scripts.run_evaluation_v2`：有效回答率 87.5%、Top-5 召回率 88.75%、引用正确率 100%、拒答准确率 100%。

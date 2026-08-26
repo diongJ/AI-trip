@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "museum",
   "text": "王墓展区以南越文王墓为核心，由主体陈列楼、综合陈列楼和古墓保护区三部分组成。基本陈列包括南越王墓原址和“南越藏珍——西汉南越王墓出土文物陈列”，专题陈列有“杨永德伉俪捐赠藏枕”。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "c0ef72256cfd5a79134adf8c50bc629c2285d8edd3404da2b85ef188e3f21b22",
+  "review_status": "approved"
 }

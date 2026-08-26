@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "南越国王室制度可以通过墓主身份、印章、随葬器物和墓葬规模共同理解。文帝行玺有助于解释王号和身份，铜虎节可连接王命与通行制度，玉衣和玉器则反映等级化的丧葬观念。把这些证据合在一起，游客更容易理解王墓不是单个墓葬，而是制度信息的集合。",
   "source_tier": "extended",
-  "topic_tags": ["南越国", "王室制度", "文帝行玺", "铜虎节", "丧葬"],
+  "topic_tags": [
+    "南越国",
+    "王室制度",
+    "文帝行玺",
+    "铜虎节",
+    "丧葬"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "6b7b474e21ae0704e0f81be807e90120a5e09b7fcdbf5af7674c0612d43ea61e"
 }

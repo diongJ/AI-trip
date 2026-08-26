@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "重点文物打卡可按证据链顺序进行：先看文帝行玺理解墓主身份，再看丝缕玉衣理解丧葬观念，随后看角形玉杯和组玉佩理解玉器工艺，最后看船纹铜提筒、铜虎节和铜烤炉理解交通、制度和生活。这个顺序比按展柜随意浏览更利于形成记忆。",
   "source_tier": "extended",
-  "topic_tags": ["打卡顺序", "重点文物", "参观攻略", "证据链", "导览"],
+  "topic_tags": [
+    "打卡顺序",
+    "重点文物",
+    "参观攻略",
+    "证据链",
+    "导览"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "aa197269767817afa3e1302ae24aafa341df7083dc0581051225616f302b792c"
 }

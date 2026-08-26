@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "AI-trip 智慧导览适合回答王墓展区背景、南越国历史、墓主身份、出土文物、文物关系、稳定参观建议和讲解思路。它不适合代替官方票务系统、实时地图或人工客服。遇到当天客流、余票、临时闭馆、停车空位、天气和导航路径等问题时，应提示用户查看南越王博物院官方渠道或实时服务。",
   "source_tier": "extended",
-  "topic_tags": ["回答边界", "智能体", "实时信息", "参观建议", "官方渠道"],
+  "topic_tags": [
+    "回答边界",
+    "智能体",
+    "实时信息",
+    "参观建议",
+    "官方渠道"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "fe4898405b3cd4954e67876236c5730b8148d7ee687803a5549118730fd6fa54"
 }

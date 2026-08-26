@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "南越国建立背景可从秦统一岭南、赵佗据有岭南和番禺作为政治中心几条线索讲解。赵佗建国问题常被用户询问，回答时应把人物与岭南政治格局、广州早期城市地位联系起来，而不是只给出一个姓名。这样能使历史背景更适合导览场景。",
   "source_tier": "extended",
-  "topic_tags": ["赵佗", "南越国", "建国", "番禺", "秦汉南疆"],
+  "topic_tags": [
+    "赵佗",
+    "南越国",
+    "建国",
+    "番禺",
+    "秦汉南疆"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "9547f16fb2860bf7c69ff93dce0fedd210771bd9163fc383a5259ff70a33ba53"
 }

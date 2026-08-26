@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "成人深度参观可从历史问题切入：南越国如何形成，赵眜为什么重要，墓葬如何证明身份，随葬器物如何展示王权、礼制和地方文化。路线可先看墓葬原址，再看文帝行玺、丝缕玉衣、铜虎节和代表玉器，最后回到岭南文化交流主题。",
   "source_tier": "extended",
-  "topic_tags": ["成人参观", "深度路线", "历史背景", "王墓展区", "文化交流"],
+  "topic_tags": [
+    "成人参观",
+    "深度路线",
+    "历史背景",
+    "王墓展区",
+    "文化交流"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "826f6ddd134044c35cba2105ca4482f86944846e394d1f65f7cc62957881ada6"
 }

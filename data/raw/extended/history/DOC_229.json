@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "南越国与汉朝关系是理解王墓文物制度特征的重要背景。王墓中体现王权、礼制、丧葬和文字制度的文物，既有地方政权特征，也能看到与汉文化的联系。系统回答时可用文帝行玺、玉衣、铜虎节等文物说明政治关系和文化互动，而不只讲朝代名称。",
   "source_tier": "extended",
-  "topic_tags": ["南越国", "汉朝", "政治关系", "汉文化", "文物证据"],
+  "topic_tags": [
+    "南越国",
+    "汉朝",
+    "政治关系",
+    "汉文化",
+    "文物证据"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "1a900e08225ebd832dfe91df46d455f292155bdac4df36607d52796476ea9966"
 }

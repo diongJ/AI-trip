@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "丝缕玉衣适合用来讲汉代丧葬观念和身份等级。讲解时可以引导游客关注玉片、连接方式、葬俗想象和王侯墓葬礼制，而不仅仅强调外观。它与文帝行玺、墓葬结构和其他随葬器物一起，构成理解南越王室丧葬制度的重要证据组。",
   "source_tier": "extended",
-  "topic_tags": ["丝缕玉衣", "丧葬观念", "汉代", "礼制", "南越文王墓"],
+  "topic_tags": [
+    "丝缕玉衣",
+    "丧葬观念",
+    "汉代",
+    "礼制",
+    "南越文王墓"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "a5e275eb7dba4edce22c3d5e33b827bd9755516138373e1659692b93f86535aa"
 }

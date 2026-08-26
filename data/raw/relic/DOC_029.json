@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "四连体铜熏炉为西汉南越国文物，高16.4厘米，南越文王墓出土。炉体由四个方口圜底小盒组成，平面呈“田”字形。熏炉是燃熏香料的器具。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "446a9aca865554d1f9f3ffc75ca0ee746cf582893901ca4de885a45a750cbba1",
+  "review_status": "approved"
 }

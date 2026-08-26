@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "陶俑类文物适合补充王墓中人物、侍从和生活场景的想象。讲解时不应只把陶俑当作小型人物模型，而应引导游客理解它们与墓主身份、随葬制度和地下世界观念之间的联系。陶俑能让学生和亲子游客更容易进入墓葬叙事。",
   "source_tier": "extended",
-  "topic_tags": ["陶俑", "随葬制度", "人物", "墓葬", "亲子讲解"],
+  "topic_tags": [
+    "陶俑",
+    "随葬制度",
+    "人物",
+    "墓葬",
+    "亲子讲解"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "a9c2a42e3cd0fc8a841f1afbc8dfce14bb4086134752f6fbe849e22b038a8a6e"
 }

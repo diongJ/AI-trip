@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "王墓展区的文化价值在于把南越文王墓原址、墓主身份、出土文物和岭南历史放在同一空间呈现。游客可以通过文帝行玺理解王权，通过丝缕玉衣理解丧葬，通过船纹铜提筒理解地域交通，通过玉器和青铜器理解工艺与生活。它是公众读懂广州和岭南文化的重要入口。",
   "source_tier": "extended",
-  "topic_tags": ["文化价值", "王墓展区", "广州", "岭南文化", "导览总结"],
+  "topic_tags": [
+    "文化价值",
+    "王墓展区",
+    "广州",
+    "岭南文化",
+    "导览总结"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "1ce1eb2c474f243194a5c1219d5425c972879e17970c27e10205833f4f6131e5"
 }

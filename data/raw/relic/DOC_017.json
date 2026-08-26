@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "透雕龙凤纹重环玉佩为西汉南越国文物，直径10.6厘米，南越文王墓出土。玉佩出土于墓主右眼位置，内圈透雕游龙，外圈透雕凤鸟，龙凤相对。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "452cad44df281322c41de96b27689efc15e31e51ed3db6cc5bbc6e0db812c01c",
+  "review_status": "approved"
 }

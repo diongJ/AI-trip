@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from hashlib import sha256
 from pathlib import Path
 
 from src.preprocessing import CorpusDocument
@@ -47,7 +48,7 @@ def main() -> None:
             update={
                 "title": _clean_title(document.title, str(document.source_url), cleaned),
                 "text": cleaned,
-                "content_hash": "",
+                "content_hash": sha256(cleaned.encode("utf-8")).hexdigest(),
                 "topic_tags": _topic_tags(cleaned, defaults),
                 "version": document.version + 1,
             }
@@ -79,7 +80,7 @@ def main() -> None:
                 update={
                     "title": _clean_title(document.title, str(document.source_url), cleaned),
                     "text": cleaned,
-                    "content_hash": "",
+                    "content_hash": sha256(cleaned.encode("utf-8")).hexdigest(),
                     "topic_tags": _topic_tags(cleaned, defaults),
                     "version": document.version + 1,
                 }

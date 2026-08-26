@@ -17,5 +17,7 @@
   ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "1106fc50a812436f6959700b8350851968d49afa52009d1e10bc3f1bcc85b51e"
 }

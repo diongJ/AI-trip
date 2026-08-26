@@ -1,8 +1,10 @@
 from src.preprocessing import CorpusDocument
 from src.rag.chunking import split_corpus, split_document
+from hashlib import sha256
 
 
 def document(doc_id: str = "DOC_001", text: str | None = None) -> CorpusDocument:
+    body = text or "文帝行玺是南越文王墓出土的金印。印面阴刻小篆文字。"
     return CorpusDocument(
         doc_id=doc_id,
         title="文帝行玺",
@@ -11,7 +13,10 @@ def document(doc_id: str = "DOC_001", text: str | None = None) -> CorpusDocument
         source_type="official",
         category="relic",
         retrieved_at="2026-08-23",
-        text=text or "文帝行玺是南越文王墓出土的金印。印面阴刻小篆文字。",
+        text=body,
+        evidence_role="factual",
+        content_hash=sha256(body.encode("utf-8")).hexdigest(),
+        review_status="approved",
     )
 
 

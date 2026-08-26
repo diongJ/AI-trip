@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "铜勺等小型生活器可以补足王墓展区的日常生活维度。它们不像文帝行玺那样直接指向王权身份，却能帮助游客理解墓中随葬品还包含饮食、取用和生活场景。导览中加入铜勺类器物，可让回答不只围绕珍宝，也能解释古人生活方式。",
   "source_tier": "extended",
-  "topic_tags": ["铜勺", "生活器", "饮食", "随葬品", "王墓展区"],
+  "topic_tags": [
+    "铜勺",
+    "生活器",
+    "饮食",
+    "随葬品",
+    "王墓展区"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "25db4f76a25ec7cf1f2900678c772c13d01bfe81c992054fe69aa43f119bfbcc"
 }

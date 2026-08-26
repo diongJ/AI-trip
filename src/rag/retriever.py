@@ -52,6 +52,7 @@ class RagRetriever:
         top_k: int = 5,
         category: str | None = None,
         source_tier: str | None = None,
+        evidence_role: str | None = None,
         min_score: float = 0.0,
     ) -> list[RetrievalHit]:
         if top_k <= 0:
@@ -99,6 +100,8 @@ class RagRetriever:
                 continue
             if source_tier and chunk.source_tier != source_tier:
                 continue
+            if evidence_role and chunk.evidence_role != evidence_role:
+                continue
             dot_product += _title_overlap_bonus(query_terms, chunk.title)
             score = dot_product / (dot_product + 1.0)
             if score >= score_floor:
@@ -128,6 +131,7 @@ class RagRetriever:
         per_query_k: int = 12,
         category: str | None = None,
         source_tier: str | None = None,
+        evidence_role: str | None = None,
     ) -> list[RetrievalHit]:
         """Fuse multiple BM25 result lists with reciprocal-rank fusion."""
         if top_k <= 0 or per_query_k <= 0:
@@ -141,6 +145,7 @@ class RagRetriever:
                 top_k=per_query_k,
                 category=category,
                 source_tier=source_tier,
+                evidence_role=evidence_role,
             ):
                 chunk_id = str(hit.metadata["chunk_id"])
                 fused[chunk_id] += 1.0 / (60 + hit.rank)
@@ -190,6 +195,9 @@ def _hit_from_chunk(chunk: DocumentChunk, score: float, rank: int) -> RetrievalH
             "source_url": str(chunk.source_url),
             "category": chunk.category,
             "source_tier": chunk.source_tier,
+            "source_type": chunk.source_type,
+            "evidence_role": chunk.evidence_role,
+            "review_status": chunk.review_status,
             "topic_tags": chunk.topic_tags,
             "retrieved_at": chunk.retrieved_at,
             "published_at": chunk.published_at,

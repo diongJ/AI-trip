@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "犀角形玉杯为西汉南越国文物，长18.4厘米、口径5.8-6.7厘米，南越文王墓出土。玉杯为青玉质、半透明，仿犀角形，中空，器身纹饰自口沿起为一立姿夔龙向后展开。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "7cd99500d703a594cdf0cc26cd004f9c5388c8ffdff89c475aa7eee2064ab434",
+  "review_status": "approved"
 }

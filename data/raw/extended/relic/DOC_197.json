@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "玻璃牌饰适合用来讲南越王墓中的材料多样性和文化交流。与金、玉、铜等材料相比，玻璃器物能引导游客关注技术传播、审美选择和岭南地区对外交流。系统回答“王墓文物材料有哪些”时，可把玻璃牌饰作为补充案例。",
   "source_tier": "extended",
-  "topic_tags": ["玻璃牌饰", "材料", "文化交流", "南越藏珍", "工艺"],
+  "topic_tags": [
+    "玻璃牌饰",
+    "材料",
+    "文化交流",
+    "南越藏珍",
+    "工艺"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "dae486baca590d5addebf4d87924c857511c44aba4fb33b68cd772a7a6506741"
 }

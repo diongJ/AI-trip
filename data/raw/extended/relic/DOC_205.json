@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "墓中饮食器组合可把铜鼎、铜釜甑、铜烤炉、铜壶和铜勺等器物联系起来讲解。它们共同提示南越王室生活、宴饮、烹饪和礼仪场景。游客如果问“王墓里能看出古人怎么生活吗”，饮食器组合就是比单件文物更适合的回答入口。",
   "source_tier": "extended",
-  "topic_tags": ["饮食器", "铜鼎", "铜釜甑", "铜烤炉", "生活方式"],
+  "topic_tags": [
+    "饮食器",
+    "铜鼎",
+    "铜釜甑",
+    "铜烤炉",
+    "生活方式"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "f47c12408144b94f687d8686e666e1f1774050375192ca8aa75abd27ee55903f"
 }

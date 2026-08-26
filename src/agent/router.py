@@ -16,6 +16,9 @@ REALTIME_OUT_OF_SCOPE_RE = re.compile(
     r"(今天|现在|实时|当前).*(游客|人数|客流|天气|交通|排队|开放|票价|门票|预约|余票)|"
     r"(实时价格|实时客流|当前排队|今日客流|今天客流|天气|预测)"
 )
+INCORRECT_PREMISE_RE = re.compile(
+    r"(?:火星|月球|外星).*(?:南越王墓|南越文王墓)|(?:南越王墓|南越文王墓).*(?:火星|月球|外星)"
+)
 DOMAIN_OUT_OF_SCOPE_RE = re.compile(
     r"(路线导航|停车最方便|哪里停车|餐厅|酒店|公交换乘|地铁换乘|打车|机场|"
     r"智能手机|恐龙|航空母舰|火星|月球|外星)"
@@ -42,13 +45,31 @@ class RuleBasedRouter:
                 question_type=QuestionType.OUT_OF_SCOPE,
                 tool=ToolName.NONE,
                 reason="问题为空，无法检索可靠证据。",
+                intent="clarification_needed",
                 scope="out_of_scope",
             )
-        if REALTIME_OUT_OF_SCOPE_RE.search(normalized) or DOMAIN_OUT_OF_SCOPE_RE.search(normalized):
+        if REALTIME_OUT_OF_SCOPE_RE.search(normalized):
             return RouteDecision(
                 question_type=QuestionType.OUT_OF_SCOPE,
                 tool=ToolName.NONE,
-                reason="问题涉及实时或项目范围外信息，当前资料无法可靠回答。",
+                reason="问题涉及实时信息，静态资料无法可靠确认。",
+                intent="realtime_unavailable",
+                scope="out_of_scope",
+            )
+        if INCORRECT_PREMISE_RE.search(normalized):
+            return RouteDecision(
+                question_type=QuestionType.OUT_OF_SCOPE,
+                tool=ToolName.NONE,
+                reason="可靠资料与问题中的地点前提不一致。",
+                intent="incorrect_premise",
+                scope="out_of_scope",
+            )
+        if DOMAIN_OUT_OF_SCOPE_RE.search(normalized):
+            return RouteDecision(
+                question_type=QuestionType.OUT_OF_SCOPE,
+                tool=ToolName.NONE,
+                reason="问题超出南越专题和馆内稳定信息范围。",
+                intent="out_of_scope",
                 scope="out_of_scope",
             )
 

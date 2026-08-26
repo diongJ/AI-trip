@@ -12,11 +12,19 @@ from src.agent.context import (
     graph_evidence_id,
     load_source_lookup,
 )
-from src.agent.models import AgentAnswer, GeneratedAnswer, RouteDecision, ToolName, ToolResult
+from src.agent.models import (
+    AgentAnswer,
+    AnswerStatus,
+    GeneratedAnswer,
+    RouteDecision,
+    ToolName,
+    ToolResult,
+)
 from src.agent.planner import QueryPlanner
 from src.agent.router import RuleBasedRouter
 from src.agent.tools import (
     AUDIENCE_HINTS,
+    FIRST_VISIT_RE,
     AgentTools,
     QUESTION_STOP_PHRASES,
     SCAFFOLD_CHARS,
@@ -42,18 +50,27 @@ class AnswerGenerator(Protocol):
     def generate(self, question: str, route: RouteDecision, result: ToolResult) -> GeneratedAnswer: ...
 
 
-class FallbackAnswerGenerator(Protocol):
-    def generate_without_evidence(self, question: str, route: RouteDecision) -> str: ...
-
-
 class ExtractiveAnswerGenerator:
     def generate(self, question: str, route: RouteDecision, result: ToolResult) -> GeneratedAnswer:
+        document_hits = list(result.documents)
+        if route.intent == "visit_guidance":
+            factual = [
+                hit for hit in document_hits if hit.metadata.get("evidence_role") == "factual"
+            ]
+            curated = [
+                hit
+                for hit in document_hits
+                if hit.metadata.get("evidence_role") == "curated_guidance"
+            ]
+            document_hits = [*factual[:1], *curated[:1]] or document_hits
         selected = [
             *[graph_evidence_id(hit) for hit in result.graph[:3]],
-            *[document_evidence_id(hit) for hit in result.documents[:2]],
+            *[document_evidence_id(hit) for hit in document_hits[:2]],
         ]
-        if route.tool in {ToolName.SEARCH_DOCUMENTS, ToolName.HYBRID_SEARCH} and result.documents:
-            snippets = [hit.content for hit in result.documents[:2]]
+        if route.tool in {ToolName.SEARCH_DOCUMENTS, ToolName.HYBRID_SEARCH} and document_hits:
+            snippets = [_format_extract(hit) for hit in document_hits[:2]]
+            if route.intent == "visit_guidance" and re.search(r"学生|研学", question):
+                snippets.insert(0, "面向学生研学，可以按以下证据线索组织参观：")
             return GeneratedAnswer(answer="\n".join(snippets), selected_evidence_ids=selected)
         if result.graph:
             facts = [
@@ -61,11 +78,11 @@ class ExtractiveAnswerGenerator:
                 for hit in result.graph[:3]
             ]
             return GeneratedAnswer(answer="\n".join(facts), selected_evidence_ids=selected)
-        if result.documents:
-            snippets = [hit.content for hit in result.documents[:2]]
+        if document_hits:
+            snippets = [_format_extract(hit) for hit in document_hits[:2]]
             return GeneratedAnswer(answer="\n".join(snippets), selected_evidence_ids=selected)
         return GeneratedAnswer(
-            answer="当前可靠资料不足以确认该问题。",
+            answer="暂未在可靠资料中找到足够依据，因此不想给出可能不准确的答案。",
             supported=False,
             refusal_reason="检索结果为空",
         )
@@ -95,7 +112,7 @@ class DeepSeekAnswerGenerator:
         context = build_grounded_context(result)
         if not context.strip():
             return GeneratedAnswer(
-                answer="当前可靠资料不足以确认该问题。",
+                answer="暂未在可靠资料中找到足够依据，因此不想给出可能不准确的答案。",
                 supported=False,
                 refusal_reason="没有可用证据",
             )
@@ -136,60 +153,6 @@ class DeepSeekAnswerGenerator:
             raise AnswerGenerationError(f"DeepSeek answer generation failed: {exc}") from exc
 
 
-class DeepSeekFallbackAnswerGenerator:
-    """Use DeepSeek general knowledge only after local retrieval fails."""
-
-    def __init__(self, settings: Settings, *, http_client: object | None = None) -> None:
-        if httpx is None:
-            raise ConfigurationError("httpx is required for DeepSeek fallback generation.")
-        settings.require_deepseek()
-        self.settings = settings
-        self._owns_client = http_client is None
-        self.client = http_client or httpx.Client(timeout=45.0)
-
-    def close(self) -> None:
-        if self._owns_client:
-            self.client.close()
-
-    def generate_without_evidence(self, question: str, route: RouteDecision) -> str:
-        payload = {
-            "model": self.settings.deepseek_model,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": (
-                        "你是南越王博物院王墓展区智慧导览助手。本次没有检索到本地知识库证据。"
-                        "可以用模型自身知识给出谨慎、面向游客的回答，但必须控制在100字以内，"
-                        "直接回答，不要重复问题，不要展开背景。"
-                        "不要编造实时客流、余票、票价、临时闭馆、天气、停车空位或导航路径。"
-                        "若问题需要实时信息，建议用户查看官方平台或地图服务。"
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": f"问题：{question}\n本地路由：{route.model_dump_json()}",
-                },
-            ],
-            "temperature": 0.2,
-        }
-        try:
-            response = self.client.post(
-                f"{self.settings.deepseek_base_url.rstrip('/')}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.settings.deepseek_api_key.get_secret_value()}",
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-            )
-            response.raise_for_status()
-            content = str(response.json()["choices"][0]["message"]["content"]).strip()
-            if not content:
-                raise ValueError("empty DeepSeek fallback response")
-            return content + "\n（以上为通用知识回答，未引用本地资料）"
-        except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as exc:
-            raise AnswerGenerationError(f"DeepSeek fallback generation failed: {exc}") from exc
-
-
 class AgentService:
     def __init__(
         self,
@@ -197,14 +160,12 @@ class AgentService:
         *,
         router: RuleBasedRouter | None = None,
         generator: AnswerGenerator | None = None,
-        fallback_generator: FallbackAnswerGenerator | None = None,
         planner: QueryPlanner | None = None,
         source_lookup: dict[str, CorpusDocument] | None = None,
     ) -> None:
         self.tools = tools
         self.router = router or RuleBasedRouter(tools.graph_retriever)
         self.generator = generator or ExtractiveAnswerGenerator()
-        self.fallback_generator = fallback_generator
         self.planner = planner
         self.source_lookup = source_lookup if source_lookup is not None else _safe_source_lookup()
 
@@ -213,20 +174,10 @@ class AgentService:
         if self.planner is not None and route.tool != ToolName.NONE and not _is_fast_path(route):
             route = self.planner.plan(question, route)
         if route.tool == ToolName.NONE:
-            return AgentAnswer(
-                answer="当前可靠资料不足以确认该问题，或问题超出南越专题资料范围。",
-                citations=[],
-                used_tools=[],
-                route_reason=route.reason,
-                insufficient_evidence=True,
-                refusal_reason=route.reason,
-            )
+            return self._route_failure(question, route)
 
         unknown_focus = self._unknown_focus_terms(question, route)
         if unknown_focus:
-            deepseek_fallback = self._deepseek_fallback_answer(question, route)
-            if deepseek_fallback:
-                return deepseek_fallback
             return AgentAnswer(
                 answer=self._unknown_focus_answer(question, unknown_focus),
                 citations=[],
@@ -234,6 +185,8 @@ class AgentService:
                 route_reason=f"{route.reason} 问题主题未收录于本地知识库。",
                 insufficient_evidence=True,
                 refusal_reason=f"本地资料未收录：{'、'.join(unknown_focus)}",
+                response_status=AnswerStatus.CLARIFICATION_NEEDED,
+                suggested_questions=self._suggested_questions(question, route),
             )
 
         result = self._run_tool(question, route)
@@ -247,18 +200,13 @@ class AgentService:
                 result = ToolResult(documents=filtered_docs)
                 citations = citations_from_result(result, source_lookup=self.source_lookup)
             else:
-                deepseek_fallback = self._deepseek_fallback_answer(question, route)
-                if deepseek_fallback:
-                    return deepseek_fallback
-                return AgentAnswer(
-                    answer=self._insufficient_answer(question, route),
-                    citations=[],
+                return self._insufficient_response(
+                    question,
+                    route,
                     used_tools=[route.tool],
-                    route_reason=route.reason,
-                    insufficient_evidence=True,
                     retrieved_documents=result.documents,
                     graph_facts=result.graph,
-                    refusal_reason="检索未返回可引用证据",
+                    reason="检索未返回可引用证据",
                 )
 
         if route.tool != ToolName.SEARCH_DOCUMENTS and result.documents and not result.graph:
@@ -270,82 +218,64 @@ class AgentService:
             )
 
         if not result.has_evidence or not citations:
-            return AgentAnswer(
-                answer=self._insufficient_answer(question, route),
-                citations=[],
+            return self._insufficient_response(
+                question,
+                route,
                 used_tools=[route.tool],
-                route_reason=route.reason,
-                insufficient_evidence=True,
                 retrieved_documents=result.documents,
                 graph_facts=result.graph,
-                refusal_reason="检索未返回可引用证据",
+                reason="检索未返回可引用证据",
             )
 
         if result.documents and not result.graph:
             filtered_docs = self._filter_focus_documents(question, route, result.documents)
             if not filtered_docs:
-                deepseek_fallback = self._deepseek_fallback_answer(question, route)
-                if deepseek_fallback:
-                    return deepseek_fallback
-                return AgentAnswer(
-                    answer=self._insufficient_answer(question, route),
-                    citations=[],
+                return self._insufficient_response(
+                    question,
+                    route,
                     used_tools=[route.tool],
-                    route_reason=route.reason,
-                    insufficient_evidence=True,
                     retrieved_documents=result.documents,
                     graph_facts=result.graph,
-                    refusal_reason="检索到的资料未覆盖问题主题",
+                    reason="检索到的资料未覆盖问题主题",
                 )
             result = ToolResult(documents=filtered_docs)
             citations = citations_from_result(result, source_lookup=self.source_lookup)
 
         generated = self.generator.generate(question, route, result)
         if not generated.supported:
-            deepseek_fallback = self._deepseek_fallback_answer(question, route)
-            if deepseek_fallback:
-                return deepseek_fallback
-            return AgentAnswer(
-                answer=generated.answer,
-                citations=[],
+            return self._insufficient_response(
+                question,
+                route,
                 used_tools=[route.tool],
-                route_reason=route.reason,
-                insufficient_evidence=True,
                 retrieved_documents=result.documents,
                 graph_facts=result.graph,
-                refusal_reason=generated.refusal_reason or "证据不足",
+                reason=generated.refusal_reason or "证据不足",
             )
         selected_result = _select_evidence(result, generated.selected_evidence_ids)
         selected_citations = citations_from_result(
             selected_result, source_lookup=self.source_lookup
         )
         if not selected_citations:
-            return AgentAnswer(
-                answer="当前可靠资料不足以确认该问题。",
-                citations=[],
+            return self._insufficient_response(
+                question,
+                route,
                 used_tools=[route.tool],
-                route_reason=route.reason,
-                insufficient_evidence=True,
                 retrieved_documents=result.documents,
                 graph_facts=result.graph,
-                refusal_reason="模型未选择有效证据",
+                reason="模型未选择有效证据",
             )
         if not _answer_is_grounded(generated.answer, selected_result):
-            deepseek_fallback = self._deepseek_fallback_answer(question, route)
-            if deepseek_fallback:
-                return deepseek_fallback
-            return AgentAnswer(
-                answer="当前可靠资料不足以确认该问题。",
-                citations=[],
+            return self._insufficient_response(
+                question,
+                route,
                 used_tools=[route.tool],
-                route_reason=route.reason,
-                insufficient_evidence=True,
                 retrieved_documents=result.documents,
                 graph_facts=result.graph,
-                refusal_reason="生成答案与所选证据一致性不足",
+                reason="生成答案与所选证据一致性不足",
             )
+        answer_text = _label_curated_guidance(generated.answer, selected_result)
         return AgentAnswer(
-            answer=generated.answer,
+            answer=answer_text,
             citations=selected_citations,
             used_tools=[route.tool],
             route_reason=route.reason,
@@ -354,6 +284,7 @@ class AgentService:
             graph_facts=result.graph,
             selected_evidence_ids=generated.selected_evidence_ids,
             source_tiers=list(dict.fromkeys(citation.source_tier for citation in selected_citations)),
+            response_status=AnswerStatus.ANSWERED,
         )
 
     def _run_tool(self, question: str, route: RouteDecision) -> ToolResult:
@@ -369,6 +300,7 @@ class AgentService:
                 question,
                 queries=route.subqueries or [question],
                 category=category,
+                include_curated_guidance=route.intent == "visit_guidance",
             )
         if route.tool == ToolName.HYBRID_SEARCH:
             return self.tools.hybrid_search(
@@ -400,6 +332,11 @@ class AgentService:
         """
         if not documents:
             return []
+        # 参观问题已经在 AgentTools 中按 tourism 分类、证据角色和专用提示词
+        # 完成分路检索与重排。此处再按字面 bigram 过滤，会把“第一次怎么看”
+        # 这类自然说法误判为无证据。
+        if route.intent == "visit_guidance" and FIRST_VISIT_RE.search(question):
+            return list(documents)
         entity_names = list(
             route.entities or ([] if route.entity_query is None else [route.entity_query])
         )
@@ -441,40 +378,87 @@ class AgentService:
             return []
         return list(documents)
 
-    def _deepseek_fallback_answer(self, question: str, route: RouteDecision) -> AgentAnswer | None:
-        if self.fallback_generator is None or route.scope == "out_of_scope":
-            return None
-        try:
-            answer = self.fallback_generator.generate_without_evidence(question, route)
-        except AnswerGenerationError:
-            return None
-        return AgentAnswer(
-            answer=answer,
-            citations=[],
-            used_tools=[route.tool],
-            route_reason=f"{route.reason} 本地证据不足，已启用 DeepSeek 通用兜底。",
-            insufficient_evidence=True,
-            refusal_reason="本地知识库无可引用证据，已使用 DeepSeek 通用回答",
-        )
-
     def _insufficient_answer(self, question: str, route: RouteDecision) -> str:
         if route.intent == "visit_guidance":
             return (
-                "我检索了馆内参观资料，但没有找到足以确认这个问题的可引用内容。"
-                "可以换得更具体一些，例如“王墓展区开放时间”“墓室参观怎么预约”"
-                "或“王墓展区有哪些重点文物”。"
+                "暂未在馆方资料和项目整理建议中找到足够依据，因此不想给出可能不准确的答案。"
+                "你可以补充具体展区、参观时长或游客类型后再试。"
             )
         suggestions = self._suggest_related_entities(question)
         if suggestions:
             topics = "、".join(f"“{name}”" for name in suggestions)
             return (
-                "我检索了本地知识图谱和资料库，没有找到足以确认这个问题的可引用证据，不能贸然作答。"
-                f"你或许想了解：{topics}？用更具体的名称再试一次。"
+                "暂未在可靠资料中找到足够依据，因此不想给出可能不准确的答案。"
+                f"你或许想了解：{topics}？"
             )
         return (
-            "我检索了本地知识图谱和资料库，没有找到足以确认这个问题的可引用证据，不能贸然作答。"
-            "可以换用更具体的实体或主题词，例如“文帝行玺”“丝缕玉衣”“赵眜”或“南越文王墓”。"
+            "暂未在可靠资料中找到足够依据，因此不想给出可能不准确的答案。"
+            "可以补充具体人物、文物、展区或时间范围后再试。"
         )
+
+    def _insufficient_response(
+        self,
+        question: str,
+        route: RouteDecision,
+        *,
+        used_tools: list[ToolName],
+        reason: str,
+        retrieved_documents: list | None = None,
+        graph_facts: list | None = None,
+    ) -> AgentAnswer:
+        return AgentAnswer(
+            answer=self._insufficient_answer(question, route),
+            citations=[],
+            used_tools=used_tools,
+            route_reason=route.reason,
+            insufficient_evidence=True,
+            retrieved_documents=retrieved_documents or [],
+            graph_facts=graph_facts or [],
+            refusal_reason=reason,
+            response_status=AnswerStatus.INSUFFICIENT_EVIDENCE,
+            suggested_questions=self._suggested_questions(question, route),
+        )
+
+    def _route_failure(self, question: str, route: RouteDecision) -> AgentAnswer:
+        if route.intent == "realtime_unavailable":
+            status = AnswerStatus.REALTIME_UNAVAILABLE
+            answer = (
+                "这类信息可能随时变化，我无法依据静态知识库可靠确认。"
+                "建议查看南越王博物院官方公告、预约页面或实时服务。"
+            )
+        elif route.intent == "clarification_needed":
+            status = AnswerStatus.CLARIFICATION_NEEDED
+            answer = "我还不能确定你想了解什么。请补充具体人物、文物、展区或时间范围。"
+        elif route.intent == "incorrect_premise":
+            status = AnswerStatus.INSUFFICIENT_EVIDENCE
+            answer = (
+                "可靠资料与问题中的前提不一致，因此我不能沿用这个前提作答。"
+                "你可以改问该人物、文物或墓葬在可靠资料中的实际情况。"
+            )
+        else:
+            status = AnswerStatus.OUT_OF_SCOPE
+            answer = (
+                "我目前主要提供南越历史、考古、人物、文物和馆内稳定信息。"
+                "这个问题暂不在可靠资料范围内。"
+            )
+        return AgentAnswer(
+            answer=answer,
+            citations=[],
+            used_tools=[],
+            route_reason=route.reason,
+            insufficient_evidence=True,
+            refusal_reason=route.reason,
+            response_status=status,
+            suggested_questions=self._suggested_questions(question, route),
+        )
+
+    def _suggested_questions(self, question: str, route: RouteDecision) -> list[str]:
+        if route.intent == "visit_guidance":
+            return ["王墓展区有哪些重点文物？", "第一次参观王墓展区可以怎么安排？"]
+        suggestions = self._suggest_related_entities(question, limit=2)
+        if suggestions:
+            return [f"请介绍一下{name}。" for name in suggestions[:2]]
+        return ["南越文王墓为什么重要？", "文帝行玺反映了什么？"]
 
     def _suggest_related_entities(self, question: str, limit: int = 3) -> list[str]:
         suggestions: list[str] = []
@@ -584,6 +568,22 @@ def _select_evidence(result: ToolResult, evidence_ids: list[str]) -> ToolResult:
         documents=[hit for hit in result.documents if document_evidence_id(hit) in selected],
         graph=[hit for hit in result.graph if graph_evidence_id(hit) in selected],
     )
+
+
+def _format_extract(hit: object) -> str:
+    if hit.metadata.get("evidence_role") == "curated_guidance":
+        return f"项目整理建议：{hit.content}"
+    return hit.content
+
+
+def _label_curated_guidance(answer: str, selected_result: ToolResult) -> str:
+    has_curated = any(
+        hit.metadata.get("evidence_role") == "curated_guidance"
+        for hit in selected_result.documents
+    )
+    if not has_curated or "项目整理建议" in answer:
+        return answer
+    return f"项目整理建议：{answer}"
 
 
 def _strip_code_fence(content: str) -> str:

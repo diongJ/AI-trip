@@ -8,8 +8,16 @@
   "retrieved_at": "2026-08-26",
   "text": "不同游客可以选择不同参观重点。第一次到访者适合按墓主身份、墓葬空间、代表文物的顺序游览；亲子家庭适合用观察问题连接文物材料、纹饰和用途；学生群体适合把文帝行玺、丝缕玉衣、铜虎节等文物放进历史证据链；对工艺感兴趣的游客可重点看玉器、金印、青铜器和印花工具。",
   "source_tier": "extended",
-  "topic_tags": ["游客类型", "亲子参观", "学生参观", "工艺", "证据链"],
+  "topic_tags": [
+    "游客类型",
+    "亲子参观",
+    "学生参观",
+    "工艺",
+    "证据链"
+  ],
   "published_at": null,
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "666f63e0eb1764f8ba6da978f04fa67ea6fe41985a98f31fe3c8711dea7698e7"
 }

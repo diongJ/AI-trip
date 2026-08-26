@@ -1,4 +1,5 @@
 import json
+from hashlib import sha256
 
 from src.rag.index import build_rag_index
 from src.rag.retriever import RagRetriever
@@ -18,6 +19,9 @@ def write_doc(root, doc_id: str, title: str, category: str, text: str) -> None:
                 "category": category,
                 "retrieved_at": "2026-08-23",
                 "text": text,
+                "evidence_role": "factual",
+                "content_hash": sha256(text.encode("utf-8")).hexdigest(),
+                "review_status": "approved",
             },
             ensure_ascii=False,
         ),

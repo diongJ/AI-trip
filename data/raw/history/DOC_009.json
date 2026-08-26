@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "history",
   "text": "“秦汉南疆——南越国历史专题陈列”讲述秦朝末期赵佗为保岭南地区安定建立南越国，以及汉武帝灭南越国后岭南正式纳入汉朝郡县版图的历史过程。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "d077f084d97d49e912e20d9f847ca2b3a0aa8524e1c84c94dee005bd7bc9d7d5",
+  "review_status": "approved"
 }

@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+from hashlib import sha256
 
 from src.extraction.models import Entity, ExtractionResult, Relation
 from src.agent.models import QuestionType, ToolName
@@ -33,6 +34,14 @@ def build_tools(tmp_path) -> AgentTools:
         "tourism",
         "王墓展区适合重点观看文帝行玺、丝缕玉衣、角形玉杯和船纹铜提筒，按墓主身份、墓葬结构和代表文物组织游览。",
     )
+    write_doc(
+        corpus,
+        "DOC_182",
+        "第一次参观王墓展区建议",
+        "tourism",
+        "第一次参观可以先确认墓主人身份，再看文帝行玺与丝缕玉衣，最后观察墓室结构。",
+        evidence_role="curated_guidance",
+    )
     build_rag_index(corpus_root=corpus, index_dir=index, force=True, chunk_size=120)
     write_test_graph(Path(graph_path))
     return AgentTools(
@@ -41,7 +50,15 @@ def build_tools(tmp_path) -> AgentTools:
     )
 
 
-def write_doc(root, doc_id: str, title: str, category: str, text: str) -> None:
+def write_doc(
+    root,
+    doc_id: str,
+    title: str,
+    category: str,
+    text: str,
+    *,
+    evidence_role: str = "factual",
+) -> None:
     path = root / category / f"{doc_id}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -49,12 +66,16 @@ def write_doc(root, doc_id: str, title: str, category: str, text: str) -> None:
             {
                 "doc_id": doc_id,
                 "title": title,
-                "source_name": "南越王博物院",
-                "source_url": "https://www.nywmuseum.org.cn/",
-                "source_type": "official",
+                "source_name": "南越王博物院" if evidence_role == "factual" else "AI-trip 项目整理",
+                "source_url": "https://www.nywmuseum.org.cn/" if evidence_role == "factual" else "https://example.com/project-guide",
+                "source_type": "official" if evidence_role == "factual" else "other",
                 "category": category,
                 "retrieved_at": "2026-08-23",
                 "text": text,
+                "source_tier": "core" if evidence_role == "factual" else "extended",
+                "evidence_role": evidence_role,
+                "content_hash": sha256(text.encode("utf-8")).hexdigest(),
+                "review_status": "approved",
             },
             ensure_ascii=False,
         ),
@@ -145,6 +166,8 @@ def test_agent_refuses_obvious_false_location_premise(tmp_path) -> None:
     assert answer.insufficient_evidence
     assert answer.citations == []
     assert answer.used_tools == []
+    assert answer.response_status.value == "insufficient_evidence"
+    assert "前提不一致" in answer.answer
 
 
 def test_router_uses_hybrid_when_document_evidence_is_requested(tmp_path) -> None:
@@ -185,6 +208,26 @@ def test_agent_answers_visit_guidance_with_citations(tmp_path) -> None:
     assert "王墓展区" in answer.answer
 
 
+def test_factual_search_never_returns_curated_guidance(tmp_path) -> None:
+    result = build_tools(tmp_path).search_documents(
+        "文帝行玺是什么？", queries=["第一次参观 文帝行玺"]
+    )
+
+    assert result.documents
+    assert all(hit.metadata["evidence_role"] == "factual" for hit in result.documents)
+
+
+def test_visit_guidance_labels_project_curated_advice(tmp_path) -> None:
+    service = AgentService(build_tools(tmp_path))
+
+    answer = service.answer("第一次去王墓展区应该怎么看？")
+
+    assert not answer.insufficient_evidence
+    assert any(citation.evidence_role == "factual" for citation in answer.citations)
+    assert any(citation.evidence_role == "curated_guidance" for citation in answer.citations)
+    assert "项目整理建议" in answer.answer
+
+
 def test_agent_keeps_realtime_visit_questions_out_of_scope(tmp_path) -> None:
     service = AgentService(build_tools(tmp_path))
 
@@ -195,12 +238,12 @@ def test_agent_keeps_realtime_visit_questions_out_of_scope(tmp_path) -> None:
     assert answer.used_tools == []
 
 
-def test_agent_can_use_deepseek_fallback_when_local_evidence_is_missing(tmp_path) -> None:
+def test_agent_softly_declines_when_local_evidence_is_missing(tmp_path) -> None:
     class EmptyDocumentRetriever:
-        def search(self, query, *, top_k=5, category=None, min_score=0.0):
+        def search(self, query, *, top_k=5, category=None, min_score=0.0, evidence_role=None):
             return []
 
-        def search_many(self, queries, *, top_k=8, per_query_k=12, category=None, source_tier=None):
+        def search_many(self, queries, *, top_k=8, per_query_k=12, category=None, source_tier=None, evidence_role=None):
             return []
 
     class EmptyGraphRetriever:
@@ -213,42 +256,30 @@ def test_agent_can_use_deepseek_fallback_when_local_evidence_is_missing(tmp_path
         def get_neighbors(self, entity_query, *, depth=1, limit=20):
             return []
 
-    class FakeFallback:
-        def __init__(self) -> None:
-            self.calls = 0
-
-        def generate_without_evidence(self, question, route):
-            self.calls += 1
-            return f"本地知识库未检索到可引用证据，以下为 DeepSeek 通用回答：{question}"
-
-    fallback = FakeFallback()
     service = AgentService(
         AgentTools(
             document_retriever=EmptyDocumentRetriever(),
             graph_retriever=EmptyGraphRetriever(),
-        ),
-        fallback_generator=fallback,
+        )
     )
 
     answer = service.answer("南越王博物院和广州城市史有什么联系？")
 
     assert answer.insufficient_evidence
     assert answer.citations == []
-    assert fallback.calls == 1
-    assert "DeepSeek 通用回答" in answer.answer
+    assert answer.response_status.value == "insufficient_evidence"
+    assert "可能不准确" in answer.answer
+    assert answer.suggested_questions
 
 
-def test_agent_does_not_use_deepseek_fallback_for_out_of_scope_realtime(tmp_path) -> None:
-    class FakeFallback:
-        def generate_without_evidence(self, question, route):  # pragma: no cover - must not run
-            raise AssertionError("fallback should not be called for out-of-scope questions")
-
-    service = AgentService(build_tools(tmp_path), fallback_generator=FakeFallback())
+def test_agent_marks_realtime_question_without_model_fallback(tmp_path) -> None:
+    service = AgentService(build_tools(tmp_path))
 
     answer = service.answer("今天馆内有多少游客？")
 
     assert answer.insufficient_evidence
     assert answer.used_tools == []
+    assert answer.response_status.value == "realtime_unavailable"
 
 
 def test_document_chunk_import_remains_available() -> None:

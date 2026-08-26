@@ -16,6 +16,7 @@ class DocumentRetriever(Protocol):
         top_k: int = 5,
         category: str | None = None,
         min_score: float = 0.0,
+        evidence_role: str | None = None,
     ) -> list[RetrievalHit]: ...
 
     def search_many(
@@ -26,6 +27,7 @@ class DocumentRetriever(Protocol):
         per_query_k: int = 12,
         category: str | None = None,
         source_tier: str | None = None,
+        evidence_role: str | None = None,
     ) -> list[RetrievalHit]: ...
 
 
@@ -62,13 +64,21 @@ RELATION_HINTS: tuple[tuple[re.Pattern[str], frozenset[str]], ...] = (
 VISIT_HINT_RE = re.compile(
     r"(参观|游览|攻略|怎么逛|怎么玩|开放时间|几点|门票|预约|地址|交通|导览|讲解|服务|展厅|展区|动线|行程)"
 )
-GENERAL_NANYUE_QUERY = "南越王博物院 王墓展区 南越文王墓 重点文物 参观"
 VISIT_QUERIES = [
     "南越王博物院 王墓展区 参观攻略 开放时间 预约",
     "南越王博物院 王墓展区 地址 交通 导览 服务",
     "南越文王墓 展厅 游览 动线 重点文物",
 ]
+FIRST_VISIT_RE = re.compile(r"第一次|初次|首次|第一次去|应该怎么看|参观重点|重点看")
 VISIT_AUDIENCE_QUERIES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
+    (
+        FIRST_VISIT_RE,
+        (
+            "第一次参观 王墓展区 重点 文帝行玺 丝缕玉衣 墓主人",
+            "王墓展区 初次参观 代表文物 墓主人身份 参观动线",
+            "南越文王墓 参观重点 文帝行玺 重要文物",
+        ),
+    ),
     (
         re.compile(r"学生|研学|课程|作业"),
         (
@@ -91,8 +101,19 @@ VISIT_AUDIENCE_QUERIES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
             "南越文王墓 导览 代表文物 讲解线索",
         ),
     ),
+    (
+        re.compile(r"下雨|雨天|降雨"),
+        (
+            "雨天参观 王墓展区 室内展陈 行程建议",
+            "下雨 王墓展区 参观攻略 天气 信息边界",
+        ),
+    ),
 )
 AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
+    (
+        FIRST_VISIT_RE,
+        ("第一次", "初次", "重点", "文帝行玺", "丝缕玉衣", "墓主人", "代表文物", "动线"),
+    ),
     (
         re.compile(r"开放时间|几点|门票|预约|闭馆|入馆|官方|购票"),
         ("开放时间", "9:00-17:30", "17:00", "预约", "官方", "门票", "入馆"),
@@ -108,6 +129,7 @@ AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
     (re.compile(r"亲子|孩子|儿童|小朋友|家庭"), ("亲子", "孩子", "儿童", "观察", "任务")),
     (re.compile(r"半小时|一小时|两小时|半日|小时|分钟|路线|动线|行程"), ("半小时", "一小时", "两小时", "半日", "路线")),
     (re.compile(r"讲解|导览"), ("讲解", "导览", "提问", "问题", "线索")),
+    (re.compile(r"下雨|雨天|降雨"), ("雨天", "下雨", "降雨", "室内展陈", "天气", "信息边界")),
 )
 
 # Generic interrogative scaffolding: stripped before measuring whether a
@@ -141,30 +163,76 @@ class AgentTools:
         top_k: int = 5,
         category: str | None = None,
         queries: list[str] | None = None,
+        include_curated_guidance: bool = False,
     ) -> ToolResult:
         expanded_queries = _expand_document_queries(query, queries)
         should_rerank_visit = bool(VISIT_HINT_RE.search(query))
         search_top_k = _visit_candidate_limit(query, top_k) if should_rerank_visit else top_k
-        documents = (
-            self.document_retriever.search_many(expanded_queries, top_k=search_top_k, category=category)
-            if hasattr(self.document_retriever, "search_many")
-            else self.document_retriever.search(query, top_k=search_top_k, category=category)
-        )
-        if not documents and category is not None:
-            documents = (
-                self.document_retriever.search_many(expanded_queries, top_k=search_top_k)
-                if hasattr(self.document_retriever, "search_many")
-                else self.document_retriever.search(query, top_k=search_top_k)
+        factual = (
+            self.document_retriever.search_many(
+                expanded_queries,
+                top_k=search_top_k,
+                category=category,
+                evidence_role="factual",
             )
-        if not documents:
-            fallback_queries = _fallback_document_queries(query)
-            documents = (
-                self.document_retriever.search_many(fallback_queries, top_k=search_top_k)
+            if hasattr(self.document_retriever, "search_many")
+            else self.document_retriever.search(
+                query,
+                top_k=search_top_k,
+                category=category,
+                evidence_role="factual",
+            )
+        )
+        if not factual and category is not None:
+            factual = (
+                self.document_retriever.search_many(
+                    expanded_queries,
+                    top_k=search_top_k,
+                    evidence_role="factual",
+                )
                 if hasattr(self.document_retriever, "search_many")
-                else self.document_retriever.search(fallback_queries[0], top_k=search_top_k)
+                else self.document_retriever.search(
+                    query,
+                    top_k=search_top_k,
+                    evidence_role="factual",
+                )
+            )
+        if not factual:
+            fallback_queries = _fallback_document_queries(query)
+            factual = (
+                self.document_retriever.search_many(
+                    fallback_queries,
+                    top_k=search_top_k,
+                    evidence_role="factual",
+                )
+                if hasattr(self.document_retriever, "search_many")
+                else self.document_retriever.search(
+                    fallback_queries[0],
+                    top_k=search_top_k,
+                    evidence_role="factual",
+                )
             )
         if should_rerank_visit:
-            documents = _rerank_visit_documents(query, documents)[:top_k]
+            factual = _rerank_visit_documents(query, factual)
+        curated: list[RetrievalHit] = []
+        if include_curated_guidance:
+            curated = (
+                self.document_retriever.search_many(
+                    expanded_queries,
+                    top_k=search_top_k,
+                    category="tourism",
+                    evidence_role="curated_guidance",
+                )
+                if hasattr(self.document_retriever, "search_many")
+                else self.document_retriever.search(
+                    query,
+                    top_k=search_top_k,
+                    category="tourism",
+                    evidence_role="curated_guidance",
+                )
+            )
+            curated = _rerank_visit_documents(query, curated)
+        documents = _combine_visit_documents(factual, curated, top_k)
         return ToolResult(documents=documents)
 
     def search_kg(
@@ -326,8 +394,6 @@ def _expand_document_queries(query: str, queries: list[str] | None) -> list[str]
         for pattern, audience_queries in VISIT_AUDIENCE_QUERIES:
             if pattern.search(query):
                 expanded.extend(audience_queries)
-    if "南越" in query or "王墓" in query or "博物院" in query:
-        expanded.append(GENERAL_NANYUE_QUERY)
     return list(dict.fromkeys(item.strip() for item in expanded if item.strip()))
 
 
@@ -348,6 +414,28 @@ def _visit_candidate_limit(query: str, top_k: int) -> int:
     if not has_audience_hint:
         return top_k
     return max(top_k, 12)
+
+
+def _combine_visit_documents(
+    factual: list[RetrievalHit], curated: list[RetrievalHit], top_k: int
+) -> list[RetrievalHit]:
+    if not curated:
+        return factual[:top_k]
+    factual_limit = max(1, top_k - 2)
+    combined = [*factual[:factual_limit], *curated[:2]]
+    if len(combined) < top_k:
+        combined.extend(factual[factual_limit : factual_limit + top_k - len(combined)])
+    if len(combined) < top_k:
+        combined.extend(curated[2 : 2 + top_k - len(combined)])
+    return [
+        hit.model_copy(
+            update={
+                "rank": rank,
+                "metadata": {**hit.metadata, "fusion_score": hit.score},
+            }
+        )
+        for rank, hit in enumerate(combined[:top_k], start=1)
+    ]
 
 
 def _rerank_visit_documents(query: str, documents: list[RetrievalHit]) -> list[RetrievalHit]:
