@@ -35,19 +35,21 @@ render_sidebar(runtime)
 st.title("🎧 AI 深度讲解")
 st.caption("从知识图谱选定对象，以 Hybrid 检索生成带来源的个性化讲解。")
 
-control_cols = st.columns([1, 2, 1])
-entity_type = control_cols[0].selectbox(
-    "讲解对象类型",
-    options=["Person", "Tomb", "Relic"],
-    format_func=lambda value: TYPE_LABELS[value],
-)
-entities = runtime.list_entities(entity_type=entity_type, limit=100)
-entity = control_cols[1].selectbox(
-    "选择人物、墓葬或代表文物",
-    options=entities,
-    format_func=lambda item: item.name,
-)
-style = control_cols[2].selectbox("讲解风格", options=list(EXPLANATION_STYLES))
+st.markdown('<p class="section-eyebrow">讲解控制面板</p>', unsafe_allow_html=True)
+with st.container(border=True):
+    control_cols = st.columns([1, 2, 1])
+    entity_type = control_cols[0].selectbox(
+        "讲解对象类型",
+        options=["Person", "Tomb", "Relic"],
+        format_func=lambda value: TYPE_LABELS[value],
+    )
+    entities = runtime.list_entities(entity_type=entity_type, limit=100)
+    entity = control_cols[1].selectbox(
+        "选择人物、墓葬或代表文物",
+        options=entities,
+        format_func=lambda item: item.name,
+    )
+    style = control_cols[2].selectbox("讲解风格", options=list(EXPLANATION_STYLES))
 
 if entity and entity.aliases:
     st.caption(f"别名：{'、'.join(entity.aliases)}")
@@ -64,9 +66,10 @@ if st.button("生成有据讲解", type="primary", width="stretch", disabled=ent
 
 result = st.session_state.get("explanation_result")
 if result:
-    st.divider()
-    st.subheader(f"{result['entity_name']}｜{result['style']}")
-    render_outcome(result["outcome"])
+    st.markdown('<p class="section-eyebrow">导览稿 · 可复制下载</p>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.subheader(f"{result['entity_name']}｜{result['style']}")
+        render_outcome(result["outcome"])
     markdown = explanation_markdown(
         result["entity_name"],
         result["style"],

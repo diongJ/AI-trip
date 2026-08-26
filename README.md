@@ -10,7 +10,7 @@ Day 1 已提供以下技术底座：
 - Neo4j Aura 约束、幂等写入和局部关系查询。
 - DeepSeek、Neo4j 及端到端样例验证脚本。
 
-Day 2 与 Day 3 已在此基础上完成 36 份核心官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。专题升级后，RAG 语料扩展为 100 份分层可信资料；核心图谱证据基线保持不变。
+Day 2 与 Day 3 已在此基础上完成 36 份核心官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。专题升级后，RAG 语料扩展为 181 份分层可信资料，并补充王墓展区参观攻略；核心图谱证据基线保持不变。
 
 ## 环境要求
 
@@ -55,6 +55,24 @@ pytest
 ```
 
 测试覆盖实体与关系字段、置信度、关系方向、实体引用、配置错误和 DeepSeek 响应解析。
+
+## 问答质量评测基线
+
+`data/eval/qa_eval.json` 维护 50 题离线评测集（32 题应回答 + 18 题应拒答），覆盖 KG 关系事实、描述性问题、亲子/研学/讲解等真实游客问法，以及未收录人物/主题/方面、实时信息、荒谬前提等拒答场景。评测全程离线运行（抽取式生成器，不调用 DeepSeek）：
+
+```powershell
+python -m scripts.evaluate_qa                      # 逐题结果 + 汇总指标
+python -m scripts.evaluate_qa --verbose            # 打印每题答案全文
+python -m scripts.evaluate_qa --fail-under 0.9     # 总体准确率低于 90% 时退出码为 1（CI 门禁）
+```
+
+评判标准：
+
+- `expect=answered`：未拒答，且答案包含全部 `must_contain` 子串；
+- `expect=refused`：`insufficient_evidence=True` 且无引用；
+- 汇总指标：回答正确率、拒答正确率、总体准确率、已回答用例平均答案长度。
+
+当前基线：50/50（100%），已回答用例平均答案长度约 165 字。修改提示词、检索参数、路由规则或生成逻辑后必须复跑评测，总体准确率不得低于 90%。
 
 ## 云服务验证
 
@@ -180,13 +198,13 @@ python -m scripts.ask "赵眜是谁？" --json
 python -m scripts.ask "讲讲丝缕玉衣的特点" --llm
 ```
 
-运行 16 题 Agent 冒烟测试：
+运行 20 题 Agent 冒烟测试：
 
 ```powershell
 python -m scripts.verify_agent
 ```
 
-Agent 回答包含 `answer`、`citations`、`used_tools`、`route_reason` 和 `insufficient_evidence`。对实时客流、天气、停车、路线导航等超范围问题，Agent 会明确拒答。
+Agent 回答包含 `answer`、`citations`、`used_tools`、`route_reason` 和 `insufficient_evidence`。稳定的开放时间、预约边界、游览动线和重点文物推荐会进入参观攻略检索；对实时客流、当天余票、天气、停车空位、路线导航等动态或范围外问题，Agent 会明确拒答。配置 DeepSeek 后，如果本地知识库仍没有可引用证据，系统可返回带明确标注的 DeepSeek 通用回答，不把它伪装成本地引用答案。
 
 ## Day 6 Streamlit 完整 Demo
 
@@ -211,9 +229,9 @@ python -m scripts.verify_demo
 
 ## 南越专题知识库升级
 
-- 语料由 36 份核心馆方资料扩展为 100 份：核心资料 36 份、扩展可信资料 64 份，共 7 万余字。
+- 语料由 36 份核心馆方资料扩展为 181 份：核心资料 36 份、扩展可信资料与参观攻略 145 份，共 9 万余字。
 - 白名单覆盖南越王博物院、广州博物馆、政府文物与考古相关页面；无关页面会进入本地隔离目录且不参与索引。
-- DeepSeek 模式先生成实体、意图和多查询检索计划，再从 BM25 与 KG 候选中选择证据；回答必须返回真实证据 ID。
+- 规则路由会优先识别真实实体名和别名；参观攻略问题使用 `tourism` 资料，多查询检索在无命中时会回退到南越专题基础查询。DeepSeek 模式先生成实体、意图和多查询检索计划，再从 BM25 与 KG 候选中选择证据；回答必须返回真实证据 ID。
 - 核心资料保持不可变，确保原有 78 个实体、87 条关系的逐字证据审计仍可复算。
 
 同步与审核扩展资料：

@@ -1,0 +1,70 @@
+{
+  "answer": "赵眜属于南越国。证据：墓主人是南越国第二代王赵眜，自称南越文帝。\n赵婴齐属于南越国。证据：赵婴齐为第三代南越王、南越文王赵眜之子。",
+  "citations": [
+    {
+      "doc_id": "DOC_005",
+      "title": "南越文王墓墓主人身份",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+      "evidence": "墓主人是南越国第二代王赵眜，自称南越文帝。"
+    },
+    {
+      "doc_id": "DOC_011",
+      "title": "赵婴齐与南越明王时代",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/News/Details/yfzx?nid=12447",
+      "evidence": "赵婴齐为第三代南越王、南越文王赵眜之子。"
+    }
+  ],
+  "used_tools": [
+    "search_kg"
+  ],
+  "route_reason": "问题包含图谱实体和明确关系词，优先查询 KG。",
+  "insufficient_evidence": false,
+  "retrieved_documents": [],
+  "graph_facts": [
+    {
+      "source_entity": {
+        "id": "person:赵眜",
+        "name": "赵眜",
+        "type": "Person",
+        "aliases": [
+          "南越文王",
+          "南越文帝"
+        ]
+      },
+      "relation": "BELONGS_TO_STATE",
+      "target_entity": {
+        "id": "state:南越国",
+        "name": "南越国",
+        "type": "State",
+        "aliases": []
+      },
+      "direction": "incoming",
+      "document_id": "DOC_005",
+      "evidence": "墓主人是南越国第二代王赵眜，自称南越文帝。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "person:赵婴齐",
+        "name": "赵婴齐",
+        "type": "Person",
+        "aliases": [
+          "南越明王"
+        ]
+      },
+      "relation": "BELONGS_TO_STATE",
+      "target_entity": {
+        "id": "state:南越国",
+        "name": "南越国",
+        "type": "State",
+        "aliases": []
+      },
+      "direction": "incoming",
+      "document_id": "DOC_011",
+      "evidence": "赵婴齐为第三代南越王、南越文王赵眜之子。",
+      "backend": "local-json"
+    }
+  ]
+}

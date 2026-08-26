@@ -11,6 +11,7 @@ from src.agent.service import (
     AgentService,
     AnswerGenerationError,
     DeepSeekAnswerGenerator,
+    DeepSeekFallbackAnswerGenerator,
     ExtractiveAnswerGenerator,
 )
 from src.agent.tools import AgentTools
@@ -72,6 +73,7 @@ class AppRuntime:
             self.deepseek_service = AgentService(
                 tools,
                 generator=DeepSeekAnswerGenerator(self.settings),
+                fallback_generator=DeepSeekFallbackAnswerGenerator(self.settings),
                 planner=DeepSeekQueryPlanner(self.settings),
             )
         except ConfigurationError:

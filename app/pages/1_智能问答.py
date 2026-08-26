@@ -32,24 +32,32 @@ runtime = load_runtime_or_stop()
 render_sidebar(runtime)
 
 st.title("💬 智能问答")
-st.caption("系统会自动选择 KG、RAG 或 Hybrid 检索，并为有效回答附上来源。")
+st.caption("系统会自动选择 KG、RAG 或 Hybrid 检索，并为有效回答附上来源；回答过程可展开扫读。")
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 head_cols = st.columns([5, 1])
 with head_cols[0]:
-    st.markdown("#### 试试这些问题")
+    st.markdown('<p class="section-eyebrow">示例问题 · 点击即问</p>', unsafe_allow_html=True)
 with head_cols[1]:
     if st.button("清空会话", width="stretch"):
         st.session_state.chat_history = []
         st.rerun()
 
-example_cols = st.columns(3)
-selected_question = None
-for index, question in enumerate(EXAMPLES):
-    if example_cols[index].button(question, key=f"example_{index}", width="stretch"):
-        selected_question = question
+st.markdown(
+    '<div class="hint-strip">👇 先点一个示例问题体验，或在页面底部输入框直接提问'
+    "（包含真实实体名如「赵眜」「丝缕玉衣」命中率更高）</div>",
+    unsafe_allow_html=True,
+)
+with st.container(border=True):
+    example_cols = st.columns(3)
+    selected_question = None
+    for index, question in enumerate(EXAMPLES):
+        if example_cols[index].button(
+            question, key=f"example_{index}", width="stretch", type="secondary"
+        ):
+            selected_question = question
 
 for item in st.session_state.chat_history:
     with st.chat_message("user"):

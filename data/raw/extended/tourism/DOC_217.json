@@ -1,0 +1,15 @@
+{
+  "doc_id": "DOC_217",
+  "title": "王墓展区交通确认提示",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/VisitIndex/Visit",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-26",
+  "text": "官方参观信息页列出王墓展区地址和公共交通参考，包括广州市越秀区解放北路867号、地铁二号线越秀公园站 E 出口等信息。系统可以回答稳定地址和公共交通参考，但实时导航、拥堵、打车价格和步行路径应交给地图服务确认。",
+  "source_tier": "extended",
+  "topic_tags": ["交通", "地址", "越秀公园站", "王墓展区", "导航边界"],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1
+}

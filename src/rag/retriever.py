@@ -13,6 +13,12 @@ class RagIndexError(RuntimeError):
     pass
 
 
+# Normalized-score floor for a hit to count as relevant evidence.
+MIN_RELEVANT_SCORE = 0.12
+# Stricter floor when the query has no multi-character terms (single-character query).
+SINGLE_TERM_SCORE_FLOOR = 0.30
+
+
 class RagRetriever:
     def __init__(self, index_dir: str | Path = DEFAULT_INDEX_DIR) -> None:
         self.index_dir = Path(index_dir)
@@ -64,8 +70,30 @@ class RagRetriever:
                     frequency * (self.k1 + 1) / (frequency + self.k1 * length_norm)
                 )
 
+        # Relevance gate: a chunk must contain enough distinct multi-character
+        # query terms (CJK bigrams or ASCII words). Single-character matches,
+        # or one incidental bigram inside a long query, are too noisy to serve
+        # as grounded evidence.
+        gate_terms = [term for term in query_terms if len(term) >= 2]
+        min_gate_hits = 1 if len(gate_terms) <= 2 else 2
+        gate_hit_count: dict[int, int] = defaultdict(int)
+        for term in gate_terms:
+            for index, _term_frequency in self.inverted.get(term, []):
+                gate_hit_count[int(index)] += 1
+        gated_indices: set[int] | None = None
+        if gate_terms:
+            gated_indices = {
+                index for index, count in gate_hit_count.items() if count >= min_gate_hits
+            }
+        score_floor = max(
+            min_score,
+            MIN_RELEVANT_SCORE if gate_terms else SINGLE_TERM_SCORE_FLOOR,
+        )
+
         raw_results: list[tuple[DocumentChunk, float]] = []
         for index, dot_product in scores.items():
+            if gated_indices is not None and index not in gated_indices:
+                continue
             chunk = self.chunks[index]
             if category and chunk.category != category:
                 continue
@@ -73,10 +101,12 @@ class RagRetriever:
                 continue
             dot_product += _title_overlap_bonus(query_terms, chunk.title)
             score = dot_product / (dot_product + 1.0)
-            if score >= min_score:
+            if score >= score_floor:
                 raw_results.append((chunk, score))
 
         raw_results.sort(key=lambda item: (-item[1], item[0].doc_id, item[0].chunk_id))
+        if not raw_results:
+            return []
         deduped: list[tuple[DocumentChunk, float]] = []
         seen: set[tuple[str, str]] = set()
         for chunk, score in raw_results:
@@ -88,29 +118,7 @@ class RagRetriever:
             if len(deduped) == top_k:
                 break
 
-        return [
-            RetrievalHit(
-                content=chunk.text,
-                score=round(score, 6),
-                rank=rank,
-                backend=BM25_BACKEND,
-                metadata={
-                    "chunk_id": chunk.chunk_id,
-                    "doc_id": chunk.doc_id,
-                    "title": chunk.title,
-                    "source_name": chunk.source_name,
-                    "source_url": str(chunk.source_url),
-                    "category": chunk.category,
-                    "source_tier": chunk.source_tier,
-                    "topic_tags": chunk.topic_tags,
-                    "retrieved_at": chunk.retrieved_at,
-                    "published_at": chunk.published_at,
-                    "content_hash": chunk.content_hash,
-                    "fusion_score": round(score, 6),
-                },
-            )
-            for rank, (chunk, score) in enumerate(deduped, start=1)
-        ]
+        return [_hit_from_chunk(chunk, score, rank) for rank, (chunk, score) in enumerate(deduped, start=1)]
 
     def search_many(
         self,
@@ -165,4 +173,27 @@ def _title_overlap_bonus(query_terms: list[str], title: str) -> float:
     title_terms = set(tokenize(title))
     coverage = len(query_bigrams & title_terms) / len(query_bigrams)
     return 6.0 * coverage
-# End of retrieval helpers.
+
+
+def _hit_from_chunk(chunk: DocumentChunk, score: float, rank: int) -> RetrievalHit:
+    rounded_score = round(min(score, 1.0), 6)
+    return RetrievalHit(
+        content=chunk.text,
+        score=rounded_score,
+        rank=rank,
+        backend=BM25_BACKEND,
+        metadata={
+            "chunk_id": chunk.chunk_id,
+            "doc_id": chunk.doc_id,
+            "title": chunk.title,
+            "source_name": chunk.source_name,
+            "source_url": str(chunk.source_url),
+            "category": chunk.category,
+            "source_tier": chunk.source_tier,
+            "topic_tags": chunk.topic_tags,
+            "retrieved_at": chunk.retrieved_at,
+            "published_at": chunk.published_at,
+            "content_hash": chunk.content_hash,
+            "fusion_score": rounded_score,
+        },
+    )
