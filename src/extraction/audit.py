@@ -10,8 +10,14 @@ from src.preprocessing import load_corpus
 def audit_extractions(
     raw_dir: str | Path = "data/raw",
     graph_dir: str | Path = "data/graph/by_document",
+    *,
+    source_tier: str | None = None,
 ) -> dict[str, object]:
-    documents = {document.doc_id: document for document in load_corpus(raw_dir)}
+    documents = {
+        document.doc_id: document
+        for document in load_corpus(raw_dir)
+        if source_tier is None or document.source_tier == source_tier
+    }
     graph_root = Path(graph_dir)
     expected_files = {f"{doc_id}.json" for doc_id in documents}
     actual_files = {path.name for path in graph_root.glob("*.json")}

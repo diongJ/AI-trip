@@ -4,6 +4,19 @@ from src.agent.models import Citation, ToolResult
 from src.preprocessing import CorpusDocument, load_corpus
 
 
+def graph_evidence_id(hit: object) -> str:
+    return "KG:{doc}:{source}:{relation}:{target}".format(
+        doc=hit.document_id,
+        source=hit.source_entity.id,
+        relation=hit.relation,
+        target=hit.target_entity.id,
+    )
+
+
+def document_evidence_id(hit: object) -> str:
+    return str(hit.metadata["chunk_id"])
+
+
 def load_source_lookup(corpus_root: str = "data/raw") -> dict[str, CorpusDocument]:
     return {document.doc_id: document for document in load_corpus(corpus_root)}
 
@@ -29,6 +42,9 @@ def citations_from_result(
                 source_name=source.source_name if source else "知识图谱 V1",
                 source_url=str(source.source_url) if source else "https://github.com/diongJ/AI-trip",
                 evidence=hit.evidence,
+                evidence_id=graph_evidence_id(hit),
+                source_tier=source.source_tier if source else "core",
+                retrieved_at=source.retrieved_at if source else "",
             )
         )
         if len(citations) >= max_citations:
@@ -48,6 +64,9 @@ def citations_from_result(
                 source_name=str(hit.metadata["source_name"]),
                 source_url=str(hit.metadata["source_url"]),
                 evidence=evidence,
+                evidence_id=document_evidence_id(hit),
+                source_tier=str(hit.metadata.get("source_tier", "core")),
+                retrieved_at=str(hit.metadata.get("retrieved_at", "")),
             )
         )
         if len(citations) >= max_citations:
@@ -59,7 +78,8 @@ def build_grounded_context(result: ToolResult, *, max_chars: int = 3000) -> str:
     parts: list[str] = []
     for hit in result.graph:
         parts.append(
-            "[KG] {source} -[{relation}]-> {target} ({doc_id})\n证据：{evidence}".format(
+            "[EVIDENCE_ID={evidence_id}] [KG] {source} -[{relation}]-> {target} ({doc_id})\n证据：{evidence}".format(
+                evidence_id=graph_evidence_id(hit),
                 source=hit.source_entity.name,
                 relation=hit.relation,
                 target=hit.target_entity.name,
@@ -69,7 +89,9 @@ def build_grounded_context(result: ToolResult, *, max_chars: int = 3000) -> str:
         )
     for hit in result.documents:
         parts.append(
-            "[DOC] {doc_id} {title}\n来源：{source_name} {source_url}\n片段：{content}".format(
+            "[EVIDENCE_ID={evidence_id}] [DOC] {doc_id} {title}\n来源层级：{tier}\n来源：{source_name} {source_url}\n片段：{content}".format(
+                evidence_id=document_evidence_id(hit),
+                tier=hit.metadata.get("source_tier", "core"),
                 doc_id=hit.metadata["doc_id"],
                 title=hit.metadata["title"],
                 source_name=hit.metadata["source_name"],

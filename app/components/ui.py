@@ -74,7 +74,7 @@ def render_sidebar(runtime: AppRuntime) -> None:
     status = runtime.status
     with st.sidebar:
         st.markdown("### 南越王智慧导览")
-        st.caption("可靠资料 · 可追溯证据 · 王墓展区")
+        st.caption("可靠资料 · 可追溯证据 · 南越专题")
         st.divider()
         st.markdown("#### 服务状态")
         _status_row("官方语料", status.corpus_ready, f"{status.document_count} 份")
@@ -95,7 +95,7 @@ def render_sidebar(runtime: AppRuntime) -> None:
             "已配置（非启动依赖）" if status.neo4j_configured else "未配置（不影响演示）",
         )
         st.divider()
-        st.info("资料仅覆盖南越王博物院王墓展区，不提供票务、客流、天气和路线导航。")
+        st.info("资料覆盖南越王博物院、南越国历史、考古与文物专题；不提供实时客流、天气、餐饮和路线导航。")
 
 
 def render_outcome(outcome: QueryOutcome, *, show_answer: bool = True) -> None:
@@ -115,6 +115,11 @@ def render_outcome(outcome: QueryOutcome, *, show_answer: bool = True) -> None:
         cols[2].metric("引用数量", len(response.citations))
         st.markdown(f"**使用工具：** {tools}")
         st.markdown(f"**路由原因：** {response.route_reason}")
+        if response.source_tiers:
+            labels = {"core": "核心馆方资料", "extended": "扩展可信资料"}
+            st.markdown("**证据层级：** " + "、".join(labels.get(tier, tier) for tier in response.source_tiers))
+        if response.refusal_reason:
+            st.markdown(f"**拒答原因：** {response.refusal_reason}")
     render_citations(response.citations)
 
 
@@ -124,10 +129,14 @@ def render_citations(citations: list[Citation]) -> None:
     st.markdown("#### 可追溯来源")
     for index, citation in enumerate(citations, start=1):
         with st.expander(f"来源 {index}｜{citation.doc_id}｜{citation.title}"):
+            tier_label = "核心馆方资料" if citation.source_tier == "core" else "扩展可信资料"
+            st.markdown(f"**来源层级：** {tier_label}")
             st.markdown(f"**来源机构：** {citation.source_name}")
             st.markdown(f"**原始链接：** [{citation.source_url}]({citation.source_url})")
             st.markdown("**证据片段：**")
             st.info(citation.evidence)
+            if citation.retrieved_at:
+                st.caption(f"资料采集日期：{citation.retrieved_at}")
 
 
 def render_relation_card(center_name: str, hit: GraphHit) -> None:

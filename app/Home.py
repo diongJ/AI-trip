@@ -25,7 +25,7 @@ st.markdown(
     <section class="hero">
       <div class="eyebrow">NANYUE KING MUSEUM · GROUNDED AI GUIDE</div>
       <h1>让每一次讲解<br>都有证据可循</h1>
-      <p>以南越王博物院王墓展区的可靠资料为基础，连接知识图谱、文档检索与智能体，提供可追溯的问答、讲解和关系探索。</p>
+      <p>以南越王博物院、南越国历史、考古与文物专题的可靠资料为基础，连接知识图谱、文档检索与智能体，提供可追溯的问答、讲解和关系探索。</p>
     </section>
     """,
     unsafe_allow_html=True,
@@ -62,7 +62,7 @@ st.markdown(
     """
     <div class="scope-note">
       <strong>资料范围提示</strong><br>
-      当前知识库仅覆盖南越王博物院王墓展区，不代表全馆藏品，也不包含票务、开放时间、实时客流、天气或路线导航。
+      当前知识库覆盖南越王博物院、南越国历史、考古发现、文物工艺与文化交流；不包含实时客流、天气、餐饮或路线导航。
     </div>
     """,
     unsafe_allow_html=True,

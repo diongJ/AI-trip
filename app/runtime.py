@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from src.agent.context import citations_from_result
 from src.agent.models import AgentAnswer, Citation, ToolResult
+from src.agent.planner import DeepSeekQueryPlanner
 from src.agent.service import (
     AgentService,
     AnswerGenerationError,
@@ -71,6 +72,7 @@ class AppRuntime:
             self.deepseek_service = AgentService(
                 tools,
                 generator=DeepSeekAnswerGenerator(self.settings),
+                planner=DeepSeekQueryPlanner(self.settings),
             )
         except ConfigurationError:
             self._deepseek_setup_warning = (
@@ -171,7 +173,7 @@ def explanation_markdown(entity_name: str, style: str, outcome: QueryOutcome) ->
         [
             "",
             "---",
-            "本讲解仅覆盖南越王博物院王墓展区的当前资料范围。",
+            "本讲解仅覆盖当前南越专题可信资料范围。",
         ]
     )
     return "\n".join(lines) + "\n"

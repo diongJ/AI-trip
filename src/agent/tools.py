@@ -18,6 +18,16 @@ class DocumentRetriever(Protocol):
         min_score: float = 0.0,
     ) -> list[RetrievalHit]: ...
 
+    def search_many(
+        self,
+        queries: list[str],
+        *,
+        top_k: int = 8,
+        per_query_k: int = 12,
+        category: str | None = None,
+        source_tier: str | None = None,
+    ) -> list[RetrievalHit]: ...
+
 
 class GraphRetriever(Protocol):
     def list_entities(
@@ -62,14 +72,14 @@ class AgentTools:
         *,
         top_k: int = 5,
         category: str | None = None,
+        queries: list[str] | None = None,
     ) -> ToolResult:
-        return ToolResult(
-            documents=self.document_retriever.search(
-                query,
-                top_k=top_k,
-                category=category,
-            )
+        documents = (
+            self.document_retriever.search_many(queries, top_k=top_k, category=category)
+            if queries and hasattr(self.document_retriever, "search_many")
+            else self.document_retriever.search(query, top_k=top_k, category=category)
         )
+        return ToolResult(documents=documents)
 
     def search_kg(
         self,
@@ -78,12 +88,16 @@ class AgentTools:
         entity_query: str | None = None,
         depth: int = 1,
         limit: int = 12,
+        entity_queries: list[str] | None = None,
     ) -> ToolResult:
-        hits = self.graph_retriever.get_neighbors(
-            entity_query or query,
-            depth=depth,
-            limit=limit,
-        )
+        hits: list[GraphHit] = []
+        seen: set[tuple[str, str, str, str]] = set()
+        for candidate in entity_queries or [entity_query or query]:
+            for hit in self.graph_retriever.get_neighbors(candidate, depth=depth, limit=limit):
+                key = (hit.source_entity.id, hit.relation, hit.target_entity.id, hit.document_id)
+                if key not in seen:
+                    seen.add(key)
+                    hits.append(hit)
         return ToolResult(
             graph=_filter_relevant_relations(query, hits)
         )
@@ -96,18 +110,21 @@ class AgentTools:
         top_k: int = 5,
         depth: int = 1,
         limit: int = 12,
+        queries: list[str] | None = None,
+        entity_queries: list[str] | None = None,
     ) -> ToolResult:
-        graph = []
-        if entity_query:
-            graph = _filter_relevant_relations(
-                query,
-                self.graph_retriever.get_neighbors(
-                    entity_query,
-                    depth=depth,
-                    limit=limit,
-                ),
-            )
-        documents = self.document_retriever.search(query, top_k=top_k)
+        graph = self.search_kg(
+            query,
+            entity_query=entity_query,
+            entity_queries=entity_queries,
+            depth=depth,
+            limit=limit,
+        ).graph if (entity_query or entity_queries) else []
+        documents = (
+            self.document_retriever.search_many(queries, top_k=top_k)
+            if queries and hasattr(self.document_retriever, "search_many")
+            else self.document_retriever.search(query, top_k=top_k)
+        )
         return ToolResult(documents=documents, graph=graph)
 
 

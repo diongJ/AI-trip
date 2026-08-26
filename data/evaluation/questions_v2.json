@@ -1,0 +1,813 @@
+{
+  "version": "2.0",
+  "targets": {
+    "answer_rate": 0.8,
+    "hit_at_5": 0.85,
+    "citation_correctness": 0.9,
+    "refusal_accuracy": 0.9,
+    "p95_latency_ms": 15000
+  },
+  "questions": [
+    {
+      "id": 1,
+      "category": "topic",
+      "question": "介绍一下南越国的建立。",
+      "answerable": true,
+      "expected_terms": [
+        "赵佗",
+        "建立"
+      ]
+    },
+    {
+      "id": 2,
+      "category": "topic",
+      "question": "南越国的建立有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "赵佗",
+        "建立"
+      ]
+    },
+    {
+      "id": 3,
+      "category": "topic",
+      "question": "为什么说南越国的建立具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "赵佗",
+        "建立"
+      ]
+    },
+    {
+      "id": 4,
+      "category": "topic",
+      "question": "介绍一下赵眜与南越文王墓。",
+      "answerable": true,
+      "expected_terms": [
+        "赵眜",
+        "南越文王墓"
+      ]
+    },
+    {
+      "id": 5,
+      "category": "topic",
+      "question": "赵眜与南越文王墓有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "赵眜",
+        "南越文王墓"
+      ]
+    },
+    {
+      "id": 6,
+      "category": "topic",
+      "question": "为什么说赵眜与南越文王墓具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "赵眜",
+        "南越文王墓"
+      ]
+    },
+    {
+      "id": 7,
+      "category": "topic",
+      "question": "介绍一下文帝行玺。",
+      "answerable": true,
+      "expected_terms": [
+        "文帝行玺"
+      ]
+    },
+    {
+      "id": 8,
+      "category": "topic",
+      "question": "文帝行玺有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "文帝行玺"
+      ]
+    },
+    {
+      "id": 9,
+      "category": "topic",
+      "question": "为什么说文帝行玺具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "文帝行玺"
+      ]
+    },
+    {
+      "id": 10,
+      "category": "topic",
+      "question": "介绍一下丝缕玉衣。",
+      "answerable": true,
+      "expected_terms": [
+        "丝缕玉衣"
+      ]
+    },
+    {
+      "id": 11,
+      "category": "topic",
+      "question": "丝缕玉衣有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "丝缕玉衣"
+      ]
+    },
+    {
+      "id": 12,
+      "category": "topic",
+      "question": "为什么说丝缕玉衣具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "丝缕玉衣"
+      ]
+    },
+    {
+      "id": 13,
+      "category": "topic",
+      "question": "介绍一下犀角形玉杯。",
+      "answerable": true,
+      "expected_terms": [
+        "犀角形玉杯"
+      ]
+    },
+    {
+      "id": 14,
+      "category": "topic",
+      "question": "犀角形玉杯有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "犀角形玉杯"
+      ]
+    },
+    {
+      "id": 15,
+      "category": "topic",
+      "question": "为什么说犀角形玉杯具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "犀角形玉杯"
+      ]
+    },
+    {
+      "id": 16,
+      "category": "topic",
+      "question": "介绍一下南越国宫署遗址。",
+      "answerable": true,
+      "expected_terms": [
+        "宫署遗址"
+      ]
+    },
+    {
+      "id": 17,
+      "category": "topic",
+      "question": "南越国宫署遗址有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "宫署遗址"
+      ]
+    },
+    {
+      "id": 18,
+      "category": "topic",
+      "question": "为什么说南越国宫署遗址具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "宫署遗址"
+      ]
+    },
+    {
+      "id": 19,
+      "category": "topic",
+      "question": "介绍一下南越文王墓墓室结构。",
+      "answerable": true,
+      "expected_terms": [
+        "南越文王墓"
+      ]
+    },
+    {
+      "id": 20,
+      "category": "topic",
+      "question": "南越文王墓墓室结构有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "南越文王墓"
+      ]
+    },
+    {
+      "id": 21,
+      "category": "topic",
+      "question": "为什么说南越文王墓墓室结构具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "南越文王墓"
+      ]
+    },
+    {
+      "id": 22,
+      "category": "topic",
+      "question": "介绍一下船纹铜提筒。",
+      "answerable": true,
+      "expected_terms": [
+        "船纹铜提筒"
+      ]
+    },
+    {
+      "id": 23,
+      "category": "topic",
+      "question": "船纹铜提筒有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "船纹铜提筒"
+      ]
+    },
+    {
+      "id": 24,
+      "category": "topic",
+      "question": "为什么说船纹铜提筒具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "船纹铜提筒"
+      ]
+    },
+    {
+      "id": 25,
+      "category": "topic",
+      "question": "介绍一下错金铭文铜虎节。",
+      "answerable": true,
+      "expected_terms": [
+        "铜虎节"
+      ]
+    },
+    {
+      "id": 26,
+      "category": "topic",
+      "question": "错金铭文铜虎节有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "铜虎节"
+      ]
+    },
+    {
+      "id": 27,
+      "category": "topic",
+      "question": "为什么说错金铭文铜虎节具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "铜虎节"
+      ]
+    },
+    {
+      "id": 28,
+      "category": "topic",
+      "question": "介绍一下南越国与汉朝的关系。",
+      "answerable": true,
+      "expected_terms": [
+        "南越国",
+        "汉"
+      ]
+    },
+    {
+      "id": 29,
+      "category": "topic",
+      "question": "南越国与汉朝的关系有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "南越国",
+        "汉"
+      ]
+    },
+    {
+      "id": 30,
+      "category": "topic",
+      "question": "为什么说南越国与汉朝的关系具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "南越国",
+        "汉"
+      ]
+    },
+    {
+      "id": 31,
+      "category": "topic",
+      "question": "介绍一下南越国的海上交流。",
+      "answerable": true,
+      "expected_terms": [
+        "交流"
+      ]
+    },
+    {
+      "id": 32,
+      "category": "topic",
+      "question": "南越国的海上交流有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "交流"
+      ]
+    },
+    {
+      "id": 33,
+      "category": "topic",
+      "question": "为什么说南越国的海上交流具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "交流"
+      ]
+    },
+    {
+      "id": 34,
+      "category": "topic",
+      "question": "介绍一下南越国的玉器工艺。",
+      "answerable": true,
+      "expected_terms": [
+        "玉器"
+      ]
+    },
+    {
+      "id": 35,
+      "category": "topic",
+      "question": "南越国的玉器工艺有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "玉器"
+      ]
+    },
+    {
+      "id": 36,
+      "category": "topic",
+      "question": "为什么说南越国的玉器工艺具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "玉器"
+      ]
+    },
+    {
+      "id": 37,
+      "category": "topic",
+      "question": "介绍一下南越国的铜器。",
+      "answerable": true,
+      "expected_terms": [
+        "铜"
+      ]
+    },
+    {
+      "id": 38,
+      "category": "topic",
+      "question": "南越国的铜器有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "铜"
+      ]
+    },
+    {
+      "id": 39,
+      "category": "topic",
+      "question": "为什么说南越国的铜器具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "铜"
+      ]
+    },
+    {
+      "id": 40,
+      "category": "topic",
+      "question": "介绍一下墓葬中的玺印。",
+      "answerable": true,
+      "expected_terms": [
+        "玺印"
+      ]
+    },
+    {
+      "id": 41,
+      "category": "topic",
+      "question": "墓葬中的玺印有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "玺印"
+      ]
+    },
+    {
+      "id": 42,
+      "category": "topic",
+      "question": "为什么说墓葬中的玺印具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "玺印"
+      ]
+    },
+    {
+      "id": 43,
+      "category": "topic",
+      "question": "介绍一下南越国都城番禺。",
+      "answerable": true,
+      "expected_terms": [
+        "番禺"
+      ]
+    },
+    {
+      "id": 44,
+      "category": "topic",
+      "question": "南越国都城番禺有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "番禺"
+      ]
+    },
+    {
+      "id": 45,
+      "category": "topic",
+      "question": "为什么说南越国都城番禺具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "番禺"
+      ]
+    },
+    {
+      "id": 46,
+      "category": "topic",
+      "question": "介绍一下赵佗的历史作用。",
+      "answerable": true,
+      "expected_terms": [
+        "赵佗"
+      ]
+    },
+    {
+      "id": 47,
+      "category": "topic",
+      "question": "赵佗的历史作用有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "赵佗"
+      ]
+    },
+    {
+      "id": 48,
+      "category": "topic",
+      "question": "为什么说赵佗的历史作用具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "赵佗"
+      ]
+    },
+    {
+      "id": 49,
+      "category": "topic",
+      "question": "介绍一下南越国的多元文化。",
+      "answerable": true,
+      "expected_terms": [
+        "文化"
+      ]
+    },
+    {
+      "id": 50,
+      "category": "topic",
+      "question": "南越国的多元文化有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "文化"
+      ]
+    },
+    {
+      "id": 51,
+      "category": "topic",
+      "question": "为什么说南越国的多元文化具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "文化"
+      ]
+    },
+    {
+      "id": 52,
+      "category": "topic",
+      "question": "介绍一下南越王博物院王宫展区。",
+      "answerable": true,
+      "expected_terms": [
+        "王宫展区"
+      ]
+    },
+    {
+      "id": 53,
+      "category": "topic",
+      "question": "南越王博物院王宫展区有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "王宫展区"
+      ]
+    },
+    {
+      "id": 54,
+      "category": "topic",
+      "question": "为什么说南越王博物院王宫展区具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "王宫展区"
+      ]
+    },
+    {
+      "id": 55,
+      "category": "topic",
+      "question": "介绍一下南越王博物院王墓展区。",
+      "answerable": true,
+      "expected_terms": [
+        "王墓展区"
+      ]
+    },
+    {
+      "id": 56,
+      "category": "topic",
+      "question": "南越王博物院王墓展区有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "王墓展区"
+      ]
+    },
+    {
+      "id": 57,
+      "category": "topic",
+      "question": "为什么说南越王博物院王墓展区具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "王墓展区"
+      ]
+    },
+    {
+      "id": 58,
+      "category": "topic",
+      "question": "介绍一下南越考古发现的意义。",
+      "answerable": true,
+      "expected_terms": [
+        "考古"
+      ]
+    },
+    {
+      "id": 59,
+      "category": "topic",
+      "question": "南越考古发现的意义有哪些主要特点？",
+      "answerable": true,
+      "expected_terms": [
+        "考古"
+      ]
+    },
+    {
+      "id": 60,
+      "category": "topic",
+      "question": "为什么说南越考古发现的意义具有重要意义？",
+      "answerable": true,
+      "expected_terms": [
+        "考古"
+      ]
+    },
+    {
+      "id": 61,
+      "category": "robustness",
+      "question": "帝玺是啥材质？",
+      "answerable": true,
+      "expected_terms": [
+        "金"
+      ]
+    },
+    {
+      "id": 62,
+      "category": "robustness",
+      "question": "那个写着文帝行玺的印章有什么用？",
+      "answerable": true,
+      "expected_terms": [
+        "文帝行玺"
+      ]
+    },
+    {
+      "id": 63,
+      "category": "robustness",
+      "question": "赵昧是谁？",
+      "answerable": true,
+      "expected_terms": [
+        "赵眜"
+      ]
+    },
+    {
+      "id": 64,
+      "category": "robustness",
+      "question": "南越文王是哪个人？",
+      "answerable": true,
+      "expected_terms": [
+        "赵眜"
+      ]
+    },
+    {
+      "id": 65,
+      "category": "robustness",
+      "question": "丝缕玉一是什么？",
+      "answerable": true,
+      "expected_terms": [
+        "丝缕玉衣"
+      ]
+    },
+    {
+      "id": 66,
+      "category": "robustness",
+      "question": "角型玉杯有啥特别？",
+      "answerable": true,
+      "expected_terms": [
+        "玉杯"
+      ]
+    },
+    {
+      "id": 67,
+      "category": "robustness",
+      "question": "王墓里面怎么分房间？",
+      "answerable": true,
+      "expected_terms": [
+        "墓"
+      ]
+    },
+    {
+      "id": 68,
+      "category": "robustness",
+      "question": "南越国老大是谁建立的？",
+      "answerable": true,
+      "expected_terms": [
+        "赵佗"
+      ]
+    },
+    {
+      "id": 69,
+      "category": "robustness",
+      "question": "番禺当时是不是首都？",
+      "answerable": true,
+      "expected_terms": [
+        "番禺"
+      ]
+    },
+    {
+      "id": 70,
+      "category": "robustness",
+      "question": "宫暑遗址发现了什么？",
+      "answerable": true,
+      "expected_terms": [
+        "宫署"
+      ]
+    },
+    {
+      "id": 71,
+      "category": "robustness",
+      "question": "铜提桶上的船图说明啥？",
+      "answerable": true,
+      "expected_terms": [
+        "船纹"
+      ]
+    },
+    {
+      "id": 72,
+      "category": "robustness",
+      "question": "金印为何能认出墓主人？",
+      "answerable": true,
+      "expected_terms": [
+        "文帝行玺"
+      ]
+    },
+    {
+      "id": 73,
+      "category": "robustness",
+      "question": "玉衣体现什么下葬想法？",
+      "answerable": true,
+      "expected_terms": [
+        "玉衣"
+      ]
+    },
+    {
+      "id": 74,
+      "category": "robustness",
+      "question": "南越和大汉是什么关系？",
+      "answerable": true,
+      "expected_terms": [
+        "南越国",
+        "汉"
+      ]
+    },
+    {
+      "id": 75,
+      "category": "robustness",
+      "question": "两处展区分别有什么看点？",
+      "answerable": true,
+      "expected_terms": [
+        "王宫展区",
+        "王墓展区"
+      ]
+    },
+    {
+      "id": 76,
+      "category": "unanswerable",
+      "question": "今天王墓展区有多少游客？",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 77,
+      "category": "unanswerable",
+      "question": "明天广州天气怎么样？",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 78,
+      "category": "unanswerable",
+      "question": "博物院附近哪家餐厅最好？",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 79,
+      "category": "unanswerable",
+      "question": "帮我规划去机场的实时路线。",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 80,
+      "category": "unanswerable",
+      "question": "火星上的南越国是谁建立的？",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 81,
+      "category": "unanswerable",
+      "question": "赵佗使用过智能手机吗？",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 82,
+      "category": "unanswerable",
+      "question": "南越王墓里是否发现了恐龙化石？",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 83,
+      "category": "unanswerable",
+      "question": "请预测下个月门票价格。",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 84,
+      "category": "unanswerable",
+      "question": "给我推荐酒店并比较实时价格。",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 85,
+      "category": "unanswerable",
+      "question": "南越国是否拥有现代航空母舰？",
+      "answerable": false,
+      "expected_terms": []
+    },
+    {
+      "id": 86,
+      "category": "provenance",
+      "question": "当前资料是什么时候采集的？",
+      "answerable": true,
+      "expected_terms": [
+        "采集"
+      ]
+    },
+    {
+      "id": 87,
+      "category": "provenance",
+      "question": "王宫展区资料来自哪个机构？",
+      "answerable": true,
+      "expected_terms": [
+        "南越王博物院"
+      ]
+    },
+    {
+      "id": 88,
+      "category": "provenance",
+      "question": "这条展览信息的来源链接是什么？",
+      "answerable": true,
+      "expected_terms": [
+        "来源"
+      ]
+    },
+    {
+      "id": 89,
+      "category": "provenance",
+      "question": "扩展资料属于什么来源层级？",
+      "answerable": true,
+      "expected_terms": [
+        "扩展"
+      ]
+    },
+    {
+      "id": 90,
+      "category": "provenance",
+      "question": "如果两个来源冲突，系统依据什么回答？",
+      "answerable": true,
+      "expected_terms": [
+        "来源"
+      ]
+    }
+  ]
+}

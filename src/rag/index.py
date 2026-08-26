@@ -13,7 +13,10 @@ from src.rag.chunking import DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, split_co
 from src.rag.models import DocumentChunk
 
 DEFAULT_INDEX_DIR = Path("data/processed/rag")
-LEXICAL_BACKEND = "lexical-tfidf-v1"
+BM25_BACKEND = "multi-field-bm25-v2"
+LEXICAL_BACKEND = BM25_BACKEND
+BM25_K1 = 1.5
+BM25_B = 0.75
 
 ASCII_WORD_RE = re.compile(r"[A-Za-z0-9_]+")
 CJK_RE = re.compile(r"[\u4e00-\u9fff]")
@@ -38,10 +41,15 @@ def build_rag_index(
 ) -> dict[str, object]:
     target = Path(index_dir)
     manifest_path = target / "index_manifest.json"
-    if manifest_path.exists() and not force:
-        return json.loads(manifest_path.read_text(encoding="utf-8"))
-
     documents = load_corpus(corpus_root)
+    if manifest_path.exists() and not force:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if (
+            manifest.get("embedding_model") == BM25_BACKEND
+            and manifest.get("source_fingerprint") == source_fingerprint(documents)
+        ):
+            return manifest
+
     chunks = split_corpus(documents, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     if not chunks:
         raise ValueError("cannot build RAG index with zero chunks")
@@ -57,18 +65,15 @@ def build_rag_index(
 
     chunk_count = len(chunks)
     idf = {
-        term: math.log((chunk_count + 1) / (frequency + 1)) + 1
+        term: math.log(1 + (chunk_count - frequency + 0.5) / (frequency + 0.5))
         for term, frequency in document_frequency.items()
     }
-    weighted_vectors = [
-        {term: value * idf[term] for term, value in vector.items()}
-        for vector in chunk_vectors
-    ]
-    norms = [_norm(vector) for vector in weighted_vectors]
+    lengths = [sum(vector.values()) for vector in chunk_vectors]
+    average_length = sum(lengths) / len(lengths)
     inverted: dict[str, list[tuple[int, float]]] = defaultdict(list)
-    for index, vector in enumerate(weighted_vectors):
-        for term, weight in vector.items():
-            inverted[term].append((index, weight))
+    for index, vector in enumerate(chunk_vectors):
+        for term, frequency in vector.items():
+            inverted[term].append((index, frequency))
 
     _write_json_atomic(
         metadata_path,
@@ -77,16 +82,19 @@ def build_rag_index(
     _write_json_atomic(
         index_path,
         {
-            "backend": LEXICAL_BACKEND,
+            "backend": BM25_BACKEND,
             "idf": idf,
-            "norms": norms,
+            "lengths": lengths,
+            "average_length": average_length,
+            "k1": BM25_K1,
+            "b": BM25_B,
             "inverted": {term: postings for term, postings in sorted(inverted.items())},
         },
     )
 
     manifest = {
         "created_at": datetime.now(UTC).isoformat(),
-        "embedding_model": LEXICAL_BACKEND,
+        "embedding_model": BM25_BACKEND,
         "chunk_size": chunk_size,
         "chunk_overlap": chunk_overlap,
         "document_count": len(documents),
@@ -119,17 +127,12 @@ def source_fingerprint(documents: object) -> str:
 
 
 def _weighted_terms(chunk: DocumentChunk) -> Counter[str]:
-    terms = tokenize(f"{chunk.title} {chunk.category} {chunk.text}")
-    vector = Counter(terms)
+    vector: Counter[str] = Counter(tokenize(chunk.text))
     for term in tokenize(chunk.title):
+        vector[term] += 3
+    for term in tokenize(" ".join([chunk.category, *chunk.topic_tags])):
         vector[term] += 2
     return vector
-
-
-def _norm(vector: dict[str, float]) -> float:
-    return math.sqrt(sum(value * value for value in vector.values())) or 1.0
-
-
 def _write_json_atomic(path: Path, payload: object) -> None:
     temp_path = path.with_suffix(path.suffix + ".tmp")
     temp_path.write_text(

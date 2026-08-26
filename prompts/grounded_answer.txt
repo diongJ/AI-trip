@@ -4,8 +4,15 @@
 不要使用模型自身记忆补充事实。
 如果证据不足，输出“当前可靠资料不足以确认”。
 
+先判断证据是否足以支持回答，只能选择下方真实存在的 EVIDENCE_ID。
+
 必须输出严格 JSON：
 
 {
-  "answer": "直接回答，所有事实都能在证据中找到"
+  "answer": "直接回答，所有事实都能在证据中找到；不足时固定为当前可靠资料不足以确认该问题。",
+  "selected_evidence_ids": ["用于支持回答的EVIDENCE_ID"],
+  "supported": true,
+  "refusal_reason": null
 }
+
+证据不足时 supported=false、selected_evidence_ids=[]，并简短填写 refusal_reason。

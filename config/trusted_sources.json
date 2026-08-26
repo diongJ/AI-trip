@@ -1,0 +1,169 @@
+{
+  "relevance_keywords": [
+    "南越", "赵佗", "赵眜", "王墓", "王宫", "宫署", "秦汉", "考古", "文物", "岭南", "海上丝绸之路"
+  ],
+  "sources": [
+    {
+      "name": "南越王博物院",
+      "domains": ["www.nywmuseum.org.cn"],
+      "seed_urls": [
+        "https://www.nywmuseum.org.cn/Home/",
+        "https://www.nywmuseum.org.cn/Exhibition/TList/jbcl?type=1",
+        "https://www.nywmuseum.org.cn/Exhibition/TList/lszl?type=2",
+        "https://www.nywmuseum.org.cn/Collection/Index/dcjp"
+      ],
+      "include_paths": ["^/(Home|About|Exhibition|Collection|News/Details)/"],
+      "exclude_paths": ["(djgz|tzgg|cwgk|dangjian)"],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "馆方资料"],
+      "follow_links": true
+    },
+    {
+      "name": "广州市人民政府",
+      "domains": ["www.gz.gov.cn"],
+      "seed_urls": [
+        "https://www.gz.gov.cn/xw/jrgz/content/post_7841508.html",
+        "https://www.gz.gov.cn/zlgz/whgz/content/post_7868660.html",
+        "https://www.gz.gov.cn/zlgz/whgz/content/post_7864015.html",
+        "https://www.gz.gov.cn/zlgz/gzly/wzgz/wbcg/content/mpost_9589229.html",
+        "https://www.gz.gov.cn/gzzcwjk/gzdata/content/post_10682312.html"
+      ],
+      "include_paths": ["/content/post_\\d+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "政府资料"]
+    },
+    {
+      "name": "广州市文化广电旅游局",
+      "domains": ["wglj.gz.gov.cn"],
+      "seed_urls": [
+        "https://wglj.gz.gov.cn/gzdt/zwxx/content/post_9364174.html",
+        "https://wglj.gz.gov.cn/gkmlpt/content/10/10682/post_10682313.html",
+        "https://wglj.gz.gov.cn/xxgk/gzdt/zwxx/content/post_10428306.html"
+      ],
+      "include_paths": ["/content/.+post_\\d+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "考古保护"]
+    },
+    {
+      "name": "中国社会科学院考古研究所",
+      "domains": ["kaogu.cssn.cn"],
+      "seed_urls": [
+        "https://kaogu.cssn.cn/xwzx/kgdt/201803/t20180330_5944398.shtml",
+        "https://kaogu.cssn.cn/xwzx/kgdt/201906/t20190603_5944822.shtml"
+      ],
+      "include_paths": ["^/xwzx/kgdt/.+\\.shtml$"],
+      "exclude_paths": [],
+      "source_type": "academic",
+      "source_tier": "extended",
+      "review_status": "sample_review",
+      "topic_tags": ["南越专题", "学术考古"]
+    },
+    {
+      "name": "广东文史",
+      "domains": ["www.gdwsw.gov.cn"],
+      "seed_urls": [
+        "https://www.gdwsw.gov.cn/shsy/content/post_26644.html"
+      ],
+      "include_paths": ["/content/post_\\d+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "文史研究"]
+    },
+    {
+      "name": "湖南省文物局",
+      "domains": ["wwj.hunan.gov.cn"],
+      "seed_urls": [
+        "https://wwj.hunan.gov.cn/wwj/c100310/c100311/202308/t20230804_29454104.html"
+      ],
+      "include_paths": ["/wwj/.+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "文博讲座"]
+    },
+    {
+      "name": "广东省人民政府",
+      "domains": ["www.gd.gov.cn"],
+      "seed_urls": [
+        "https://www.gd.gov.cn/zjgd/lyxx/lydt/content/post_70372.html",
+        "https://www.gd.gov.cn/zjgd/sqgk/jzyg/content/post_4685442.html"
+      ],
+      "include_paths": ["/content/post_\\d+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "岭南历史"]
+    },
+    {
+      "name": "广东省文化和旅游厅",
+      "domains": ["whly.gd.gov.cn"],
+      "seed_urls": [
+        "https://whly.gd.gov.cn/gkmlpt/content/4/4155/post_4155148.html"
+      ],
+      "include_paths": ["/content/.+post_\\d+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "考古遗址"]
+    },
+    {
+      "name": "广州市水务局",
+      "domains": ["swj.gz.gov.cn"],
+      "seed_urls": [
+        "https://swj.gz.gov.cn/zzfw/rdxw/content/post_9820495.html"
+      ],
+      "include_paths": ["/content/post_\\d+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "木构水闸"]
+    },
+    {
+      "name": "广东省人民政府参事室",
+      "domains": ["gdcss.gd.gov.cn"],
+      "seed_urls": [
+        "https://gdcss.gd.gov.cn/hdjl/wdzsk/cs/content/post_3106161.html"
+      ],
+      "include_paths": ["/content/post_\\d+\\.html$"],
+      "exclude_paths": [],
+      "source_type": "official",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "海上丝绸之路"]
+    },
+    {
+      "name": "广州博物馆",
+      "domains": ["www.guangzhoumuseum.cn", "nw.guangzhoumuseum.cn"],
+      "seed_urls": [
+        "https://www.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=66",
+        "https://www.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=67",
+        "https://www.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=68",
+        "https://www.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=69",
+        "https://nw.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=72",
+        "https://nw.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=74",
+        "https://www.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=21",
+        "https://www.guangzhoumuseum.cn/website_cn/Web/Resource/findingsDetail.aspx?id=80"
+      ],
+      "include_paths": ["/website_cn/[Ww]eb/Resource/findingsDetail\\.aspx\\?id=\\d+$"],
+      "exclude_paths": [],
+      "source_type": "museum",
+      "source_tier": "extended",
+      "review_status": "approved",
+      "topic_tags": ["南越专题", "广州考古"]
+    }
+  ]
+}
