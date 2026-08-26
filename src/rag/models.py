@@ -15,6 +15,11 @@ class DocumentChunk(BaseModel):
     source_name: str = Field(min_length=1)
     source_url: AnyHttpUrl
     category: str = Field(min_length=1)
+    source_tier: str = "core"
+    topic_tags: list[str] = Field(default_factory=list)
+    retrieved_at: str = ""
+    published_at: str | None = None
+    content_hash: str = ""
 
 
 class RetrievalHit(BaseModel):
@@ -28,7 +33,10 @@ class RetrievalHit(BaseModel):
 
     @model_validator(mode="after")
     def require_source_metadata(self) -> "RetrievalHit":
-        required = {"doc_id", "title", "source_name", "source_url", "category", "chunk_id"}
+        required = {
+            "doc_id", "title", "source_name", "source_url", "category", "chunk_id",
+            "source_tier", "retrieved_at", "fusion_score",
+        }
         missing = sorted(required.difference(self.metadata))
         if missing:
             raise ValueError(f"retrieval metadata missing required fields: {missing}")

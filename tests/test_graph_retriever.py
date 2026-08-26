@@ -32,6 +32,31 @@ def test_local_graph_returns_evidence_bearing_relations(tmp_path, monkeypatch) -
     assert any(hit.relation == "MADE_OF" for hit in hits)
 
 
+def test_local_graph_lists_entities_by_alias_and_type(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    write_test_graph(Path("data/graph/knowledge_graph_v1.json"))
+    retriever = LocalGraphRetriever(Path("data/graph/knowledge_graph_v1.json"))
+
+    matches = retriever.list_entities("金印", entity_type="Relic", limit=10)
+
+    assert [entity.id for entity in matches] == ["relic:文帝行玺"]
+    assert retriever.list_entities(entity_type="Person")[0].name == "赵眜"
+    assert retriever.list_entities("金印", entity_type="Person") == []
+    with pytest.raises(ValueError, match="limit"):
+        retriever.list_entities(limit=0)
+
+
+def test_neo4j_graph_list_entities_uses_read_only_filters() -> None:
+    driver = FakeDriver()
+    retriever = Neo4jGraphRetriever(FakeGraph(driver))
+
+    matches = retriever.list_entities("文帝", entity_type="Relic", limit=8)
+
+    assert matches[0].name == "文帝行玺"
+    assert driver.last_parameters["entity_type"] == "Relic"
+    assert driver.last_parameters["limit"] == 8
+
+
 def test_graph_hit_rejects_missing_document_id() -> None:
     with pytest.raises(ValidationError, match="document_id"):
         GraphHit(
@@ -71,8 +96,10 @@ class FakeDriver:
     def __init__(self) -> None:
         self.used_two_hop_unwind = False
         self.supports_embedded_entity_query = False
+        self.last_parameters: dict[str, object] = {}
 
     def execute_query(self, cypher: str, **parameters: object) -> tuple[list[FakeRecord], None, None]:
+        self.last_parameters = parameters
         if "RETURN entity.id AS id" in cypher:
             self.supports_embedded_entity_query = (
                 "toLower($query) CONTAINS toLower(entity.name)" in cypher

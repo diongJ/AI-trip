@@ -72,6 +72,11 @@ def split_document(
             source_name=document.source_name,
             source_url=str(document.source_url),
             category=document.category,
+            source_tier=document.source_tier,
+            topic_tags=document.topic_tags,
+            retrieved_at=document.retrieved_at,
+            published_at=document.published_at,
+            content_hash=document.content_hash,
         )
         for index, chunk in enumerate(unique_chunks, start=1)
     ]

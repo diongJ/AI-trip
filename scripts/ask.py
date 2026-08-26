@@ -4,6 +4,7 @@ import argparse
 
 from scripts.verify_retrieval import _ensure_local_graph
 from src.agent.service import AgentService, DeepSeekAnswerGenerator, ExtractiveAnswerGenerator
+from src.agent.planner import DeepSeekQueryPlanner
 from src.agent.tools import AgentTools
 from src.config import get_settings
 from src.config.settings import ConfigurationError
@@ -39,13 +40,15 @@ def main() -> None:
         graph_retriever=LocalGraphRetriever(),
     )
     generator = ExtractiveAnswerGenerator()
+    planner = None
     if args.llm:
         try:
             generator = DeepSeekAnswerGenerator(get_settings())
+            planner = DeepSeekQueryPlanner(get_settings())
         except ConfigurationError as exc:
             raise SystemExit(f"Cannot use --llm: {exc}") from None
 
-    response = AgentService(tools, generator=generator).answer(args.question)
+    response = AgentService(tools, generator=generator, planner=planner).answer(args.question)
     if args.json:
         print(response.model_dump_json(indent=2))
         return

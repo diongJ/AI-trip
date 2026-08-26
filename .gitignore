@@ -22,7 +22,9 @@ data/raw/*
 !data/raw/person/
 !data/raw/relic/
 !data/raw/tomb/
+!data/raw/extended/
 !data/raw/**/*.json
+data/quarantine/
 data/processed/*
 !data/processed/.gitkeep
 !data/processed/batch_extraction_report.json

@@ -1,0 +1,193 @@
+from __future__ import annotations
+
+import re
+import time
+from dataclasses import dataclass
+
+from src.agent.context import citations_from_result
+from src.agent.models import AgentAnswer, Citation, ToolResult
+from src.agent.planner import DeepSeekQueryPlanner
+from src.agent.service import (
+    AgentService,
+    AnswerGenerationError,
+    DeepSeekAnswerGenerator,
+    ExtractiveAnswerGenerator,
+)
+from src.agent.tools import AgentTools
+from src.config import Settings, get_settings
+from src.config.settings import ConfigurationError
+from src.graph.retriever import LocalGraphRetriever
+from src.rag.index import build_rag_index
+from src.rag.models import GraphEntity, GraphHit
+from src.rag.retriever import RagIndexError, RagRetriever
+
+
+EXPLANATION_STYLES = {
+    "简短导览": "请用约 180 字写一段清晰、适合现场参观的简短导览",
+    "深度讲解": "请用约 500 字分层讲解其背景、特征、关系与文化意义",
+    "亲子版": "请用约 250 字、适合 8 至 12 岁儿童理解的生动语言讲解，并提出一个观察问题",
+}
+
+
+@dataclass(frozen=True)
+class QueryOutcome:
+    response: AgentAnswer
+    elapsed_ms: float
+    generation_mode: str
+    warning: str | None = None
+
+
+@dataclass(frozen=True)
+class RuntimeStatus:
+    corpus_ready: bool
+    rag_ready: bool
+    graph_ready: bool
+    deepseek_configured: bool
+    neo4j_configured: bool
+    document_count: int
+    entity_count: int
+    relation_count: int
+
+
+class AppRuntime:
+    """Cached, read-only application services shared by Streamlit pages."""
+
+    def __init__(self, *, settings: Settings | None = None) -> None:
+        self.settings = settings or get_settings()
+        manifest = build_rag_index()
+        try:
+            rag = RagRetriever()
+        except RagIndexError:
+            build_rag_index(force=True)
+            rag = RagRetriever()
+        self.graph = LocalGraphRetriever()
+        tools = AgentTools(document_retriever=rag, graph_retriever=self.graph)
+        self.extractive_service = AgentService(
+            tools,
+            generator=ExtractiveAnswerGenerator(),
+        )
+        self.deepseek_service: AgentService | None = None
+        self._deepseek_setup_warning: str | None = None
+        try:
+            self.deepseek_service = AgentService(
+                tools,
+                generator=DeepSeekAnswerGenerator(self.settings),
+                planner=DeepSeekQueryPlanner(self.settings),
+            )
+        except ConfigurationError:
+            self._deepseek_setup_warning = (
+                "DeepSeek 未配置，已使用离线证据摘录模式。"
+            )
+
+        self.status = RuntimeStatus(
+            corpus_ready=bool(rag.chunks),
+            rag_ready=True,
+            graph_ready=bool(self.graph.entities),
+            deepseek_configured=self.deepseek_service is not None,
+            neo4j_configured=_neo4j_is_configured(self.settings),
+            document_count=int(manifest.get("document_count", 0)),
+            entity_count=len(self.graph.entities),
+            relation_count=len(self.graph.relations),
+        )
+
+    def ask(self, question: str, *, prefer_llm: bool = True) -> QueryOutcome:
+        started = time.perf_counter()
+        warning = None
+        mode = "离线证据摘录"
+        if prefer_llm and self.deepseek_service is not None:
+            try:
+                response = self.deepseek_service.answer(question)
+                mode = "DeepSeek 智能生成"
+            except AnswerGenerationError:
+                response = self.extractive_service.answer(question)
+                warning = "智能生成服务暂时不可用，本次已回退到离线证据摘录。"
+        else:
+            response = self.extractive_service.answer(question)
+            if prefer_llm:
+                warning = self._deepseek_setup_warning
+        if response.insufficient_evidence:
+            mode = "规则拒答 / 证据不足"
+        elapsed_ms = round((time.perf_counter() - started) * 1000, 1)
+        return QueryOutcome(
+            response=response,
+            elapsed_ms=elapsed_ms,
+            generation_mode=mode,
+            warning=warning,
+        )
+
+    def list_entities(
+        self,
+        query: str = "",
+        *,
+        entity_type: str | None = None,
+        limit: int = 100,
+    ) -> list[GraphEntity]:
+        return self.graph.list_entities(
+            query,
+            entity_type=entity_type,
+            limit=limit,
+        )
+
+    def neighbors(self, entity_name: str, *, limit: int = 30) -> list[GraphHit]:
+        return self.graph.get_neighbors(entity_name, depth=1, limit=limit)
+
+    def citation_for_graph_hit(self, hit: GraphHit) -> Citation | None:
+        citations = citations_from_result(
+            ToolResult(graph=[hit]),
+            source_lookup=self.extractive_service.source_lookup,
+        )
+        return citations[0] if citations else None
+
+
+def build_explanation_prompt(entity_name: str, style: str) -> str:
+    instruction = EXPLANATION_STYLES.get(style)
+    if instruction is None:
+        raise ValueError(f"unsupported explanation style: {style}")
+    return (
+        f"介绍一下{entity_name}。{instruction}。"
+        "请结合文物证据说明，所有判断必须来自当前王墓展区可靠资料。"
+    )
+
+
+def explanation_markdown(entity_name: str, style: str, outcome: QueryOutcome) -> str:
+    lines = [
+        f"# {entity_name}｜{style}",
+        "",
+        outcome.response.answer,
+        "",
+        "## 参考来源",
+        "",
+    ]
+    if not outcome.response.citations:
+        lines.append("当前可靠资料不足，未生成可引用来源。")
+    for citation in outcome.response.citations:
+        lines.extend(
+            [
+                f"- **{citation.doc_id}｜{citation.title}**",
+                f"  - 来源：{citation.source_name}",
+                f"  - 链接：{citation.source_url}",
+                f"  - 证据：{citation.evidence}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "---",
+            "本讲解仅覆盖当前南越专题可信资料范围。",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def safe_download_name(entity_name: str, style: str) -> str:
+    value = re.sub(r"[^\w\u4e00-\u9fff-]+", "_", f"{entity_name}_{style}")
+    return f"{value.strip('_') or '讲解稿'}.md"
+
+
+def _neo4j_is_configured(settings: Settings) -> bool:
+    return bool(
+        settings.neo4j_uri
+        and settings.neo4j_username
+        and settings.neo4j_password
+        and settings.neo4j_password.get_secret_value()
+    )
