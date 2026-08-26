@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_161",
+  "title": "王墓展区讲解提问清单",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-26",
+  "text": "王墓展区讲解可以围绕一组连续问题展开：这座墓为什么被认定为南越王墓，墓主人赵眜的身份如何确认，文帝行玺为什么重要，丝缕玉衣体现了怎样的丧葬观念，船纹铜提筒能反映哪些岭南交通和图像信息，随葬器物怎样呈现南越国与汉文化、岭南地方文化的交流。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "讲解问题",
+    "学生参观",
+    "赵眜",
+    "文帝行玺",
+    "文化交流"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "2bc9e3df712f333bf8e24736a3771d1b639fa8f06bc653748cf04c1dd84e7c8e"
+}

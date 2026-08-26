@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_163",
+  "title": "王墓展区参观避坑提示",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-26",
+  "text": "参观王墓展区时应避免只看单件文物名称而忽略证据关系。更有效的方式是把每件文物放回墓葬和历史语境：文帝行玺关联墓主身份，丝缕玉衣关联丧葬观念，角形玉杯关联玉器工艺，船纹铜提筒关联岭南水上交通，铜虎节关联王命和交通凭证。实时开放变动仍需以官方公告为准。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "参观建议",
+    "证据关系",
+    "文物关系",
+    "王墓展区",
+    "官方公告"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "8d0e17290408b95ba580cf372a522de77ffaa13ae96a88abac0506f5369859e2"
+}

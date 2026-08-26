@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_204",
+  "title": "玺印文字观察指南",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Collection/Details/?nid=46",
+  "source_type": "official",
+  "category": "relic",
+  "retrieved_at": "2026-08-26",
+  "text": "观察玺印文字时，可以从文字内容、书体、刻法和使用对象入手。以文帝行玺为例，印文帮助解释墓主称号和身份，材质与出土语境则进一步强化证据链。系统回答玺印问题时，应把文字、材质、墓葬和人物联系起来，而不是只说它是一枚金印。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "玺印",
+    "印文",
+    "小篆",
+    "文帝行玺",
+    "证据链"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "c72a4738eba16076be47c98677f99618ab62c391bcfe1b6260c5357c3ad2c490"
+}

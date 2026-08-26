@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "铜承盘高足玉杯为西汉南越国文物，通高17厘米，南越文王墓出土。全器由高足青玉杯、托架和铜承盘三部分组成，整器由金、银、玉、铜、木五种材料制成。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "358997f2e5e630148dcd3f6c456dbdb538d15bfefd5e77a9f96b8651840873d6",
+  "review_status": "approved"
 }

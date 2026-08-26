@@ -19,6 +19,7 @@ from app.components.ui import (
     configure_page,
     load_runtime_or_stop,
     relation_table_rows,
+    render_graph_legend,
     render_relation_card,
     render_sidebar,
 )
@@ -36,6 +37,7 @@ if pending_center is not None:
 st.title("🕸️ 图谱探索")
 st.caption("按名称或别名定位实体，查看一跳关系并沿相邻节点继续探索。")
 
+st.markdown('<p class="section-eyebrow">定位实体</p>', unsafe_allow_html=True)
 filter_cols = st.columns([2, 1])
 query = filter_cols[0].text_input("搜索实体名称或别名", placeholder="例如：南越文帝、文帝行玺")
 type_options = [None, *TYPE_LABELS.keys()]
@@ -84,6 +86,7 @@ if not hits:
     st.stop()
 
 st.markdown(f"### 一跳关系（{len(hits)}）")
+render_graph_legend()
 for hit in hits:
     render_relation_card(selected.name, hit)
 

@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "丝缕玉衣为西汉南越国文物，全长173厘米，南越文王墓出土。玉衣由2291片玉片、丝缕和麻布粘贴编缀而成，主要由头套、上身衣、袖筒、手套、裤筒和鞋套六部分组成。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "46195fd5c77299ff4eec6c1f5908bb72e5a63fdae5bdb02a1a103f67767fc445",
+  "review_status": "approved"
 }

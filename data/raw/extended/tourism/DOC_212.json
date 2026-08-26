@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_212",
+  "title": "半小时重点文物路线",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-26",
+  "text": "半小时快速参观只能选择少量高信息密度展品。推荐围绕文帝行玺、丝缕玉衣和船纹铜提筒三件文物展开：前者讲墓主身份，中者讲丧葬观念，后者讲岭南交通和图像叙事。若还有时间，可补看角形玉杯或铜虎节。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "半小时路线",
+    "快速参观",
+    "文帝行玺",
+    "丝缕玉衣",
+    "船纹铜提筒"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "ab05548e81b9d8fb987856e3bb481ad5250c12bd58bf354cf1517c282623de5c"
+}

@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "“文帝行玺”龙钮金印为西汉南越国文物，印面长3.1厘米、宽3厘米，南越文王墓出土。印面阴刻小篆“文帝行玺”四字，印钮为S形游龙，金印出土于墓主胸部，证实墓主为南越文帝。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "e73ecb6cf7e415d19b0f69d653f324d98d6d4a91ec6f0a7cfbdcbd9117bd829d",
+  "review_status": "approved"
 }

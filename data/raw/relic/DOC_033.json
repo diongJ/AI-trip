@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "铜釜甑为西汉南越国文物，南越文王墓出土。釜小口直唇、大圆腹、平底；甑为敞口、窄平沿，腹较深，圈足，甑底有箅，透气孔作图案形。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "0bd6ea7d41251253fda53e353310f6585ffb64b3bc475e04748a4fa08b34ff09",
+  "review_status": "approved"
 }

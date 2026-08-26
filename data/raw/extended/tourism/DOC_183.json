@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_183",
+  "title": "亲子观察任务路线",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-26",
+  "text": "亲子参观可以设计三个观察任务：找一件能证明墓主身份的文物，找一件体现丧葬观念的文物，找一件能看见岭南生活或交通信息的文物。对应展品可选择文帝行玺、丝缕玉衣和船纹铜提筒。这样的路线能把孩子的注意力从背诵知识转向观察证据。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "亲子路线",
+    "观察任务",
+    "文帝行玺",
+    "丝缕玉衣",
+    "船纹铜提筒"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "content_hash": "996e9a01f30d6ac6c9427c195915555a6273ef4e70e6d18d3f1f96462fb828a0"
+}

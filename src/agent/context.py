@@ -44,6 +44,9 @@ def citations_from_result(
                 evidence=hit.evidence,
                 evidence_id=graph_evidence_id(hit),
                 source_tier=source.source_tier if source else "core",
+                source_type=source.source_type if source else "official",
+                evidence_role=source.evidence_role if source else "factual",
+                content_hash=source.content_hash if source else "",
                 retrieved_at=source.retrieved_at if source else "",
             )
         )
@@ -66,6 +69,9 @@ def citations_from_result(
                 evidence=evidence,
                 evidence_id=document_evidence_id(hit),
                 source_tier=str(hit.metadata.get("source_tier", "core")),
+                source_type=str(hit.metadata.get("source_type", "official")),
+                evidence_role=str(hit.metadata.get("evidence_role", "factual")),
+                content_hash=str(hit.metadata.get("content_hash", "")),
                 retrieved_at=str(hit.metadata.get("retrieved_at", "")),
             )
         )
@@ -75,27 +81,29 @@ def citations_from_result(
 
 
 def build_grounded_context(result: ToolResult, *, max_chars: int = 3000) -> str:
+    """Build the evidence block for the grounded-answer prompt.
+
+    Keep it minimal on purpose: only EVIDENCE_ID, evidence type, and content.
+    Source URLs, tiers, and doc ids are re-attached at citation time, so
+    including them here only invites the model to parrot metadata.
+    """
     parts: list[str] = []
     for hit in result.graph:
         parts.append(
-            "[EVIDENCE_ID={evidence_id}] [KG] {source} -[{relation}]-> {target} ({doc_id})\n证据：{evidence}".format(
+            "[EVIDENCE_ID={evidence_id}] [KG] {source} -[{relation}]-> {target}\n证据：{evidence}".format(
                 evidence_id=graph_evidence_id(hit),
                 source=hit.source_entity.name,
                 relation=hit.relation,
                 target=hit.target_entity.name,
-                doc_id=hit.document_id,
                 evidence=hit.evidence,
             )
         )
     for hit in result.documents:
         parts.append(
-            "[EVIDENCE_ID={evidence_id}] [DOC] {doc_id} {title}\n来源层级：{tier}\n来源：{source_name} {source_url}\n片段：{content}".format(
+            "[EVIDENCE_ID={evidence_id}] [DOC] [EVIDENCE_ROLE={role}] {title}\n片段：{content}".format(
                 evidence_id=document_evidence_id(hit),
-                tier=hit.metadata.get("source_tier", "core"),
-                doc_id=hit.metadata["doc_id"],
+                role=hit.metadata.get("evidence_role", "factual"),
                 title=hit.metadata["title"],
-                source_name=hit.metadata["source_name"],
-                source_url=hit.metadata["source_url"],
                 content=hit.content,
             )
         )

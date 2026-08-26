@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "八节铁芯龙虎玉带钩为西汉南越国文物，长19.5厘米，南越文王墓出土。带钩为青玉质，通体圆雕，龙虎并体形，由八节合成，当中六节有圆孔贯通，用一根铁芯串联。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "b9788a932811a28c13d8cfff4f72ab8dc37a110143e0ad7a73c36a9e504d716b",
+  "review_status": "approved"
 }

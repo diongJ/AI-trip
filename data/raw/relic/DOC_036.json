@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "铜印花板模为西汉南越国文物，南越文王墓出土。这两件印板是在丝织物上印染图案的工具，西耳室出土丝织品中发现了与印板图案相同的印花织物。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "6263a4ccdf0fb9b907444691beb6b53cf0295b338d24365f8432b3adae5cd474",
+  "review_status": "approved"
 }

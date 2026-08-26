@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_198",
+  "title": "铜壶讲解补充",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Collection/Index",
+  "source_type": "official",
+  "category": "relic",
+  "retrieved_at": "2026-08-26",
+  "text": "铜壶类器物适合从盛酒盛水、礼仪陈设和青铜工艺角度讲解。它能帮助游客把南越文王墓中的青铜器从单一“古代器物”理解为不同功能类型：有饮食器、礼仪器、通行凭证和装饰构件。铜壶可与铜鼎、铜釜甑、铜烤炉组成饮食与礼仪主题。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "铜壶",
+    "青铜器",
+    "饮食",
+    "礼仪",
+    "器物功能"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "b1ccb64c7a953c0fe33c825ef22268d5e112cfc2e1d35ac30db031f0a682af44"
+}

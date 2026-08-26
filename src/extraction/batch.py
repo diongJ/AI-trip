@@ -117,6 +117,17 @@ class BatchExtractionRunner:
                 continue
             seen_ids.add(document.doc_id)
 
+            if document.evidence_role != "factual":
+                items.append(
+                    BatchItemResult(
+                        input_file=str(path),
+                        doc_id=document.doc_id,
+                        status="skipped",
+                        error="curated guidance is excluded from knowledge graph extraction",
+                    )
+                )
+                continue
+
             output_path = output_root / f"{document.doc_id}.json"
             if output_path.exists() and not force:
                 existing = self._load_existing(output_path)

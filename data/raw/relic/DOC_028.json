@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "船纹铜提筒为西汉南越国文物，高40.7厘米，南越文王墓出土。铜提筒上刻有四组船纹，描绘大型作战船队凯旋场景，反映当时岭南地区较发达的水上交通。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "5cbf2be9a38840b22cf74fafab6dbdfff2f867016af4b7096ecc531cc8b31d10",
+  "review_status": "approved"
 }

@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "人操蛇鎏金铜托座为西汉南越国文物，高31.5厘米，南越文王墓出土。此为漆木屏风右下角折叠构件，跪坐力士俑口衔两头蛇，两手各操一蛇。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "8661d5b4101eabc509c76132f8ddf6eb3c8272d06b3c59797844100afed556a0",
+  "review_status": "approved"
 }

@@ -1,0 +1,227 @@
+{
+  "answer": "丝缕玉衣材质为玉。证据：玉衣由2291片玉片、丝缕和麻布粘贴编缀而成。\n丝缕玉衣材质为丝。证据：玉衣由2291片玉片、丝缕和麻布粘贴编缀而成。\n丝缕玉衣属于类别玉衣。证据：丝缕玉衣为西汉南越国文物。\n丝缕玉衣制作于西汉。证据：丝缕玉衣为西汉南越国文物。",
+  "citations": [
+    {
+      "doc_id": "DOC_014",
+      "title": "丝缕玉衣",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=56",
+      "evidence": "玉衣由2291片玉片、丝缕和麻布粘贴编缀而成。"
+    },
+    {
+      "doc_id": "DOC_014",
+      "title": "丝缕玉衣",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=56",
+      "evidence": "丝缕玉衣为西汉南越国文物。"
+    },
+    {
+      "doc_id": "DOC_007",
+      "title": "丝缕玉衣与珠玉敛葬",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+      "evidence": "南越王身着丝缕玉衣，并以珠玉敛葬，凸显南越文帝尊贵的身份与地位。"
+    },
+    {
+      "doc_id": "DOC_014",
+      "title": "丝缕玉衣",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=56",
+      "evidence": "丝缕玉衣为西汉南越国文物，全长173厘米，南越文王墓出土。玉衣由2291片玉片、丝缕和麻布粘贴编缀而成，主要由头套、上身衣、袖筒、手套、裤筒和鞋套六部分组成。"
+    },
+    {
+      "doc_id": "DOC_007",
+      "title": "丝缕玉衣与珠玉敛葬",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+      "evidence": "南越王身着丝缕玉衣，并以珠玉敛葬，凸显南越文帝尊贵的身份与地位。南越文王墓还发现有15个殉人，体现了南越独特的丧葬文化。"
+    },
+    {
+      "doc_id": "DOC_012",
+      "title": "王墓展区文物特展合作公告中的王墓定位",
+      "source_name": "南越王博物院",
+      "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12589",
+      "evidence": "王墓展区以南越文王墓为核心，通过墓中出土的一千余件套出土文物集中展现岭南地区政治、经济和文化的发展状况。南越文王墓被列入全国重点文物保护单位，入选“百年百大考古发现”。"
+    }
+  ],
+  "used_tools": [
+    "hybrid_search"
+  ],
+  "route_reason": "问题需要实体关系和文档描述，使用混合检索。",
+  "insufficient_evidence": false,
+  "retrieved_documents": [
+    {
+      "content": "丝缕玉衣为西汉南越国文物，全长173厘米，南越文王墓出土。玉衣由2291片玉片、丝缕和麻布粘贴编缀而成，主要由头套、上身衣、袖筒、手套、裤筒和鞋套六部分组成。",
+      "score": 0.552617,
+      "rank": 1,
+      "backend": "lexical-tfidf-v1",
+      "metadata": {
+        "chunk_id": "DOC_014_CHUNK_001",
+        "doc_id": "DOC_014",
+        "title": "丝缕玉衣",
+        "source_name": "南越王博物院",
+        "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=56",
+        "category": "relic"
+      }
+    },
+    {
+      "content": "南越王身着丝缕玉衣，并以珠玉敛葬，凸显南越文帝尊贵的身份与地位。南越文王墓还发现有15个殉人，体现了南越独特的丧葬文化。",
+      "score": 0.412843,
+      "rank": 2,
+      "backend": "lexical-tfidf-v1",
+      "metadata": {
+        "chunk_id": "DOC_007_CHUNK_001",
+        "doc_id": "DOC_007",
+        "title": "丝缕玉衣与珠玉敛葬",
+        "source_name": "南越王博物院",
+        "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+        "category": "culture"
+      }
+    },
+    {
+      "content": "王墓展区以南越文王墓为核心，通过墓中出土的一千余件套出土文物集中展现岭南地区政治、经济和文化的发展状况。南越文王墓被列入全国重点文物保护单位，入选“百年百大考古发现”。",
+      "score": 0.069752,
+      "rank": 3,
+      "backend": "lexical-tfidf-v1",
+      "metadata": {
+        "chunk_id": "DOC_012_CHUNK_001",
+        "doc_id": "DOC_012",
+        "title": "王墓展区文物特展合作公告中的王墓定位",
+        "source_name": "南越王博物院",
+        "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12589",
+        "category": "tomb"
+      }
+    },
+    {
+      "content": "南越国历史专题陈列中，“守疆营土”重点讲述秦朝末期，赵佗为保岭南地区的安定和人民的安宁建立南越国。历代南越统治者的经营推动岭南政治、经济、文化、民族融合和海外交流发展。",
+      "score": 0.065703,
+      "rank": 4,
+      "backend": "lexical-tfidf-v1",
+      "metadata": {
+        "chunk_id": "DOC_010_CHUNK_001",
+        "doc_id": "DOC_010",
+        "title": "赵佗与南越国建立",
+        "source_name": "南越王博物院",
+        "source_url": "https://www.nywmuseum.org.cn/News/Details/yfzx?nid=8083",
+        "category": "person"
+      }
+    },
+    {
+      "content": "圆雕玉舞人为西汉南越国文物，高3.5厘米、宽3.5厘米，南越文王墓出土。舞者穿右衽长袖衣，扭胯并膝而跪，两面均以线刻表现衣纹，头顶端有小孔贯穿。",
+      "score": 0.0542,
+      "rank": 5,
+      "backend": "lexical-tfidf-v1",
+      "metadata": {
+        "chunk_id": "DOC_021_CHUNK_001",
+        "doc_id": "DOC_021",
+        "title": "圆雕玉舞人",
+        "source_name": "南越王博物院",
+        "source_url": "https://www.nywmuseum.org.cn/Collection/Details/dcjp?nid=99",
+        "category": "relic"
+      }
+    }
+  ],
+  "graph_facts": [
+    {
+      "source_entity": {
+        "id": "relic:丝缕玉衣",
+        "name": "丝缕玉衣",
+        "type": "Relic",
+        "aliases": []
+      },
+      "relation": "MADE_OF",
+      "target_entity": {
+        "id": "material:玉",
+        "name": "玉",
+        "type": "Material",
+        "aliases": [
+          "青玉"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_014",
+      "evidence": "玉衣由2291片玉片、丝缕和麻布粘贴编缀而成。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:丝缕玉衣",
+        "name": "丝缕玉衣",
+        "type": "Relic",
+        "aliases": []
+      },
+      "relation": "MADE_OF",
+      "target_entity": {
+        "id": "material:丝",
+        "name": "丝",
+        "type": "Material",
+        "aliases": [
+          "丝缕"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_014",
+      "evidence": "玉衣由2291片玉片、丝缕和麻布粘贴编缀而成。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:丝缕玉衣",
+        "name": "丝缕玉衣",
+        "type": "Relic",
+        "aliases": []
+      },
+      "relation": "BELONGS_TO_CATEGORY",
+      "target_entity": {
+        "id": "reliccategory:玉衣",
+        "name": "玉衣",
+        "type": "RelicCategory",
+        "aliases": []
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_014",
+      "evidence": "丝缕玉衣为西汉南越国文物。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:丝缕玉衣",
+        "name": "丝缕玉衣",
+        "type": "Relic",
+        "aliases": []
+      },
+      "relation": "CREATED_IN",
+      "target_entity": {
+        "id": "dynasty:西汉",
+        "name": "西汉",
+        "type": "Dynasty",
+        "aliases": []
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_014",
+      "evidence": "丝缕玉衣为西汉南越国文物。",
+      "backend": "local-json"
+    },
+    {
+      "source_entity": {
+        "id": "relic:丝缕玉衣",
+        "name": "丝缕玉衣",
+        "type": "Relic",
+        "aliases": []
+      },
+      "relation": "REFLECTS_CULTURE",
+      "target_entity": {
+        "id": "culture:汉代丧葬制度",
+        "name": "汉代丧葬制度",
+        "type": "Culture",
+        "aliases": [
+          "珠玉敛葬"
+        ]
+      },
+      "direction": "outgoing",
+      "document_id": "DOC_007",
+      "evidence": "南越王身着丝缕玉衣，并以珠玉敛葬，凸显南越文帝尊贵的身份与地位。",
+      "backend": "local-json"
+    }
+  ]
+}

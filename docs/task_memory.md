@@ -112,3 +112,34 @@
 - 默认回答不依赖 DeepSeek，保证无网络/无 API Key 设备也能演示主链路。
 - `--llm` 模式只允许基于检索上下文生成，不允许使用模型自身知识补事实。
 - RAG 索引写入已改为临时文件原子替换，减少并发验证时读到半写入文件的风险。
+
+## 2026-08-26 Agent 与参观攻略优化
+
+### 当前状态
+
+- 工作分支：`codex/improve-agent-corpus`。
+- 基线分支：`main` / `origin/main`，起点为 `8635f4e`。
+- `docs/website_design_agent_prompt.md` 已加入 `.gitignore`，不纳入仓库。
+
+### 已完成内容
+
+- 新增 12 份 `tourism` 参观攻略语料：基础开放/预约边界、游览动线、重点文物、亲子学生讲解、一小时/两小时/半日安排、游客分层建议、动态信息边界。
+- 新增 9 份历史、人物、文化、文物和展区辨析扩展资料，补强南越文王墓、赵眜、文帝行玺、丝缕玉衣、角形玉杯、船纹铜提筒、铜虎节等常问主题。
+- 继续新增 20 份资料 `DOC_174-DOC_193`：文物 8 份、旅游攻略 4 份、场地资料 4 份、历史文化背景 4 份。
+- 继续新增 40 份资料 `DOC_194-DOC_233`：文物 15 份、旅游攻略 10 份、场地资料 7 份、历史文化背景 8 份。
+- 新增 `docs/knowledge_base_expansion.md`，记录扩充资料范围、来源边界和验证结果。
+- Agent 路由区分稳定参观信息与实时动态信息：稳定开放时间、地址、预约边界、游览建议可检索回答；当天客流、余票、天气、停车空位、导航仍拒答。
+- 实体识别先从图谱真实实体名和别名中匹配，避免长问题或讲解 prompt 把实体识别成整句。
+- 文档检索新增多查询扩展和南越专题兜底；KG 关系过滤在过窄时回退到原图谱证据，减少“搜不到就无法回答”的情况。
+- 参观攻略意图优先限制在 `tourism` 类资料，避免被泛化展览列表挤占。
+- DeepSeek 模式新增通用兜底：本地无可引用证据时可调用 DeepSeek 自身回答，并明确标注“本地知识库未检索到可引用证据”；实时和范围外问题仍不启用该兜底。
+
+### 验证记录
+
+- `python -m scripts.validate_corpus` 通过：181 docs。
+- `python -m scripts.build_rag_index --force` 通过：181 docs。
+- `python -m scripts.verify_rag` 通过：9/10。
+- `python -m scripts.verify_retrieval` 通过。
+- `python -m scripts.verify_agent` 通过：20/20。
+- `python -m scripts.verify_demo` 通过：5/5。
+- `python -m pytest` 通过：72 passed，6 skipped。

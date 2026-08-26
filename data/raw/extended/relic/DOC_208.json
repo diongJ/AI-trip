@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_208",
+  "title": "墓中工艺观察指南",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Collection/Index",
+  "source_type": "official",
+  "category": "relic",
+  "retrieved_at": "2026-08-26",
+  "text": "观察王墓文物工艺时，可把材料分为金、玉、铜、铁、玻璃和漆木等类型，再看铸造、错金、鎏金、琢玉、印染和组合装配等工艺。这样的观察方法适合回答“哪些文物最能体现工艺水平”，也能帮助游客从材料进入历史解释。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "工艺",
+    "材料",
+    "错金",
+    "鎏金",
+    "琢玉"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "7802be1afac9ba167ee58e374d27fca9d047a29fd77331b4b319df8bd8c64a56"
+}

@@ -144,18 +144,30 @@ def render_relation_card(center_name: str, hit: GraphHit) -> None:
     target = html.escape(hit.target_entity.name)
     relation = html.escape(RELATION_LABELS.get(hit.relation, hit.relation))
     center = html.escape(center_name)
+    source_cls = f"node-{hit.source_entity.type}"
+    target_cls = f"node-{hit.target_entity.type}"
     active_source = " active-node" if hit.source_entity.name == center_name else ""
     active_target = " active-node" if hit.target_entity.name == center_name else ""
     st.markdown(
         f"""
         <div class="relation-row" aria-label="{center} 的关系">
-          <span class="entity-node{active_source}">{source}</span>
+          <span class="entity-node {source_cls}{active_source}">{source}</span>
           <span class="relation-arrow">— {relation} →</span>
-          <span class="entity-node{active_target}">{target}</span>
+          <span class="entity-node {target_cls}{active_target}">{target}</span>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_graph_legend() -> None:
+    """图谱页实体类型图例（纯展示，不含按钮，不影响交互顺序）。"""
+    chips = "".join(
+        f'<span class="legend-chip"><span class="entity-node node-{key}" '
+        f'style="padding:.1rem .5rem;font-size:.74rem;">{label}</span></span>'
+        for key, label in TYPE_LABELS.items()
+    )
+    st.markdown(f'<div class="graph-legend">{chips}</div>', unsafe_allow_html=True)
 
 
 def relation_table_rows(hits: list[GraphHit]) -> list[dict[str, str]]:
@@ -180,23 +192,208 @@ def _status_row(label: str, ready: bool, detail: str) -> None:
 
 _STYLE = """
 <style>
-  :root { --museum-red: #7d2e2e; --museum-gold: #b88746; --ink: #2f2925; }
-  .stApp { background: linear-gradient(180deg, #fbf7f0 0%, #fffdf9 36%, #ffffff 100%); }
+  /* ── 设计变量：博物馆色系（象牙纸面 / 墨色 / 陶土红 / 青铜绿 / 玉石青 / 旧金） ── */
+  :root {
+    --paper: #f7f3ea;
+    --paper-warm: #fbf7ef;
+    --card: #fffdf8;
+    --ink: #2f2a24;
+    --ink-soft: #6b6154;
+    --museum-red: #7d2e2e;
+    --museum-red-deep: #5f2121;
+    --museum-gold: #b88746;
+    --bronze-green: #4d6b5a;
+    --jade: #3f7364;
+    --line: #e6dcc8;
+    --line-strong: #d9cbae;
+  }
+
+  .stApp { background: linear-gradient(180deg, var(--paper) 0%, #fffdf9 40%, #ffffff 100%); }
   h1, h2, h3 { color: var(--ink); letter-spacing: .01em; }
-  [data-testid="stMetric"] { background: #fffaf1; border: 1px solid #eadbc5; border-radius: 14px; padding: 12px; }
-  .hero { padding: 2rem 2.2rem; border-radius: 22px; color: white; background: linear-gradient(125deg, #612424, #8d3a32 58%, #bd8544); box-shadow: 0 15px 40px rgba(77,36,27,.16); margin-bottom: 1.4rem; }
-  .hero h1 { color: white; margin: 0 0 .5rem 0; font-size: clamp(2rem, 5vw, 3.7rem); }
-  .hero p { max-width: 760px; font-size: 1.08rem; opacity: .94; margin: 0; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .16em; color: #ffe5b9; font-size: .75rem; margin-bottom: .7rem; }
-  .scope-note { border-left: 5px solid var(--museum-gold); padding: 1rem 1.2rem; background: #fff8ea; border-radius: 8px; }
-  .relation-row { display: grid; grid-template-columns: minmax(110px,1fr) minmax(120px,auto) minmax(110px,1fr); align-items: center; gap: .7rem; margin: .55rem 0; padding: .7rem; border: 1px solid #eadbc5; border-radius: 12px; background: white; text-align: center; }
-  .entity-node { padding: .45rem .7rem; border-radius: 999px; background: #f3e9db; color: #4b3027; font-weight: 650; }
-  .active-node { background: #7d2e2e; color: white; }
+  a { color: var(--museum-red); }
+
+  /* ── 按钮与 query chip（Uiverse 微交互节奏，博物馆配色） ── */
+  .stButton > button, .stLinkButton > a, [data-testid="stPageLink"] a {
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .stButton > button:hover, .stLinkButton > a:hover, [data-testid="stPageLink"] a:hover {
+    transform: translateY(-1px);
+    border-color: var(--museum-red);
+    box-shadow: 0 6px 16px -8px rgba(95, 33, 33, .35);
+  }
+  .stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, var(--museum-red), var(--museum-red-deep));
+    border-color: var(--museum-red-deep);
+  }
+
+  /* ── Metric / 信息面板（Origin UI stats 风格） ── */
+  [data-testid="stMetric"] {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--museum-gold);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  [data-testid="stMetricLabel"] { color: var(--ink-soft); }
+  [data-testid="stMetricValue"] { color: var(--museum-red-deep); font-weight: 700; }
+
+  /* ── Expander / 引用卡片 ── */
+  [data-testid="stExpander"] {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  [data-testid="stExpander"] summary:hover { color: var(--museum-red); }
+
+  /* ── 对话消息 ── */
+  [data-testid="stChatMessage"] {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: .4rem .8rem;
+  }
+
+  /* ── 侧边栏 ── */
+  [data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #f3ecdd 0%, var(--paper-warm) 100%);
+    border-right: 1px solid var(--line);
+  }
+
+  /* ── 数据表 ── */
+  [data-testid="stDataFrame"] { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+
+  /* ── Hero：数字展厅（Aceternity 式细网格 + 证据节点，克制不炫技） ── */
+  .hero {
+    position: relative;
+    padding: 2.4rem 2.4rem 2.2rem;
+    border-radius: 20px;
+    color: #fdf8ef;
+    background:
+      radial-gradient(ellipse 55% 60% at 78% 12%, rgba(184,135,70,.28), transparent 65%),
+      linear-gradient(125deg, #4a1d1d 0%, #7d2e2e 55%, #a9713d 100%);
+    box-shadow: 0 18px 44px rgba(74, 29, 29, .20);
+    margin-bottom: 1.4rem;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(253,248,239,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(253,248,239,.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .hero::after {
+    /* 证据节点：图谱隐喻的少量锚点 */
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,229,185,.55) 2px, transparent 2.6px);
+    background-size: 120px 120px;
+    background-position: 24px 18px;
+    opacity: .35;
+    pointer-events: none;
+  }
+  .hero h1 { color: #fff; margin: 0 0 .6rem 0; font-size: clamp(1.9rem, 4.6vw, 3.4rem); position: relative; }
+  .hero p { max-width: 760px; font-size: 1.05rem; opacity: .94; margin: 0; position: relative; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: .18em; color: #ffe5b9;
+    font-size: .72rem; margin-bottom: .8rem; position: relative;
+  }
+
+  /* ── 功能入口 / 原则面板 ── */
+  .entry-panel {
+    height: 100%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--museum-red);
+    border-radius: 10px;
+    padding: 1rem 1.1rem .4rem;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .entry-panel:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -14px rgba(47,42,36,.35); }
+  .entry-panel h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+  .entry-panel p { color: var(--ink-soft); font-size: .88rem; line-height: 1.6; margin: 0 0 .5rem; }
+
+  .principle-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--bronze-green);
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    height: 100%;
+  }
+  .principle-card strong { color: var(--ink); }
+  .principle-card span { color: var(--ink-soft); font-size: .85rem; line-height: 1.6; }
+
+  .scope-note {
+    border-left: 5px solid var(--museum-gold);
+    padding: 1rem 1.2rem;
+    background: #fff8ea;
+    border-radius: 8px;
+    margin-top: 1.2rem;
+  }
+
+  .section-eyebrow {
+    text-transform: uppercase; letter-spacing: .16em;
+    color: var(--museum-red); font-size: .72rem; font-weight: 600;
+    margin: 1.6rem 0 .2rem;
+  }
+
+  /* ── 图谱关系行：节点按实体类型着色 ── */
+  .relation-row {
+    display: grid;
+    grid-template-columns: minmax(110px,1fr) minmax(120px,auto) minmax(110px,1fr);
+    align-items: center; gap: .7rem;
+    margin: .55rem 0; padding: .7rem;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--card); text-align: center;
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  .relation-row:hover { border-color: var(--line-strong); box-shadow: 0 8px 20px -14px rgba(47,42,36,.4); }
+  .entity-node {
+    padding: .45rem .7rem; border-radius: 999px;
+    background: #f3e9db; color: #4b3027; font-weight: 650;
+    border: 1px solid transparent;
+  }
+  .node-Person { background: #f3e0dc; color: #7d2e2e; }
+  .node-Tomb, .node-TombChamber { background: #e9e4da; color: #3d362c; }
+  .node-Relic, .node-RelicCategory { background: #e2ece6; color: #33523f; }
+  .node-Material, .node-Pattern { background: #e6eeea; color: #3f7364; }
+  .node-State, .node-Dynasty { background: #f0e8d3; color: #7a5a1e; }
+  .node-Location, .node-HistoricalEvent, .node-Culture, .node-Exhibition { background: #ece7f0; color: #54486b; }
+  .active-node {
+    background: var(--museum-red) !important; color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(125,46,46,.18);
+  }
   .relation-arrow { color: #805c35; font-size: .9rem; }
+
+  .graph-legend { display: flex; flex-wrap: wrap; gap: .5rem; margin: .3rem 0 .8rem; }
+  .legend-chip {
+    font-size: .74rem; padding: .2rem .6rem; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink-soft);
+  }
+
+  /* ── 引导条 ── */
+  .hint-strip {
+    background: #fff8ea;
+    border: 1px dashed var(--museum-gold);
+    border-radius: 10px;
+    color: #7a5a1e;
+    font-size: .85rem;
+    padding: .55rem .9rem;
+    margin: .2rem 0 .6rem;
+  }
+  .hero-cta { margin: -.4rem 0 1rem; }
+
   @media (max-width: 600px) {
-    .hero { padding: 1.35rem; border-radius: 16px; }
+    .hero { padding: 1.4rem 1.2rem; border-radius: 14px; }
+    .hero h1 { font-size: 1.7rem; }
     .relation-row { grid-template-columns: 1fr; }
     .relation-arrow { transform: rotate(90deg); padding: .25rem; }
+    [data-testid="stMetric"] { padding: 10px 12px; }
   }
 </style>
 """

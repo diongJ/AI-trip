@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from hashlib import sha256
 
 import pytest
 
@@ -51,16 +52,22 @@ def write_raw(
     root: Path,
     doc_id: str,
     text: str = "官方资料明确记载赵眜葬于南越文王墓，证据完整可核验。",
+    *,
+    evidence_role: str = "factual",
 ) -> None:
     payload = {
         "doc_id": doc_id,
         "title": "测试资料",
-        "source_name": "测试来源",
+        "source_name": "测试来源" if evidence_role == "factual" else "AI-trip 项目整理",
         "source_url": "https://example.com/source",
-        "source_type": "official",
-        "category": "tomb",
+        "source_type": "official" if evidence_role == "factual" else "other",
+        "category": "tomb" if evidence_role == "factual" else "tourism",
         "retrieved_at": "2026-08-24",
         "text": text,
+        "source_tier": "core" if evidence_role == "factual" else "extended",
+        "evidence_role": evidence_role,
+        "content_hash": sha256(text.encode("utf-8")).hexdigest(),
+        "review_status": "approved",
     }
     (root / f"{doc_id}.json").write_text(
         json.dumps(payload, ensure_ascii=False), encoding="utf-8"
@@ -212,6 +219,25 @@ def test_fusion_drops_curated_entities_and_relations(tmp_path: Path) -> None:
     assert fused.relations == []
     assert report.dropped_entity_ids == 1
     assert report.dropped_relations == 1
+
+
+def test_fusion_rejects_curated_guidance_as_graph_source(tmp_path: Path) -> None:
+    graph = tmp_path / "graph"
+    raw = tmp_path / "raw"
+    graph.mkdir()
+    raw.mkdir()
+    write_raw(raw, "DOC_001", evidence_role="curated_guidance")
+    write_result(
+        graph,
+        "DOC_001",
+        {
+            "entities": [entity("exhibition:建议路线", "建议路线", "Exhibition", "DOC_001")],
+            "relations": [],
+        },
+    )
+
+    with pytest.raises(ValueError, match="curated_entity_source"):
+        fuse_extractions(graph, ResolutionConfig(), raw_dir=raw)
 
 
 def test_fusion_rejects_relation_left_on_dropped_entity(tmp_path: Path) -> None:

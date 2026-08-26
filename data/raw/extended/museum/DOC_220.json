@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_220",
+  "title": "综合陈列楼场地说明",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/About/Index/wmzq",
+  "source_type": "official",
+  "category": "museum",
+  "retrieved_at": "2026-08-26",
+  "text": "综合陈列楼可承接专题展览、服务台和部分临时展览信息。游客询问“除了王墓原址还能看什么”时，系统可以说明王墓展区不仅有古墓保护区，也有陈列楼空间。涉及临时展览名称和展期时，应提醒用户以官方最新公告为准。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "综合陈列楼",
+    "临时展览",
+    "场地资料",
+    "服务台",
+    "王墓展区"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "705e54177976ebefd51430ecaa916dc52ec61ddb80955e8de1858d3eaf8aed26"
+}

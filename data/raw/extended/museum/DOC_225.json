@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_225",
+  "title": "考古遗址类博物馆定位",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/About/Index/bwyjj",
+  "source_type": "official",
+  "category": "museum",
+  "retrieved_at": "2026-08-26",
+  "text": "南越王博物院是以南越国重要考古遗存为依托的大型考古遗址类博物馆。这个定位决定了导览不应只像普通藏品陈列那样介绍器物，还要解释遗址、出土语境、城市考古和文物保护。场地资料回答应突出遗址类博物馆的证据链特征。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "考古遗址类博物馆",
+    "场地定位",
+    "南越王博物院",
+    "文物保护",
+    "证据链"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "d0e461e31c5a3c0f0ac305ae0f8d70357cd89728ef8db134229615b8377bedd1"
+}

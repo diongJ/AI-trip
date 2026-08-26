@@ -15,5 +15,6 @@
   "published_at": null,
   "content_hash": "c0a5626fd2df6fa6e028f35fb7d40d975681d23548c1e873857a21fdbf3530c7",
   "review_status": "approved",
-  "version": 5
+  "version": 5,
+  "evidence_role": "factual"
 }

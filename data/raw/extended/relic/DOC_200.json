@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_200",
+  "title": "铜灯讲解补充",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Collection/Index",
+  "source_type": "official",
+  "category": "relic",
+  "retrieved_at": "2026-08-26",
+  "text": "铜灯适合讲解墓葬中的生活想象、照明技术和陈设空间。游客可以从灯具形态、使用功能和随葬位置理解古代生活器物进入墓葬后的意义。它能与漆木屏风构件、铜烤炉等共同构成“墓中生活空间复原”的讲解线索。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "铜灯",
+    "照明",
+    "生活空间",
+    "青铜器",
+    "墓葬陈设"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "5dab9e134ddaa9c1f1742ff619e1161316f1843c106e356426f9a0365bb1b89c"
+}

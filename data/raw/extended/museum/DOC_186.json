@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_186",
+  "title": "王墓展区场地定位",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/About/Index/wmzq",
+  "source_type": "official",
+  "category": "museum",
+  "retrieved_at": "2026-08-26",
+  "text": "王墓展区的场地定位以南越文王墓原址、墓葬出土文物和南越国历史展示为核心。它不是泛化的广州旅游景点问答范围，而是围绕王墓考古、墓主身份、随葬器物和岭南秦汉历史展开。智能导览在回答场地问题时应优先说明王墓展区这一专题边界。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "王墓展区",
+    "场地定位",
+    "南越文王墓",
+    "原址",
+    "专题边界"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "14ceec45b04f4ab7165941c46d316573504a760856c57be7345826cf86509548"
+}

@@ -16,6 +16,9 @@ class DocumentChunk(BaseModel):
     source_url: AnyHttpUrl
     category: str = Field(min_length=1)
     source_tier: str = "core"
+    source_type: str = "official"
+    evidence_role: str = "factual"
+    review_status: str = "approved"
     topic_tags: list[str] = Field(default_factory=list)
     retrieved_at: str = ""
     published_at: str | None = None
@@ -35,7 +38,8 @@ class RetrievalHit(BaseModel):
     def require_source_metadata(self) -> "RetrievalHit":
         required = {
             "doc_id", "title", "source_name", "source_url", "category", "chunk_id",
-            "source_tier", "retrieved_at", "fusion_score",
+            "source_tier", "source_type", "evidence_role", "review_status",
+            "content_hash", "retrieved_at", "fusion_score",
         }
         missing = sorted(required.difference(self.metadata))
         if missing:

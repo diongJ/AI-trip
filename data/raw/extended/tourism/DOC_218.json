@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_218",
+  "title": "闭馆和延时开放提醒",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Home/",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-26",
+  "text": "南越王博物院官网展示常规开放时间，也提醒寒暑假及国家法定假日可能延长开放，具体信息需关注官方公告。知识库回答开放时间时应同时给出常规规则和官方公告提醒，避免把特殊时段或临时调整写成永久事实。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "开放时间",
+    "闭馆",
+    "延时开放",
+    "官方公告",
+    "参观准备"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "e6a577c4d0339dedb6748a53c3a01b85ad1f896421a1ffbce5d0ffb6a6096374"
+}

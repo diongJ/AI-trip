@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_177",
+  "title": "玉剑饰讲解补充",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Collection/Index",
+  "source_type": "official",
+  "category": "relic",
+  "retrieved_at": "2026-08-26",
+  "text": "玉剑饰可以把兵器、身份和装饰工艺联系起来讲解。它提示游客古代高等级器物并不只追求实用，还会通过玉质部件表达身份和审美。讲解时可将玉剑饰与铜虎节、文帝行玺等制度性文物对照，说明王墓随葬品中权力、礼仪和工艺之间的联系。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "玉剑饰",
+    "兵器",
+    "玉器",
+    "身份",
+    "工艺"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "79bc9d4fbedff5b48a15f4f0442ca86e6becbb1ba977650a192cd6dc7d69213b"
+}

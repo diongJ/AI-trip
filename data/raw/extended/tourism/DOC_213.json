@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_213",
+  "title": "预约和到馆提醒",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/VisitIndex/Visit",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-26",
+  "text": "参观王墓展区前，应关注南越王博物院官方公众号或官方参观信息页，确认实名预约、入场时段和墓室下层参观预约要求。静态知识库可说明预约边界和官方确认路径，但不能判断当天余票、排队时间或现场名额变化。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "预约",
+    "到馆提醒",
+    "参观信息",
+    "王墓展区",
+    "官方渠道"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "6eff8e6aff2c4bae3927f05176895deb5c7e957091751fde1320e302e89c6f54"
+}

@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "museum",
   "text": "王墓展区地址为广州市越秀区解放北路867号，周二至周日9:00-17:30开放，17:00停止领票及进场。王墓展区购票进场，南越文王墓墓室下层参观票需另行预约。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "0d24d710bd0c479d7f0e62940191d3e19be35b0b09780d45567a62253986ad22",
+  "review_status": "approved"
 }

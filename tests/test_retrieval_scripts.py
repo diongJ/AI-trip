@@ -1,5 +1,6 @@
 import json
 import sys
+from hashlib import sha256
 from pathlib import Path
 
 from scripts.build_graph_v1 import build_graph_v1
@@ -27,6 +28,7 @@ def test_graph_builder_does_not_parse_parent_cli_arguments(
     (input_dir / "DOC_001.json").write_text(
         result.model_dump_json(), encoding="utf-8"
     )
+    raw_text = "这是一段长度足够的测试资料，介绍南越国第二代王赵眜。"
     (raw_dir / "DOC_001.json").write_text(
         json.dumps(
             {
@@ -37,7 +39,10 @@ def test_graph_builder_does_not_parse_parent_cli_arguments(
                 "source_type": "official",
                 "category": "person",
                 "retrieved_at": "2026-08-25",
-                "text": "这是一段长度足够的测试资料，介绍南越国第二代王赵眜。",
+                "text": raw_text,
+                "evidence_role": "factual",
+                "content_hash": sha256(raw_text.encode("utf-8")).hexdigest(),
+                "review_status": "approved",
             },
             ensure_ascii=False,
         ),

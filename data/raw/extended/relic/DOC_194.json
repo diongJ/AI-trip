@@ -1,0 +1,23 @@
+{
+  "doc_id": "DOC_194",
+  "title": "玉璧讲解补充",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Collection/Index",
+  "source_type": "official",
+  "category": "relic",
+  "retrieved_at": "2026-08-26",
+  "text": "玉璧类文物适合从礼制、身份和玉文化角度讲解。游客观察时可关注玉器形制、纹饰和出土语境，再把它与组玉佩、玉杯、丝缕玉衣等玉器联系起来理解。玉璧能帮助系统回答“王墓里为什么有这么多玉器”“玉器和身份有什么关系”等问题。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "玉璧",
+    "玉器",
+    "礼制",
+    "身份",
+    "南越文王墓"
+  ],
+  "published_at": null,
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "content_hash": "8bd18925423115b557d6da1f51bde8afbfa8402a9613dbb3be96c9bbde89a18d"
+}

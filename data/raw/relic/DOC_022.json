@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "墓主人组玉佩为西汉南越国文物，南越文王墓出土。南越文王墓共出土组玉佩十一套，其中墓主这一套最为华丽，由双凤涡纹玉璧、龙凤涡纹玉璧、犀形玉璜等饰件组成。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "7e888e60aa741da9c12712e946512f892324a9c4b24888419b17ca2048347ca2",
+  "review_status": "approved"
 }

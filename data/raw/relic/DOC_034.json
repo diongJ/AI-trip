@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "relic",
   "text": "铜烤炉为西汉南越国文物，高11厘米、长61厘米、宽52.5厘米，南越文王墓出土。烤炉平面略呈长方形，四角微翘，底设四个带轴轮的足，可以推动。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "10835b2a36ef18f69d25bc51c184aa7a98c893900e4a6a46901f09b9d0c58af4",
+  "review_status": "approved"
 }

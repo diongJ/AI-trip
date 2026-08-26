@@ -6,5 +6,8 @@
   "source_type": "official",
   "category": "exhibition",
   "text": "“南越藏珍——西汉南越王墓出土文物陈列”以1983年发现的南越国第二代国王赵眜之墓为基础。该墓是岭南地区发现的规模最大的唯一汉代彩绘石室墓，1996年被列为全国重点文物保护单位。",
-  "retrieved_at": "2026-08-23"
+  "retrieved_at": "2026-08-23",
+  "evidence_role": "factual",
+  "content_hash": "6c507b0d9e29cb5d6c945af2d99f175d80470229d3fe6e5824d3fbc7addf5a63",
+  "review_status": "approved"
 }
