@@ -79,6 +79,9 @@ class DeepSeekQueryPlanner:
                 relations=[str(item).strip() for item in raw.get("relations", []) if str(item).strip()],
                 scope=scope,
                 answer_mode=fallback.answer_mode,
+                temporal_scope=fallback.temporal_scope,
+                as_of=fallback.as_of,
+                visit_zone=fallback.visit_zone,
             )
         except Exception:
             return fallback.model_copy(update={"subqueries": fallback.subqueries or [question]})

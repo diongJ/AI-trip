@@ -521,12 +521,20 @@ class AgentService:
             )
         if route.tool == ToolName.SEARCH_DOCUMENTS:
             category = "tourism" if route.intent == "visit_guidance" else None
+            zones = (
+                {"王墓展区", "两展区"}
+                if route.visit_zone.value == "wangmu"
+                else {"王墓展区", "王宫展区", "两展区"}
+            ) if route.intent == "visit_guidance" else None
             return self.tools.search_documents(
                 question,
                 queries=route.subqueries or [question],
                 category=category,
                 include_curated_guidance=route.intent == "visit_guidance",
                 top_k=top_k,
+                temporal_scope=route.temporal_scope.value,
+                as_of=route.as_of,
+                zones=zones,
             )
         if route.tool == ToolName.HYBRID_SEARCH:
             return self.tools.hybrid_search(
@@ -537,6 +545,8 @@ class AgentService:
                 limit=20 if depth == 2 else 12,
                 queries=route.subqueries or [question],
                 entity_queries=route.entities or None,
+                temporal_scope=route.temporal_scope.value,
+                as_of=route.as_of,
             )
         raise ValueError(f"unsupported tool: {route.tool}")
 
@@ -544,7 +554,19 @@ class AgentService:
         if route.tool == ToolName.SEARCH_DOCUMENTS:
             return ToolResult()
         queries = list(dict.fromkeys([question, *route.subqueries]))
-        return self.tools.search_documents(question, top_k=5, queries=queries)
+        zones = (
+            {"王墓展区", "两展区"}
+            if route.visit_zone.value == "wangmu"
+            else {"王墓展区", "王宫展区", "两展区"}
+        ) if route.intent == "visit_guidance" else None
+        return self.tools.search_documents(
+            question,
+            top_k=5,
+            queries=queries,
+            temporal_scope=route.temporal_scope.value,
+            as_of=route.as_of,
+            zones=zones,
+        )
 
     def _filter_focus_documents(
         self, question: str, route: RouteDecision, documents: list
@@ -703,6 +725,12 @@ class AgentService:
                 "可靠资料与问题中的前提不一致，因此我不能沿用这个前提作答。"
                 "你可以改问该人物、文物或墓葬在可靠资料中的实际情况。"
             )
+        elif route.intent == "wanggong_visit_out_of_scope":
+            status = AnswerStatus.OUT_OF_SCOPE
+            answer = "当前智慧导览以王墓展区为主。王宫资料只用于两展区比较、交通和联动路线；你可以改问“王墓和王宫怎样联动参观？”。"
+        elif route.intent == "visit_uncertain":
+            status = AnswerStatus.INSUFFICIENT_EVIDENCE
+            answer = "暂未在可靠资料中找到这项参观细节的馆方依据，建议出行前向馆方咨询确认。"
         else:
             status = AnswerStatus.OUT_OF_SCOPE
             answer = (

@@ -17,6 +17,9 @@ class DocumentRetriever(Protocol):
         category: str | None = None,
         min_score: float = 0.0,
         evidence_role: str | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> list[RetrievalHit]: ...
 
     def search_many(
@@ -28,6 +31,9 @@ class DocumentRetriever(Protocol):
         category: str | None = None,
         source_tier: str | None = None,
         evidence_role: str | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> list[RetrievalHit]: ...
 
 
@@ -62,7 +68,8 @@ RELATION_HINTS: tuple[tuple[re.Pattern[str], frozenset[str]], ...] = (
     (re.compile(r"属于哪国|哪个国家|所属国家"), frozenset({"BELONGS_TO_STATE"})),
 )
 VISIT_HINT_RE = re.compile(
-    r"(参观|游览|攻略|怎么逛|怎么玩|开放时间|几点|门票|预约|地址|交通|导览|讲解|服务|展厅|展区|动线|行程)"
+    r"(参观|游览|攻略|怎么逛|怎么玩|开放时间|几点|门票|预约|地址|交通|导览|讲解|服务|展厅|展区|动线|行程|"
+    r"寄存|轮椅|婴儿车|无障碍|手语|多语种|语音|英语|英文|老人|分钟|小时|雨天|食物|母婴)"
 )
 VISIT_QUERIES = [
     "南越王博物院 王墓展区 参观攻略 开放时间 预约",
@@ -108,6 +115,13 @@ VISIT_AUDIENCE_QUERIES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
             "下雨 王墓展区 参观攻略 天气 信息边界",
         ),
     ),
+    (
+        re.compile(r"两展区|王墓.*王宫|王宫.*王墓|一起参观|联动|展区.*区别"),
+        (
+            "王墓 王宫 两展区 联动参观 路线 预约 交通",
+            "王墓展区 王宫展区 区别 一天参观 建议",
+        ),
+    ),
 )
 AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
     (
@@ -129,7 +143,11 @@ AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
     (re.compile(r"亲子|孩子|儿童|小朋友|家庭"), ("亲子", "孩子", "儿童", "观察", "任务")),
     (re.compile(r"半小时|一小时|两小时|半日|小时|分钟|路线|动线|行程"), ("半小时", "一小时", "两小时", "半日", "路线")),
     (re.compile(r"讲解|导览"), ("讲解", "导览", "提问", "问题", "线索")),
+    (re.compile(r"寄存|行李"), ("寄存", "行李", "服务", "入馆")),
+    (re.compile(r"轮椅|无障碍|婴儿车"), ("轮椅", "无障碍", "婴儿车", "服务", "咨询")),
+    (re.compile(r"手语|多语种|英语|英文|语音"), ("手语", "多语种", "英语", "导览", "服务")),
     (re.compile(r"下雨|雨天|降雨"), ("雨天", "下雨", "降雨", "室内展陈", "天气", "信息边界")),
+    (re.compile(r"两展区|王墓.*王宫|王宫.*王墓|一起参观|联动|展区.*区别"), ("两展区", "王墓", "王宫", "联动", "路线", "预约")),
 )
 
 # Generic interrogative scaffolding: stripped before measuring whether a
@@ -164,6 +182,9 @@ class AgentTools:
         category: str | None = None,
         queries: list[str] | None = None,
         include_curated_guidance: bool = False,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> ToolResult:
         expanded_queries = _expand_document_queries(query, queries)
         should_rerank_visit = bool(VISIT_HINT_RE.search(query))
@@ -174,6 +195,9 @@ class AgentTools:
                 top_k=search_top_k,
                 category=category,
                 evidence_role="factual",
+                temporal_scope=temporal_scope,
+                as_of=as_of,
+                zones=zones,
             )
             if hasattr(self.document_retriever, "search_many")
             else self.document_retriever.search(
@@ -181,6 +205,9 @@ class AgentTools:
                 top_k=search_top_k,
                 category=category,
                 evidence_role="factual",
+                temporal_scope=temporal_scope,
+                as_of=as_of,
+                zones=zones,
             )
         )
         if not factual and category is not None:
@@ -189,12 +216,18 @@ class AgentTools:
                     expanded_queries,
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
                 if hasattr(self.document_retriever, "search_many")
                 else self.document_retriever.search(
                     query,
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
             )
         if not factual:
@@ -204,12 +237,18 @@ class AgentTools:
                     fallback_queries,
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
                 if hasattr(self.document_retriever, "search_many")
                 else self.document_retriever.search(
                     fallback_queries[0],
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
             )
         if should_rerank_visit:
@@ -222,6 +261,9 @@ class AgentTools:
                     top_k=search_top_k,
                     category="tourism",
                     evidence_role="curated_guidance",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
                 if hasattr(self.document_retriever, "search_many")
                 else self.document_retriever.search(
@@ -229,6 +271,9 @@ class AgentTools:
                     top_k=search_top_k,
                     category="tourism",
                     evidence_role="curated_guidance",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
             )
             curated = _rerank_visit_documents(query, curated)
@@ -269,6 +314,9 @@ class AgentTools:
         limit: int = 12,
         queries: list[str] | None = None,
         entity_queries: list[str] | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> ToolResult:
         graph = self.search_kg(
             query,
@@ -277,7 +325,14 @@ class AgentTools:
             depth=depth,
             limit=limit,
         ).graph if (entity_query or entity_queries) else []
-        documents = self.search_documents(query, top_k=top_k, queries=queries).documents
+        documents = self.search_documents(
+            query,
+            top_k=top_k,
+            queries=queries,
+            temporal_scope=temporal_scope,
+            as_of=as_of,
+            zones=zones,
+        ).documents
         return ToolResult(documents=documents, graph=graph)
 
 

@@ -99,10 +99,12 @@ def build_grounded_context(result: ToolResult, *, max_chars: int = 6000) -> str:
             )
         )
     for hit in result.documents:
+        validity = _validity_label(hit.metadata)
         parts.append(
-            "[EVIDENCE_ID={evidence_id}] [DOC] [EVIDENCE_ROLE={role}] {title}\n片段：{content}".format(
+            "[EVIDENCE_ID={evidence_id}] [DOC] [EVIDENCE_ROLE={role}] [VALIDITY={validity}] {title}\n片段：{content}".format(
                 evidence_id=document_evidence_id(hit),
                 role=hit.metadata.get("evidence_role", "factual"),
+                validity=validity,
                 title=hit.metadata["title"],
                 content=hit.content,
             )
@@ -113,3 +115,11 @@ def build_grounded_context(result: ToolResult, *, max_chars: int = 6000) -> str:
 
 def _title_from_graph(document_id: str) -> str:
     return f"图谱关系证据 {document_id}"
+
+
+def _validity_label(metadata: dict) -> str:
+    start = metadata.get("effective_from") or ""
+    end = metadata.get("effective_until") or ""
+    if start or end:
+        return f"{start or '-'}~{end or '-'}"
+    return "stable"

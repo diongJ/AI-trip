@@ -39,6 +39,17 @@ class AnswerMode(StrEnum):
     DEEP = "deep"
 
 
+class TemporalScope(StrEnum):
+    CURRENT = "current"
+    HISTORICAL = "historical"
+    FUTURE = "future"
+
+
+class VisitZone(StrEnum):
+    WANGMU = "wangmu"
+    CROSS_ZONE = "cross_zone"
+
+
 class ClaimType(StrEnum):
     DIRECT_FACT = "direct_fact"
     SYNTHESIS = "synthesis"
@@ -66,6 +77,9 @@ class RouteDecision(BaseModel):
     relations: list[str] = Field(default_factory=list)
     scope: Literal["in_scope", "out_of_scope"] = "in_scope"
     answer_mode: AnswerMode = AnswerMode.AUTO
+    temporal_scope: TemporalScope = TemporalScope.CURRENT
+    as_of: str | None = None
+    visit_zone: VisitZone = VisitZone.WANGMU
 
 
 class Citation(BaseModel):
