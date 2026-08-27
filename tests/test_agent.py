@@ -238,6 +238,20 @@ def test_visit_guidance_labels_project_curated_advice(tmp_path) -> None:
     assert "项目整理建议" in answer.answer
 
 
+def test_stable_visit_guidance_skips_model_planner_reclassification(tmp_path) -> None:
+    class UnexpectedPlanner:
+        def plan(self, question, fallback):
+            raise AssertionError("stable visitor guidance must keep the deterministic route")
+
+    service = AgentService(build_tools(tmp_path), planner=UnexpectedPlanner())
+
+    answer = service.answer("开闭馆时间")
+
+    assert answer.response_status.value == "answered"
+    assert "9:00" in answer.answer
+    assert answer.citations
+
+
 def test_agent_keeps_realtime_visit_questions_out_of_scope(tmp_path) -> None:
     service = AgentService(build_tools(tmp_path))
 
@@ -321,6 +335,55 @@ def test_agent_uses_traceable_web_search_only_after_local_evidence_fails(tmp_pat
     assert len(answer.web_sources) == 1
     assert answer.used_tools[-1] == ToolName.WEB_SEARCH
     assert web.questions == ["赵眜的父亲是谁？"]
+
+
+def test_visit_guidance_web_fallback_adds_museum_context_when_local_is_empty() -> None:
+    class EmptyDocumentRetriever:
+        idf = {"开放": 1.0, "时间": 1.0, "闭馆": 1.0}
+
+        def search(self, query, **kwargs):
+            return []
+
+        def search_many(self, queries, **kwargs):
+            return []
+
+    class EmptyGraphRetriever:
+        def list_entities(self, query="", *, entity_type=None, limit=100):
+            return []
+
+        def resolve_entity_id(self, query):
+            return None
+
+        def get_neighbors(self, entity_query, *, depth=1, limit=20):
+            return []
+
+    class FakeWebSearch:
+        def __init__(self) -> None:
+            self.questions = []
+
+        def search(self, question: str) -> WebSearchResult:
+            self.questions.append(question)
+            return WebSearchResult(
+                answer="联网馆方页面给出了王墓展区开放安排。",
+                sources=[
+                    WebSource(
+                        title="南越王博物院参观信息",
+                        url="https://www.nywmuseum.org.cn/News/VisitIndex/Visit",
+                        accessed_at="2026-08-27T12:00:00+08:00",
+                    )
+                ],
+            )
+
+    web = FakeWebSearch()
+    service = AgentService(
+        AgentTools(EmptyDocumentRetriever(), EmptyGraphRetriever()),
+        web_search_generator=web,
+    )
+
+    answer = service.answer("开闭馆时间")
+
+    assert answer.response_status.value == "web_search_answered"
+    assert web.questions == ["南越王博物院王墓展区：开闭馆时间"]
 
 
 def test_agent_never_web_searches_realtime_or_out_of_scope_questions(tmp_path) -> None:

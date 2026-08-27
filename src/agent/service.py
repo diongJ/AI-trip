@@ -697,8 +697,11 @@ class AgentService:
     ) -> AgentAnswer | None:
         if self.web_search_generator is None or not _web_search_allowed(question, route):
             return None
+        web_question = question
+        if route.intent == "visit_guidance" and not NANYUE_SCOPE_RE.search(question):
+            web_question = f"南越王博物院王墓展区：{question}"
         try:
-            result = self.web_search_generator.search(question)
+            result = self.web_search_generator.search(web_question)
         except AnswerGenerationError:
             return None
         return AgentAnswer(
@@ -880,7 +883,12 @@ def _web_search_allowed(question: str, route: RouteDecision) -> bool:
         "incorrect_premise",
     }:
         return False
-    return bool(route.entity_query or route.entities or NANYUE_SCOPE_RE.search(question))
+    return bool(
+        route.intent == "visit_guidance"
+        or route.entity_query
+        or route.entities
+        or NANYUE_SCOPE_RE.search(question)
+    )
 
 
 def _response_output_texts(output: list[object]) -> list[str]:
@@ -944,7 +952,9 @@ def _web_sources_from_payload(output: list[object]) -> list[WebSource]:
 
 
 def _is_fast_path(route: RouteDecision) -> bool:
-    return route.tool == ToolName.SEARCH_KG and bool(route.entity_query)
+    return (
+        route.tool == ToolName.SEARCH_KG and bool(route.entity_query)
+    ) or route.intent == "visit_guidance"
 
 
 def _select_evidence(result: ToolResult, evidence_ids: list[str]) -> ToolResult:

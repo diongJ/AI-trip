@@ -126,6 +126,48 @@ def test_deepseek_planner_returns_structured_multi_query_plan() -> None:
     assert len(plan.subqueries) == 4
 
 
+def test_deepseek_planner_cannot_downgrade_a_valid_rule_route() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(
+                                {
+                                    "intent": "out_of_scope",
+                                    "entities": [],
+                                    "subqueries": ["王墓展区 开放时间", "闭馆安排", "参观指南"],
+                                    "relations": [],
+                                    "scope": "out_of_scope",
+                                    "tool": "none",
+                                    "reason": "模型误判为动态信息",
+                                },
+                                ensure_ascii=False,
+                            )
+                        }
+                    }
+                ]
+            },
+        )
+
+    fallback = RouteDecision(
+        question_type=QuestionType.DESCRIPTION,
+        tool=ToolName.SEARCH_DOCUMENTS,
+        reason="规则识别为稳定参观信息",
+        intent="visit_guidance",
+        subqueries=["开闭馆时间"],
+    )
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        plan = DeepSeekQueryPlanner(_settings(), http_client=client).plan("开闭馆时间", fallback)
+
+    assert plan.scope == "in_scope"
+    assert plan.tool == ToolName.SEARCH_DOCUMENTS
+    assert plan.intent == "visit_guidance"
+    assert plan.subqueries[0] == "开闭馆时间"
+
+
 def test_deepseek_web_search_requires_real_search_and_traceable_source() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         payload = json.loads(request.content)
