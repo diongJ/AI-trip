@@ -43,7 +43,7 @@
 - 文档检索增加多查询扩展；非参观问题不再使用宽泛的南越专题查询强行兜底。
 - KG 无证据时会尝试文档兜底。
 - 历史事实仅检索 `factual`；参观攻略先检索官方稳定资料，再补充带“项目整理建议”标识的 `curated_guidance`。
-- DeepSeek 只能根据选中的本地证据组织回答；本地无可引用证据时返回按原因区分的柔和提示，不再生成通用知识答案。
+- DeepSeek 首先只能根据选中的本地证据组织回答；专题内本地无可引用证据时，可通过 Responses API 强制执行真实 `web_search`。只有返回已完成搜索动作和可解析来源 URL 才采用回答，并明确标记为未审核联网补充；联网结果不进入语料库或知识图谱。
 
 ## 当前验证
 
@@ -53,6 +53,6 @@
 - `python -m scripts.verify_retrieval`：通过。
 - `python -m scripts.verify_agent`：20/20，覆盖参观攻略、实时拒答和混合检索。
 - `python -m scripts.verify_demo`：5/5。
-- `python -m pytest -q`：94 项通过；覆盖信任字段、证据角色隔离、路由、RAG、KG 和 DeepSeek 失败回退。
+- `python -m pytest -q`：98 项通过；覆盖信任字段、证据角色隔离、路由、RAG、KG、DeepSeek 失败回退和联网来源强校验。
 - `python -m scripts.evaluate_qa --fail-under 0.9`：50/50，通过率 100%。
 - `python -m scripts.run_evaluation_v2`：有效回答率 87.5%、Top-5 召回率 88.75%、引用正确率 100%、拒答准确率 100%。

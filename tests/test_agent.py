@@ -3,7 +3,17 @@ import json
 from hashlib import sha256
 
 from src.extraction.models import Entity, ExtractionResult, Relation
-from src.agent.models import QuestionType, ToolName
+from src.agent.models import (
+    AnswerClaim,
+    AnswerMode,
+    ClaimType,
+    ConversationTurn,
+    GeneratedAnswer,
+    QuestionType,
+    ToolName,
+    WebSearchResult,
+    WebSource,
+)
 from src.agent.router import RuleBasedRouter
 from src.agent.service import AgentService
 from src.agent.tools import AgentTools
@@ -282,6 +292,50 @@ def test_agent_marks_realtime_question_without_model_fallback(tmp_path) -> None:
     assert answer.response_status.value == "realtime_unavailable"
 
 
+def test_agent_uses_traceable_web_search_only_after_local_evidence_fails(tmp_path) -> None:
+    class FakeWebSearch:
+        def __init__(self) -> None:
+            self.questions = []
+
+        def search(self, question: str) -> WebSearchResult:
+            self.questions.append(question)
+            return WebSearchResult(
+                answer="联网资料对赵眜亲属关系有进一步讨论，但仍应核对馆方研究。",
+                sources=[
+                    WebSource(
+                        title="研究机构资料",
+                        url="https://example.org/research",
+                        accessed_at="2026-08-27T12:00:00+08:00",
+                    )
+                ],
+            )
+
+    web = FakeWebSearch()
+    service = AgentService(build_tools(tmp_path), web_search_generator=web)
+
+    answer = service.answer("赵眜的父亲是谁？")
+
+    assert answer.response_status.value == "web_search_answered"
+    assert not answer.insufficient_evidence
+    assert answer.citations == []
+    assert len(answer.web_sources) == 1
+    assert answer.used_tools[-1] == ToolName.WEB_SEARCH
+    assert web.questions == ["赵眜的父亲是谁？"]
+
+
+def test_agent_never_web_searches_realtime_or_out_of_scope_questions(tmp_path) -> None:
+    class UnexpectedWebSearch:
+        def search(self, question: str):
+            raise AssertionError(f"must not search: {question}")
+
+    service = AgentService(
+        build_tools(tmp_path), web_search_generator=UnexpectedWebSearch()
+    )
+
+    assert service.answer("今天王墓展区还有多少余票？").response_status.value == "realtime_unavailable"
+    assert service.answer("火星上的南越王墓是谁建的？").response_status.value == "insufficient_evidence"
+
+
 def test_document_chunk_import_remains_available() -> None:
     assert DocumentChunk.__name__ == "DocumentChunk"
 
@@ -356,3 +410,41 @@ def test_agent_keeps_grounded_answer_after_faithfulness_check(tmp_path) -> None:
 
     assert not answer.insufficient_evidence
     assert "金" in answer.answer
+
+
+def test_agent_resolves_pronoun_follow_up_from_recent_user_turn(tmp_path) -> None:
+    service = AgentService(build_tools(tmp_path))
+
+    answer = service.answer(
+        "它是什么材料？",
+        history=[ConversationTurn(question="介绍一下文帝行玺。", answer="")],
+    )
+
+    assert not answer.insufficient_evidence
+    assert "金" in answer.answer
+
+
+def test_synthesis_claim_without_two_evidence_items_is_rejected(tmp_path) -> None:
+    from src.agent.context import graph_evidence_id
+
+    class InvalidSynthesisGenerator:
+        def generate(self, question, route, result):
+            evidence_id = graph_evidence_id(result.graph[0])
+            return GeneratedAnswer(
+                answer="结合这些证据可以看出，它很重要。",
+                selected_evidence_ids=[evidence_id],
+                claims=[
+                    AnswerClaim(
+                        text="结合这些证据可以看出，它很重要。",
+                        claim_type=ClaimType.SYNTHESIS,
+                        evidence_ids=[evidence_id],
+                    )
+                ],
+            )
+
+    answer = AgentService(
+        build_tools(tmp_path), generator=InvalidSynthesisGenerator()
+    ).answer("文帝行玺是什么材料？", answer_mode=AnswerMode.DEEP)
+
+    assert answer.insufficient_evidence
+    assert answer.citations == []

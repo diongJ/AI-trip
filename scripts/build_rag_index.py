@@ -11,6 +11,11 @@ def main() -> None:
     parser.add_argument("--force", action="store_true", help="rebuild even when a manifest exists")
     parser.add_argument("--chunk-size", type=int, default=420)
     parser.add_argument("--chunk-overlap", type=int, default=60)
+    parser.add_argument(
+        "--semantic",
+        action="store_true",
+        help="also build local BGE vectors (requires pip install -e .[semantic])",
+    )
     args = parser.parse_args()
 
     manifest = build_rag_index(
@@ -19,6 +24,12 @@ def main() -> None:
         chunk_overlap=args.chunk_overlap,
     )
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
+    if args.semantic:
+        from src.rag.retriever import RagRetriever
+        from src.rag.semantic import SemanticRagRetriever
+
+        semantic = SemanticRagRetriever(RagRetriever())
+        print(json.dumps({"semantic_ready": semantic.available}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

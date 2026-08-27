@@ -19,6 +19,7 @@ from app.components.ui import (
     render_outcome,
     render_sidebar,
 )
+from src.agent.models import AnswerMode, ConversationTurn
 
 
 EXAMPLES = [
@@ -32,7 +33,15 @@ runtime = load_runtime_or_stop()
 render_sidebar(runtime)
 
 st.title("💬 智能问答")
-st.caption("系统会自动选择 KG、RAG 或 Hybrid 检索，并为有效回答附上来源；回答过程可展开扫读。")
+st.caption(
+    "系统优先使用本地 KG/RAG 可信证据；专题内无证据时可进行 DeepSeek 联网搜索，"
+    "联网内容会单独标识并提醒甄别。"
+)
+answer_mode = {
+    "自动": AnswerMode.AUTO,
+    "简洁": AnswerMode.BRIEF,
+    "深入": AnswerMode.DEEP,
+}[st.selectbox("回答风格", ["自动", "简洁", "深入"], help="深入模式会综合多条证据并逐条核验。")]
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -72,6 +81,12 @@ if question:
         st.markdown(question)
     with st.chat_message("assistant", avatar="🏺"):
         with st.spinner("正在检索可靠证据并组织回答……"):
-            outcome = runtime.ask(question)
+            history = [
+                ConversationTurn(
+                    question=item["question"], answer=item["outcome"].response.answer
+                )
+                for item in st.session_state.chat_history[-4:]
+            ]
+            outcome = runtime.ask(question, history=history, answer_mode=answer_mode)
         render_outcome(outcome)
     st.session_state.chat_history.append({"question": question, "outcome": outcome})

@@ -78,6 +78,7 @@ class DeepSeekQueryPlanner:
                 subqueries=subqueries,
                 relations=[str(item).strip() for item in raw.get("relations", []) if str(item).strip()],
                 scope=scope,
+                answer_mode=fallback.answer_mode,
             )
         except Exception:
             return fallback.model_copy(update={"subqueries": fallback.subqueries or [question]})

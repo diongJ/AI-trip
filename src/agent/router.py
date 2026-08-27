@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Protocol
 
-from src.agent.models import QuestionType, RouteDecision, ToolName
+from src.agent.models import AnswerMode, QuestionType, RouteDecision, ToolName
 
 
 class EntityResolver(Protocol):
@@ -28,6 +28,8 @@ DESCRIPTION_RE = re.compile(r"(介绍|讲讲|特点|意义|价值|如何|为什�
 HYBRID_RE = re.compile(
     r"(结合.*(?:文物|资料|证据)|文物证据|建立|创建|创立|开国|反映|观念)"
 )
+COMPARISON_RE = re.compile(r"(比较|区别|异同|不同|相同|对比)")
+EXPLANATION_RE = re.compile(r"(为什么|意义|价值|反映了什么|体现|如何理解|影响)")
 TOURISM_RE = re.compile(
     r"(参观|游览|攻略|怎么逛|怎么玩|路线|动线|展厅|展区|开放时间|几点|门票|预约|地址|"
     r"交通|怎么去|讲解|导览|寄存|服务|拍照|无障碍|亲子|学生|老人|行程)"
@@ -74,15 +76,20 @@ class RuleBasedRouter:
             )
 
         entity_query = self._find_entity_query(normalized)
+        answer_mode = _default_answer_mode(normalized)
+        explanation_intent = "comparison" if COMPARISON_RE.search(normalized) else (
+            "explanation" if EXPLANATION_RE.search(normalized) else "description"
+        )
         if entity_query and HYBRID_RE.search(normalized):
             return RouteDecision(
                 question_type=QuestionType.DESCRIPTION,
                 tool=ToolName.HYBRID_SEARCH,
                 entity_query=entity_query,
                 reason="问题需要结合结构化关系和文档证据，使用混合检索。",
-                intent="hybrid_explanation",
+                intent="hybrid_explanation" if explanation_intent == "description" else explanation_intent,
                 entities=[entity_query],
                 subqueries=[normalized],
+                answer_mode=answer_mode,
             )
         if TOURISM_RE.search(normalized):
             return RouteDecision(
@@ -93,6 +100,7 @@ class RuleBasedRouter:
                 intent="visit_guidance",
                 entities=[entity_query] if entity_query else [],
                 subqueries=_visit_subqueries(normalized),
+                answer_mode=answer_mode,
             )
         if entity_query and RELATION_RE.search(normalized):
             return RouteDecision(
@@ -103,6 +111,7 @@ class RuleBasedRouter:
                 intent="relation_exploration",
                 entities=[entity_query],
                 subqueries=[normalized],
+                answer_mode=answer_mode,
             )
         if entity_query and DESCRIPTION_RE.search(normalized):
             return RouteDecision(
@@ -110,8 +119,10 @@ class RuleBasedRouter:
                 tool=ToolName.HYBRID_SEARCH,
                 entity_query=entity_query,
                 reason="问题需要实体关系和文档描述，使用混合检索。",
+                intent=explanation_intent,
                 entities=[entity_query],
                 subqueries=[normalized],
+                answer_mode=answer_mode,
             )
         if entity_query:
             return RouteDecision(
@@ -122,19 +133,24 @@ class RuleBasedRouter:
                 intent="entity_fact",
                 entities=[entity_query],
                 subqueries=[normalized],
+                answer_mode=answer_mode,
             )
         if DESCRIPTION_RE.search(normalized):
             return RouteDecision(
                 question_type=QuestionType.DESCRIPTION,
                 tool=ToolName.SEARCH_DOCUMENTS,
                 reason="问题偏描述性，使用文档检索获取原文片段。",
+                intent=explanation_intent,
                 subqueries=[normalized],
+                answer_mode=answer_mode,
             )
         return RouteDecision(
             question_type=QuestionType.DESCRIPTION,
             tool=ToolName.SEARCH_DOCUMENTS,
             reason="未命中明确实体，使用文档检索作为保守默认策略。",
+            intent=explanation_intent,
             subqueries=[normalized],
+            answer_mode=answer_mode,
         )
 
     def _find_entity_query(self, question: str) -> str | None:
@@ -182,6 +198,12 @@ def _visit_subqueries(question: str) -> list[str]:
             ]
         )
     )
+
+
+def _default_answer_mode(question: str) -> AnswerMode:
+    if COMPARISON_RE.search(question) or EXPLANATION_RE.search(question):
+        return AnswerMode.DEEP
+    return AnswerMode.AUTO
 
 
 def _entity_from_known_aliases(question: str, resolver: EntityResolver) -> str | None:

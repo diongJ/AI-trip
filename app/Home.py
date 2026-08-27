@@ -83,7 +83,7 @@ principle_cols = st.columns(3)
 principles = [
     ("证据先行", "回答来自 KG 关系或 RAG 原文片段，不依赖模型记忆。"),
     ("来源可查", "每条有效回答均展示文档编号、来源层级和原始链接。"),
-    ("边界明确", "证据不足或超出范围时主动拒答；DeepSeek 通用兜底会明确标注。"),
+    ("边界明确", "本地证据不足时可使用 DeepSeek 真实联网搜索补充，并明确提示甄别；范围外问题仍拒答。"),
 ]
 for col, (title, desc) in zip(principle_cols, principles):
     col.markdown(

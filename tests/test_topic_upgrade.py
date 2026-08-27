@@ -6,6 +6,7 @@ import pytest
 
 from src.agent.models import QuestionType, RouteDecision, ToolName
 from src.agent.planner import DeepSeekQueryPlanner
+from src.agent.service import AnswerGenerationError, DeepSeekWebSearchAnswerGenerator
 from src.config.settings import Settings
 from src.preprocessing import CorpusDocument
 from src.preprocessing.sources import sync_sources
@@ -123,6 +124,70 @@ def test_deepseek_planner_returns_structured_multi_query_plan() -> None:
     assert plan.entities == ["文帝行玺", "丝缕玉衣"]
     assert plan.subqueries[0] == "比较两件文物"
     assert len(plan.subqueries) == 4
+
+
+def test_deepseek_web_search_requires_real_search_and_traceable_source() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        assert request.url.path == "/responses"
+        assert payload["model"] == "deepseek-v4-flash"
+        assert payload["tools"] == [{"type": "web_search"}]
+        assert payload["tool_choice"] == {"type": "web_search"}
+        return httpx.Response(
+            200,
+            json={
+                "status": "completed",
+                "output": [
+                    {
+                        "type": "web_search_call",
+                        "status": "completed",
+                        "action": {"type": "open_page", "url": "https://museum.example/source"},
+                    },
+                    {
+                        "type": "message",
+                        "status": "completed",
+                        "content": [
+                            {
+                                "type": "output_text",
+                                "text": "联网资料显示该问题仍需结合馆方研究判断。",
+                                "annotations": [
+                                    {
+                                        "type": "url_citation",
+                                        "title": "测试博物馆资料",
+                                        "url": "https://museum.example/source",
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                ],
+            },
+        )
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        result = DeepSeekWebSearchAnswerGenerator(
+            _settings(), http_client=client
+        ).search("南越国某项制度是什么？")
+
+    assert "联网资料" in result.answer
+    assert len(result.sources) == 1
+    assert str(result.sources[0].url) == "https://museum.example/source"
+
+
+def test_deepseek_web_search_rejects_untraceable_answer() -> None:
+    response = httpx.Response(
+        200,
+        json={
+            "output": [
+                {"type": "web_search_call", "status": "completed", "action": {"type": "search", "query": "南越"}},
+                {"type": "message", "content": [{"type": "output_text", "text": "没有来源的答案"}]},
+            ]
+        },
+    )
+
+    with httpx.Client(transport=httpx.MockTransport(lambda _: response)) as client:
+        with pytest.raises(AnswerGenerationError, match="traceable source"):
+            DeepSeekWebSearchAnswerGenerator(_settings(), http_client=client).search("南越问题")
 
 
 def test_whitelist_sync_accepts_relevant_pages_and_deduplicates(tmp_path) -> None:

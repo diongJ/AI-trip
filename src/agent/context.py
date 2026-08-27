@@ -80,7 +80,7 @@ def citations_from_result(
     return citations
 
 
-def build_grounded_context(result: ToolResult, *, max_chars: int = 3000) -> str:
+def build_grounded_context(result: ToolResult, *, max_chars: int = 6000) -> str:
     """Build the evidence block for the grounded-answer prompt.
 
     Keep it minimal on purpose: only EVIDENCE_ID, evidence type, and content.

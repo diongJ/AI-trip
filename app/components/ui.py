@@ -5,7 +5,7 @@ import html
 import streamlit as st
 
 from app.runtime import AppRuntime, QueryOutcome
-from src.agent.models import Citation
+from src.agent.models import AnswerStatus, Citation, WebSource
 from src.rag.models import GraphHit
 
 
@@ -80,6 +80,11 @@ def render_sidebar(runtime: AppRuntime) -> None:
         _status_row("官方语料", status.corpus_ready, f"{status.document_count} 份")
         _status_row("RAG 索引", status.rag_ready, "已加载")
         _status_row(
+            "语义检索",
+            status.semantic_ready,
+            "BGE 混合检索" if status.semantic_ready else "BM25 降级模式",
+        )
+        _status_row(
             "本地图谱",
             status.graph_ready,
             f"{status.entity_count} 实体 / {status.relation_count} 关系",
@@ -88,6 +93,11 @@ def render_sidebar(runtime: AppRuntime) -> None:
             "DeepSeek",
             status.deepseek_configured,
             "智能生成" if status.deepseek_configured else "自动离线降级",
+        )
+        _status_row(
+            "联网搜索兜底",
+            status.web_search_configured,
+            "按需启用" if status.web_search_configured else "未配置",
         )
         _status_row(
             "Neo4j Aura",
@@ -102,7 +112,14 @@ def render_outcome(outcome: QueryOutcome, *, show_answer: bool = True) -> None:
     response = outcome.response
     if outcome.warning:
         st.warning(outcome.warning)
-    if response.insufficient_evidence:
+    if response.response_status == AnswerStatus.WEB_SEARCH_ANSWERED:
+        st.warning(
+            "联网搜索补充：以下内容尚未进入本地知识库，可能存在遗漏或错误，"
+            "请结合来源谨慎甄别。"
+        )
+        if show_answer:
+            st.markdown(response.answer)
+    elif response.insufficient_evidence:
         st.warning(response.answer)
     elif show_answer:
         st.markdown(response.answer)
@@ -112,15 +129,25 @@ def render_outcome(outcome: QueryOutcome, *, show_answer: bool = True) -> None:
         cols = st.columns(3)
         cols[0].metric("响应时间", f"{outcome.elapsed_ms:.1f} ms")
         cols[1].metric("生成模式", outcome.generation_mode)
-        cols[2].metric("引用数量", len(response.citations))
+        cols[2].metric("来源数量", len(response.citations) + len(response.web_sources))
         st.markdown(f"**使用工具：** {tools}")
         st.markdown(f"**路由原因：** {response.route_reason}")
         if response.source_tiers:
-            labels = {"core": "核心馆方资料", "extended": "扩展可信资料"}
+            labels = {
+                "core": "核心馆方资料",
+                "extended": "扩展可信资料",
+                "web": "DeepSeek 联网搜索（未审核）",
+            }
             st.markdown("**证据层级：** " + "、".join(labels.get(tier, tier) for tier in response.source_tiers))
         if response.refusal_reason:
             st.markdown(f"**拒答原因：** {response.refusal_reason}")
+        if response.claims:
+            direct = sum(claim.claim_type.value == "direct_fact" for claim in response.claims)
+            synthesis = len(response.claims) - direct
+            status = "已核验" if response.claims_verified else "本地兜底校验"
+            st.markdown(f"**结论核验：** {status}｜直接事实 {direct} 条｜综合结论 {synthesis} 条")
     render_citations(response.citations)
+    render_web_sources(response.web_sources)
 
 
 def render_citations(citations: list[Citation]) -> None:
@@ -137,6 +164,15 @@ def render_citations(citations: list[Citation]) -> None:
             st.info(citation.evidence)
             if citation.retrieved_at:
                 st.caption(f"资料采集日期：{citation.retrieved_at}")
+
+
+def render_web_sources(sources: list[WebSource]) -> None:
+    if not sources:
+        return
+    st.markdown("#### 联网搜索来源（未进入知识库）")
+    for index, source in enumerate(sources, start=1):
+        st.markdown(f"{index}. [{source.title}]({source.url})")
+        st.caption(f"访问时间：{source.accessed_at}｜请自行核对来源权威性与发布时间")
 
 
 def render_relation_card(center_name: str, hit: GraphHit) -> None:

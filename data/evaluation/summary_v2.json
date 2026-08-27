@@ -4,7 +4,7 @@
   "hit_at_5": 0.8875,
   "citation_correctness": 1.0,
   "refusal_accuracy": 1.0,
-  "p95_latency_ms": 10.387,
+  "p95_latency_ms": 10.565,
   "targets": {
     "answer_rate": 0.8,
     "hit_at_5": 0.85,
