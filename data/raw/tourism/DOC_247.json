@@ -18,5 +18,16 @@
   "published_at": null,
   "content_hash": "a75d2e1e241a8afec07d787bcc1c25cec6d32b41bd6b84638603293cdb551eff",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "quarterly_check",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time"
+  ],
+  "recommended_duration": null
 }

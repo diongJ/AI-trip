@@ -15,6 +15,7 @@ from typing import Any
 
 from src.rag.models import RetrievalHit
 from src.rag.retriever import RagRetriever
+from src.rag.retriever import _eligible_for_time
 
 DEFAULT_EMBEDDING_MODEL = "BAAI/bge-small-zh-v1.5"
 DEFAULT_RERANKER_MODEL = "BAAI/bge-reranker-base"
@@ -124,6 +125,9 @@ class SemanticRagRetriever:
         category: str | None = None,
         source_tier: str | None = None,
         evidence_role: str | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> list[RetrievalHit]:
         if top_k <= 0:
             raise ValueError("top_k must be positive")
@@ -134,6 +138,9 @@ class SemanticRagRetriever:
             category=category,
             source_tier=source_tier,
             evidence_role=evidence_role,
+            temporal_scope=temporal_scope,
+            as_of=as_of,
+            zones=zones,
         )
         semantic_hits = self._semantic_hits(
             queries,
@@ -141,6 +148,9 @@ class SemanticRagRetriever:
             category=category,
             source_tier=source_tier,
             evidence_role=evidence_role,
+            temporal_scope=temporal_scope,
+            as_of=as_of,
+            zones=zones,
         )
         candidates = _rrf_merge(lexical_hits, semantic_hits, limit=max(24, top_k * 3))
         candidates = self._rerank(queries[0] if queries else "", candidates)
@@ -154,6 +164,9 @@ class SemanticRagRetriever:
         category: str | None,
         source_tier: str | None,
         evidence_role: str | None,
+        temporal_scope: str,
+        as_of: str | None,
+        zones: set[str] | None,
     ) -> list[RetrievalHit]:
         import numpy as np
 
@@ -174,6 +187,10 @@ class SemanticRagRetriever:
             if source_tier and chunk.source_tier != source_tier:
                 continue
             if evidence_role and chunk.evidence_role != evidence_role:
+                continue
+            if not _eligible_for_time(chunk, temporal_scope=temporal_scope, as_of=as_of):
+                continue
+            if zones and chunk.zone and chunk.zone not in zones:
                 continue
             score = max(0.0, min(1.0, (float(scores[index]) + 1) / 2))
             metadata = chunk.model_dump(mode="json")
@@ -199,6 +216,14 @@ class SemanticRagRetriever:
                         "retrieved_at": chunk.retrieved_at,
                         "published_at": chunk.published_at,
                         "content_hash": chunk.content_hash,
+                        "effective_from": chunk.effective_from,
+                        "effective_until": chunk.effective_until,
+                        "last_checked_at": chunk.last_checked_at,
+                        "volatility": chunk.volatility,
+                        "zone": chunk.zone,
+                        "floor": chunk.floor,
+                        "visitor_types": chunk.visitor_types,
+                        "recommended_duration": chunk.recommended_duration,
                         "fusion_score": score,
                     },
                 )

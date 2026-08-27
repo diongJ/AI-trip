@@ -80,6 +80,14 @@ def split_document(
             retrieved_at=document.retrieved_at,
             published_at=document.published_at,
             content_hash=document.content_hash,
+            effective_from=document.effective_from,
+            effective_until=document.effective_until,
+            last_checked_at=document.last_checked_at,
+            volatility=document.volatility,
+            zone=document.zone,
+            floor=document.floor,
+            visitor_types=document.visitor_types,
+            recommended_duration=document.recommended_duration,
         )
         for index, chunk in enumerate(unique_chunks, start=1)
     ]

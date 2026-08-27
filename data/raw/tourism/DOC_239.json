@@ -18,5 +18,17 @@
   "published_at": "2026-07-07",
   "content_hash": "76ff8884e3be999b03ddff3fe485634f165a8983c3cc2cb5a11971b74833735a",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2026-07-11",
+  "effective_until": "2026-08-31",
+  "last_checked_at": "2026-08-27",
+  "volatility": "weekly_check",
+  "zone": "王宫展区",
+  "floor": null,
+  "visitor_types": [
+    "family",
+    "student"
+  ],
+  "recommended_duration": null
 }

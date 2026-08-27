@@ -19,5 +19,17 @@
   "published_at": "2025-07-09",
   "content_hash": "d3c905b034d66b69189e800baa41405d99a8652ccbb14127e5227fb160d83942",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2025-07-09",
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "monthly_check",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time",
+    "student"
+  ],
+  "recommended_duration": 20
 }

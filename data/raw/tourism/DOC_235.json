@@ -19,5 +19,19 @@
   "published_at": null,
   "content_hash": "a5d1bf5d2ca37adebc36b02b539a07d8ec39264fb3551a0c0402563fb6076c21",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "monthly_check",
+  "zone": "王宫展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time",
+    "family",
+    "senior",
+    "student"
+  ],
+  "recommended_duration": null
 }

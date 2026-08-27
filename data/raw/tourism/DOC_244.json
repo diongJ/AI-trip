@@ -19,5 +19,17 @@
   "published_at": "2022-09-07",
   "content_hash": "3b82c6af9455bce0b87599f08c034e1e3012047fb32b12f5f7eb56bb49ad19a0",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "monthly_check",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [
+    "disabled",
+    "senior"
+  ],
+  "recommended_duration": null
 }

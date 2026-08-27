@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from json import JSONDecodeError
 from collections import defaultdict
 from pathlib import Path
@@ -54,6 +56,9 @@ class RagRetriever:
         source_tier: str | None = None,
         evidence_role: str | None = None,
         min_score: float = 0.0,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> list[RetrievalHit]:
         if top_k <= 0:
             raise ValueError("top_k must be positive")
@@ -102,6 +107,10 @@ class RagRetriever:
                 continue
             if evidence_role and chunk.evidence_role != evidence_role:
                 continue
+            if not _eligible_for_time(chunk, temporal_scope=temporal_scope, as_of=as_of):
+                continue
+            if zones and chunk.zone and chunk.zone not in zones:
+                continue
             dot_product += _title_overlap_bonus(query_terms, chunk.title)
             score = dot_product / (dot_product + 1.0)
             if score >= score_floor:
@@ -132,6 +141,9 @@ class RagRetriever:
         category: str | None = None,
         source_tier: str | None = None,
         evidence_role: str | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> list[RetrievalHit]:
         """Fuse multiple BM25 result lists with reciprocal-rank fusion."""
         if top_k <= 0 or per_query_k <= 0:
@@ -146,6 +158,9 @@ class RagRetriever:
                 category=category,
                 source_tier=source_tier,
                 evidence_role=evidence_role,
+                temporal_scope=temporal_scope,
+                as_of=as_of,
+                zones=zones,
             ):
                 chunk_id = str(hit.metadata["chunk_id"])
                 fused[chunk_id] += 1.0 / (60 + hit.rank)
@@ -202,6 +217,46 @@ def _hit_from_chunk(chunk: DocumentChunk, score: float, rank: int) -> RetrievalH
             "retrieved_at": chunk.retrieved_at,
             "published_at": chunk.published_at,
             "content_hash": chunk.content_hash,
+            "effective_from": chunk.effective_from,
+            "effective_until": chunk.effective_until,
+            "last_checked_at": chunk.last_checked_at,
+            "volatility": chunk.volatility,
+            "zone": chunk.zone,
+            "floor": chunk.floor,
+            "visitor_types": chunk.visitor_types,
+            "recommended_duration": chunk.recommended_duration,
             "fusion_score": rounded_score,
         },
+    )
+
+
+def _eligible_for_time(chunk: DocumentChunk, *, temporal_scope: str, as_of: str | None) -> bool:
+    if temporal_scope == "all":
+        return True
+    try:
+        target = datetime.fromisoformat(as_of).date() if as_of else datetime.now(ZoneInfo("Asia/Shanghai")).date()
+        start = datetime.fromisoformat(chunk.effective_from).date() if chunk.effective_from else None
+        end = datetime.fromisoformat(chunk.effective_until).date() if chunk.effective_until else None
+    except ValueError:
+        return False
+    if temporal_scope == "historical":
+        return (start is None or start <= target) and (end is None or target <= end)
+    if temporal_scope == "future":
+        # “未来/即将” without an explicit date is a request for upcoming
+        # notices. With a date, retrieve rules that will actually be valid on
+        # that day (including stable visitor facts), not only those starting
+        # after it.
+        if as_of is None:
+            return start is not None and start >= target and chunk.volatility != "expired"
+        return (
+            chunk.volatility != "expired"
+            and (start is None or start <= target)
+            and (end is None or target <= end)
+        )
+    # Current is deliberately conservative: expired notices and rules not yet in
+    # force never compete with stable visitor guidance.
+    return (
+        chunk.volatility != "expired"
+        and (start is None or start <= target)
+        and (end is None or target <= end)
     )

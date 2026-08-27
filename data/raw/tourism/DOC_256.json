@@ -18,5 +18,14 @@
   "published_at": null,
   "content_hash": "87085bf933c1600805e4bb8c9d29bb5a12625180dcb718f5a506cf7ad82ac1db",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "review_on_official_change",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
 }

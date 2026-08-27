@@ -12,6 +12,7 @@ curated（项目整理）文档明确标注“项目整理建议”，与官方�
 from __future__ import annotations
 
 import csv
+import argparse
 import json
 from hashlib import sha256
 from pathlib import Path
@@ -695,6 +696,7 @@ def _hash(text: str) -> str:
 
 
 def build_doc(spec: dict, source_type: str) -> dict:
+    meta = META[spec["doc_id"]]
     doc = {
         "doc_id": spec["doc_id"],
         "title": spec["title"],
@@ -710,17 +712,26 @@ def build_doc(spec: dict, source_type: str) -> dict:
         "content_hash": _hash(spec["text"]),
         "review_status": "approved",
         "version": 1,
+        "evidence_role": meta["evidence_role"],
+        "effective_from": meta["effective_from"],
+        "effective_until": meta["effective_until"],
+        "last_checked_at": RETRIEVED,
+        "volatility": meta["volatility"],
+        "zone": meta["zone"],
+        "floor": meta["floor"],
+        "visitor_types": meta["visitor_types"],
+        "recommended_duration": meta["recommended_duration"],
     }
     return doc
 
 
-def write_corpus_docs() -> list[dict]:
+def write_corpus_docs(*, refresh: bool = False) -> list[dict]:
     RAW_TOURISM.mkdir(parents=True, exist_ok=True)
     docs = [build_doc(s, OFFICIAL) for s in OFFICIAL_DOCS]
     docs += [build_doc(s, CURATED) for s in CURATED_DOCS]
     for doc in docs:
         path = RAW_TOURISM / f"{doc['doc_id']}.json"
-        if path.exists():
+        if path.exists() and not refresh:
             raise SystemExit(f"拒绝覆盖已存在文件: {path}")
         path.write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")
     return docs
@@ -781,7 +792,10 @@ def write_faq_csv() -> None:
 
 
 def main() -> None:
-    docs = write_corpus_docs()
+    parser = argparse.ArgumentParser(description="生成王墓展区参观资料语料与采集表")
+    parser.add_argument("--refresh", action="store_true", help="仅安全重建 DOC_234–DOC_262")
+    args = parser.parse_args()
+    docs = write_corpus_docs(refresh=args.refresh)
     write_sources_csv(docs)
     write_space_facts_csv()
     write_relics_csv()

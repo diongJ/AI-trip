@@ -18,5 +18,16 @@
   "published_at": null,
   "content_hash": "58c2ea8b327c832c1001b9b5b235152fc00e85c5e6cbdf79a5d5db3d89ecd813",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "quarterly_check",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time"
+  ],
+  "recommended_duration": null
 }

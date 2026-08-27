@@ -17,5 +17,14 @@
   "published_at": "2026-07-27",
   "content_hash": "756b40b2641d130dc8982918f0a34f3e91d004785dc33f9fb071767fd173497f",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2026-07-28",
+  "effective_until": "2026-07-28",
+  "last_checked_at": "2026-08-27",
+  "volatility": "expired",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
 }

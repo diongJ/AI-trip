@@ -18,5 +18,17 @@
   "published_at": "2026-08-12",
   "content_hash": "bde0a7511519e413ebf40e8c85cda5ab7af2c303fcad432caab7844efaf0f5f5",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2026-09-01",
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "stable",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [
+    "student",
+    "group"
+  ],
+  "recommended_duration": null
 }

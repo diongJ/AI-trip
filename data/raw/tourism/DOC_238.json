@@ -17,5 +17,14 @@
   "published_at": "2025-09-21",
   "content_hash": "dbf655098e7b92566f7f4f159a7089ea89b623235640361bd2835fd4136c4cbd",
   "review_status": "approved",
-  "version": 1
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2025-10-09",
+  "effective_until": "2025-12-16",
+  "last_checked_at": "2026-08-27",
+  "volatility": "expired",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
 }
