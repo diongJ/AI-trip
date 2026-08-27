@@ -5,6 +5,7 @@ import csv
 from pathlib import Path
 
 from src.agent.router import RuleBasedRouter
+from src.agent.service import AgentService, ExtractiveAnswerGenerator
 from src.agent.tools import AgentTools
 from src.preprocessing import load_corpus
 from src.rag.index import build_rag_index
@@ -119,3 +120,29 @@ def test_cross_zone_project_route_keeps_its_non_official_label(tmp_path) -> None
     assert all(hit.metadata["doc_id"] != "DOC_238" for hit in result.documents)
     cross_zone_route = next(hit for hit in curated if hit.metadata["doc_id"] == "DOC_256")
     assert "项目整理建议" in cross_zone_route.content
+
+
+def test_natural_opening_and_route_questions_use_visitor_evidence(tmp_path) -> None:
+    retriever = _retriever(tmp_path)
+    service = AgentService(
+        AgentTools(retriever, EmptyGraphRetriever()),
+        generator=ExtractiveAnswerGenerator(),
+    )
+    opening = service.answer("什么时候开门")
+    route = service.answer("最佳游览路线")
+    one_hour = service.answer("我只有一小时，怎么安排？")
+    family = service.answer("带孩子怎么逛？")
+    senior = service.answer("老人怎么参观更省力？")
+    assert opening.response_status.value == "answered"
+    assert opening.citations
+    assert "9:00" in opening.answer
+    assert route.response_status.value == "answered"
+    assert route.citations
+    assert "项目整理建议" in route.answer
+    assert {citation.doc_id for citation in route.citations} >= {"DOC_159"}
+    assert one_hour.response_status.value == "answered"
+    assert {citation.doc_id for citation in one_hour.citations} >= {"DOC_160"}
+    assert family.response_status.value == "answered"
+    assert {citation.doc_id for citation in family.citations} >= {"DOC_257"}
+    assert senior.response_status.value == "answered"
+    assert {citation.doc_id for citation in senior.citations} >= {"DOC_259"}

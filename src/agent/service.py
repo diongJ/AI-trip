@@ -586,7 +586,12 @@ class AgentService:
         # 参观问题已经在 AgentTools 中按 tourism 分类、证据角色和专用提示词
         # 完成分路检索与重排。此处再按字面 bigram 过滤，会把“第一次怎么看”
         # 这类自然说法误判为无证据。
-        if route.intent == "visit_guidance" and FIRST_VISIT_RE.search(question):
+        if route.intent == "visit_guidance":
+            # Visitor intent has already been narrowed to tourism documents,
+            # time/zone validity and dedicated reranking. Natural questions
+            # such as “什么时候开门” or “最佳游览路线” often have no exact
+            # content bigram in a source, so the generic history-QA focus
+            # filter must not discard their otherwise grounded evidence.
             return list(documents)
         entity_names = list(
             route.entities or ([] if route.entity_query is None else [route.entity_query])
@@ -797,6 +802,11 @@ class AgentService:
         """
         if _relation_hint_matches(question):
             # 材料/出土/纹饰等概念词由关系提示映射到 KG 关系，不要求字面命中词表。
+            return []
+        if route.intent == "visit_guidance":
+            # Visitor-service vocabulary is intentionally paraphrase-heavy;
+            # it is validated by tourism retrieval and evidence roles rather
+            # than the generic unknown-subject guard.
             return []
         if route.entities or route.entity_query:
             # 已锚定到知识库实体的问题：未知词多为“方面”而非“主题”，

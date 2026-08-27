@@ -69,7 +69,8 @@ RELATION_HINTS: tuple[tuple[re.Pattern[str], frozenset[str]], ...] = (
 )
 VISIT_HINT_RE = re.compile(
     r"(参观|游览|攻略|怎么逛|怎么玩|开放时间|几点|门票|预约|地址|交通|导览|讲解|服务|展厅|展区|动线|行程|"
-    r"寄存|轮椅|婴儿车|无障碍|手语|多语种|语音|英语|英文|老人|分钟|小时|雨天|食物|母婴)"
+    r"寄存|轮椅|婴儿车|无障碍|手语|多语种|语音|英语|英文|老人|分钟|小时|雨天|食物|母婴|"
+    r"开门|开馆|营业|关门|闭馆|最[佳优]|推荐|建议|值得看|看什么|怎么安排|怎么走|逛多久|多久能逛完|半天)"
 )
 VISIT_QUERIES = [
     "南越王博物院 王墓展区 参观攻略 开放时间 预约",
@@ -77,6 +78,8 @@ VISIT_QUERIES = [
     "南越文王墓 展厅 游览 动线 重点文物",
 ]
 FIRST_VISIT_RE = re.compile(r"第一次|初次|首次|第一次去|应该怎么看|参观重点|重点看")
+ROUTE_REQUEST_RE = re.compile(r"(路线|动线|行程|最[佳优]|推荐|建议|怎么安排|怎么逛|怎么玩|逛多久|多久能逛完|半天|小时|分钟)")
+BOUNDARY_REQUEST_RE = re.compile(r"(实时|当天|今天|边界|官网|确认|公告)")
 VISIT_AUDIENCE_QUERIES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
     (
         FIRST_VISIT_RE,
@@ -109,6 +112,32 @@ VISIT_AUDIENCE_QUERIES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
         ),
     ),
     (
+        re.compile(r"老人|长者|老年"),
+        (
+            "老人 长者 王墓展区 轻松参观 路线 休息 建议",
+            "王墓展区 老年观众 参观时长 无障碍 服务",
+        ),
+    ),
+    (
+        re.compile(r"轮椅|无障碍|婴儿车"),
+        (
+            "王墓展区 轮椅 婴儿车 无障碍 服务台 租借",
+            "南越王博物院 无障碍 轮椅 参观服务",
+        ),
+    ),
+    (
+        re.compile(r"寄存|行李"),
+        (
+            "王墓展区 行李 寄存柜 服务",
+        ),
+    ),
+    (
+        re.compile(r"手语|多语种|英语|英文|语音"),
+        (
+            "南越王博物院 英语 多语种 语音导览 手语导赏 服务",
+        ),
+    ),
+    (
         re.compile(r"下雨|雨天|降雨"),
         (
             "雨天参观 王墓展区 室内展陈 行程建议",
@@ -129,8 +158,8 @@ AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
         ("第一次", "初次", "重点", "文帝行玺", "丝缕玉衣", "墓主人", "代表文物", "动线"),
     ),
     (
-        re.compile(r"开放时间|几点|门票|预约|闭馆|入馆|官方|购票"),
-        ("开放时间", "9:00-17:30", "17:00", "预约", "官方", "门票", "入馆"),
+        re.compile(r"开放时间|几点|开门|开馆|营业|关门|闭馆|入馆|官方|购票"),
+        ("开放时间", "9:00-17:30", "17:00", "开门", "闭馆", "预约", "官方", "门票", "入馆"),
     ),
     (
         re.compile(r"地址|交通|怎么去|在哪|地铁|公交"),
@@ -141,7 +170,8 @@ AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
         ("学生", "研学", "任务", "问题", "证据", "墓主人", "文帝行玺", "学生参观", "证据链"),
     ),
     (re.compile(r"亲子|孩子|儿童|小朋友|家庭"), ("亲子", "孩子", "儿童", "观察", "任务")),
-    (re.compile(r"半小时|一小时|两小时|半日|小时|分钟|路线|动线|行程"), ("半小时", "一小时", "两小时", "半日", "路线")),
+    (re.compile(r"老人|长者|老年"), ("老人", "长者", "轻松", "休息", "路线", "服务")),
+    (re.compile(r"半小时|一小时|两小时|半日|小时|分钟|路线|动线|行程|最[佳优]|推荐|建议|怎么安排|逛多久|多久能逛完"), ("半小时", "一小时", "两小时", "半日", "路线", "动线", "建议")),
     (re.compile(r"讲解|导览"), ("讲解", "导览", "提问", "问题", "线索")),
     (re.compile(r"寄存|行李"), ("寄存", "行李", "服务", "入馆")),
     (re.compile(r"轮椅|无障碍|婴儿车"), ("轮椅", "无障碍", "婴儿车", "服务", "咨询")),
@@ -511,6 +541,16 @@ def _rerank_visit_documents(query: str, documents: list[RetrievalHit]) -> list[R
             ]
         )
         bonus = sum(0.28 for hint in hints if hint in searchable)
+        topic_tags = {str(tag) for tag in hit.metadata.get("topic_tags", [])}
+        # “参观前准备/信息边界”对用户问路线、时长、亲子时只是辅助提醒，
+        # 不能压过实际的路线或服务证据。
+        if "信息边界" in topic_tags and not BOUNDARY_REQUEST_RE.search(query):
+            bonus -= 0.8
+        if ROUTE_REQUEST_RE.search(query):
+            if hit.metadata.get("evidence_role") == "curated_guidance":
+                bonus += 0.45
+            if "路线" in " ".join(topic_tags) or "动线" in " ".join(topic_tags):
+                bonus += 0.35
         scored.append((hit.score + bonus, hit))
 
     scored.sort(key=lambda item: (-item[0], item[1].rank, str(item[1].metadata.get("doc_id", ""))))
