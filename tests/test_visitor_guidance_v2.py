@@ -7,6 +7,7 @@ from pathlib import Path
 from src.agent.router import RuleBasedRouter
 from src.agent.service import AgentService, ExtractiveAnswerGenerator
 from src.agent.tools import AgentTools
+from src.graph.retriever import LocalGraphRetriever
 from src.preprocessing import load_corpus
 from src.rag.index import build_rag_index
 from src.rag.retriever import RagRetriever
@@ -146,3 +147,15 @@ def test_natural_opening_and_route_questions_use_visitor_evidence(tmp_path) -> N
     assert {citation.doc_id for citation in family.citations} >= {"DOC_257"}
     assert senior.response_status.value == "answered"
     assert {citation.doc_id for citation in senior.citations} >= {"DOC_259"}
+
+
+def test_relic_owner_question_resolves_to_the_supported_person_relation(tmp_path) -> None:
+    retriever = _retriever(tmp_path)
+    service = AgentService(
+        AgentTools(retriever, LocalGraphRetriever()),
+        generator=ExtractiveAnswerGenerator(),
+    )
+    answer = service.answer("丝缕玉衣的主人是谁？")
+    assert answer.response_status.value == "answered"
+    assert "赵眜" in answer.answer
+    assert {citation.doc_id for citation in answer.citations} >= {"DOC_007"}

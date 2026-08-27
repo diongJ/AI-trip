@@ -62,6 +62,7 @@ RELATION_HINTS: tuple[tuple[re.Pattern[str], frozenset[str]], ...] = (
     (re.compile(r"纹饰|图案"), frozenset({"HAS_PATTERN"})),
     (re.compile(r"出土"), frozenset({"EXCAVATED_FROM"})),
     (re.compile(r"埋葬|墓葬|葬于"), frozenset({"BURIED_IN"})),
+    (re.compile(r"主人|谁的|归谁|属于谁|使用者|穿戴者"), frozenset({"RELATED_TO_PERSON"})),
     (re.compile(r"类别|种类"), frozenset({"BELONGS_TO_CATEGORY"})),
     (re.compile(r"朝代|时期|年代|制作于"), frozenset({"CREATED_IN"})),
     (re.compile(r"文化|反映"), frozenset({"REFLECTS_CULTURE"})),
