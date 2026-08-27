@@ -119,3 +119,32 @@
 | DOC_231 | 多元一体文明视角补充 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
 | DOC_232 | 海上丝绸之路关联背景 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
 | DOC_233 | 王墓展区文化价值总结 | culture | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/bwyjj |
+| DOC_234 | 王墓展区参观指南（2026年版） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12532 |
+| DOC_235 | 王宫展区参观指南 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12498 |
+| DOC_236 | 南越文王墓墓室下层参观公告（预约限流） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12469 |
+| DOC_237 | 南越文王墓原址展示区恢复对外开放公告 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12524 |
+| DOC_238 | 南越文王墓原址展示区暂停开放公告（历史记录，已恢复） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12496 |
+| DOC_239 | 王宫展区2026年暑期延长开放服务时间公告 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12596 |
+| DOC_240 | 台风“红霞”后恢复开放公告（2026年7月） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12604 |
+| DOC_241 | 规范社会人士及机构在展区内开展讲解研学活动秩序公告 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12609 |
+| DOC_242 | 警惕院外无授权商铺消费风险公告 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12597 |
+| DOC_243 | 馆内便民服务（行李寄存、租借、医药箱） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit-0 |
+| DOC_244 | 无障碍与爱心服务（手语导赏、轮椅租借、爱心预约） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/Details/fwjs |
+| DOC_245 | 讲解与导览服务（免费定时讲解、收费讲解、语音导览） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit-0 |
+| DOC_246 | 参观须知（全员实名预约制） | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit-0 |
+| DOC_247 | 两展区地址与交通指引 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/News/VisitIndex/Visit-0 |
+| DOC_248 | 王墓展区空间构成与展览分布 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wmzq |
+| DOC_249 | 王宫展区空间构成与展览分布 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/About/Index/wgzq |
+| DOC_250 | 南越藏珍陈列单元结构与官方重点文物表述 | tourism | 南越王博物院 | https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647 |
+| DOC_251 | 第一次参观王墓展区路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_252 | 30分钟精华路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_253 | 1小时重点路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_254 | 2小时深度路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_255 | 半日王墓展区路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_256 | 王墓、王宫两展区联动路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_257 | 亲子观察路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_258 | 学生研学证据链路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_259 | 老人与少走路路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_260 | 无障碍参观路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_261 | 雨天室内优先路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |
+| DOC_262 | 四条主题参观路线（项目整理） | tourism | AI-trip 项目整理 | https://github.com/diongJ/AI-trip |

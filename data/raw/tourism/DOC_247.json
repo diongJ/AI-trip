@@ -1,0 +1,22 @@
+{
+  "doc_id": "DOC_247",
+  "title": "两展区地址与交通指引",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/VisitIndex/Visit-0",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "南越王博物院由王墓展区和王宫展区组成，两展区不在同一地址，需分别前往。王宫展区地址为广州市越秀区中山四路316号，地铁一、二号线公园前站F出口，公交财厅站、中山五路站；入口为东门（近城隍庙），出口为西门（北京路374号，近广东省财政厅）。王墓展区地址为广州市越秀区解放北路867号，地铁二号线越秀公园站E出口，公交越秀公园站、解放北路口站、盘福路站。两展区之间可搭乘地铁二号线（越秀公园站—公园前站）往来。实时路况、打车价格和停车信息不属于馆内静态资料，请以导航软件实时信息为准。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "交通",
+    "地址",
+    "地铁",
+    "公交",
+    "出入口"
+  ],
+  "published_at": null,
+  "content_hash": "a75d2e1e241a8afec07d787bcc1c25cec6d32b41bd6b84638603293cdb551eff",
+  "review_status": "approved",
+  "version": 1
+}

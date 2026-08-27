@@ -53,6 +53,12 @@
 - `python -m scripts.verify_retrieval`：通过。
 - `python -m scripts.verify_agent`：20/20，覆盖参观攻略、实时拒答和混合检索。
 - `python -m scripts.verify_demo`：5/5。
-- `python -m pytest -q`：98 项通过；覆盖信任字段、证据角色隔离、路由、RAG、KG、DeepSeek 失败回退和联网来源强校验。
-- `python -m scripts.evaluate_qa --fail-under 0.9`：50/50，通过率 100%。
-- `python -m scripts.run_evaluation_v2`：有效回答率 87.5%、Top-5 召回率 88.75%、引用正确率 100%、拒答准确率 100%。
+- `python -m pytest -q`、`scripts.validate_corpus`、索引重建与专项导览评测将在 V2 融合完成后统一更新。
+
+---
+
+# 游客导览资料扩充（第二轮）
+
+更新日期：2026-08-27。新增 DOC_234-DOC_262 共 29 份 `extended` 资料：17 份馆方事实资料与 12 条项目整理路线；路线不写入知识图谱。配套交付物位于 `docs/visitor_guidance/`，包括 63 条 FAQ、路线、空间事实、文物表、官方快照与待核实问题清单。
+
+V2 将这些资料的 `evidence_role`、有效期、展区和游客类型纳入检索，默认排除失效或尚未生效公告。
