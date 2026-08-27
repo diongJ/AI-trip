@@ -250,10 +250,10 @@ def test_agent_keeps_realtime_visit_questions_out_of_scope(tmp_path) -> None:
 
 def test_agent_softly_declines_when_local_evidence_is_missing(tmp_path) -> None:
     class EmptyDocumentRetriever:
-        def search(self, query, *, top_k=5, category=None, min_score=0.0, evidence_role=None):
+        def search(self, query, *, top_k=5, category=None, min_score=0.0, evidence_role=None, **kwargs):
             return []
 
-        def search_many(self, queries, *, top_k=8, per_query_k=12, category=None, source_tier=None, evidence_role=None):
+        def search_many(self, queries, *, top_k=8, per_query_k=12, category=None, source_tier=None, evidence_role=None, **kwargs):
             return []
 
     class EmptyGraphRetriever:

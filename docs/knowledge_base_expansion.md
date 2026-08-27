@@ -35,7 +35,7 @@
 - 所有新增资料均标记为 `source_tier=extended`，不改变 Day 3 核心图谱 78 个实体、87 条关系的基线口径。
 - 开放时间、预约、票务等只保留稳定边界和官方确认提醒；当天客流、实时余票、临时闭馆、天气、停车空位和路线导航不写入静态知识库。
 - 全部有效文档必须持久化与正文一致的 `content_hash`，并显式填写 `review_status` 和 `evidence_role`。
-- 163 份官方或可信资料标记为 `factual`；18 份项目整理攻略标记为 `curated_guidance`。整理攻略不能进入知识图谱，也不能作为博物院规定的引用。
+- 180 份官方或可信资料标记为 `factual`；30 份项目整理攻略标记为 `curated_guidance`。整理攻略不能进入知识图谱，也不能作为博物院规定的引用。
 
 ## 对应系统改动
 
@@ -47,8 +47,8 @@
 
 ## 当前验证
 
-- `python -m scripts.validate_corpus`：181 docs。
-- `python -m scripts.build_rag_index --force`：181 docs。
+- `python -m scripts.validate_corpus`：210 docs，180 份 factual、30 份 curated_guidance。
+- `python -m scripts.build_rag_index --force`：210 docs。
 - `python -m scripts.verify_rag`：9/10。
 - `python -m scripts.verify_retrieval`：通过。
 - `python -m scripts.verify_agent`：20/20，覆盖参观攻略、实时拒答和混合检索。
@@ -59,6 +59,6 @@
 
 # 游客导览资料扩充（第二轮）
 
-更新日期：2026-08-27。新增 DOC_234-DOC_262 共 29 份 `extended` 资料：17 份馆方事实资料与 12 条项目整理路线；路线不写入知识图谱。配套交付物位于 `docs/visitor_guidance/`，包括 63 条 FAQ、路线、空间事实、文物表、官方快照与待核实问题清单。
+更新日期：2026-08-27。新增 DOC_234-DOC_262 共 29 份 `extended` 资料：17 份馆方事实资料与 12 条项目整理路线；路线不写入知识图谱。配套交付物位于 `docs/visitor_guidance/`，包括 64 条 FAQ、路线、空间事实、文物表、官方快照与待核实问题清单。
 
 V2 将这些资料的 `evidence_role`、有效期、展区和游客类型纳入检索，默认排除失效或尚未生效公告。

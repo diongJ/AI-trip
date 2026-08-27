@@ -34,7 +34,7 @@ def main() -> None:
 def _home_path(runtime: AppRuntime) -> bool:
     status = runtime.status
     return (
-        status.document_count == 181
+        status.document_count == 210
         and status.entity_count == 78
         and status.relation_count == 87
     )
