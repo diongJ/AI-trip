@@ -51,3 +51,50 @@
 - `python -m scripts.verify_agent`：20/20，覆盖参观攻略、实时拒答和混合检索。
 - `python -m scripts.verify_demo`：5/5。
 - `python -m pytest`：72 passed，6 skipped；覆盖路由、RAG 兜底、DeepSeek 通用兜底和 Demo 状态。
+
+---
+
+# 游客导览资料扩充（第二轮）
+
+更新日期：2026-08-27
+
+## 依据
+
+按《南越王博物院游客导览资料采集任务书》（docs/visitor_guidance_source_collection.md）执行，
+补齐"参观事实、空间位置、重点文物、游客需求和路线组织"资料。
+
+## 新增语料（29 个，data/raw/tourism/，source_tier=extended）
+
+- 官方事实 DOC_234-DOC_250（17 个，source_type=official）：
+  2026 年王墓展区参观指南、王宫展区参观指南、墓室下层预约限流公告（2025-07-09）、
+  墓原址恢复开放公告（2025-12-16）、墓原址暂停开放公告（2025-09-21，已失效仅留变更记录）、
+  王宫展区 2026 暑期延长开放（2026-07-11 至 08-31）、台风恢复开放公告（2026-07-27，已执行完毕）、
+  规范社会讲解研学秩序公告（2026-08-12，2026-09-01 施行）、警惕院外无授权商铺公告（2026-07-07）、
+  馆内便民服务、无障碍与爱心服务、讲解导览服务、参观须知、两展区交通、王墓/王宫展区空间构成、
+  南越藏珍六单元结构与官方重点文物表述。
+- 项目整理路线 DOC_251-DOC_262（12 条，source_type=other，evidence_role=curated_guidance）：
+  首次参观、30 分钟、1 小时、2 小时、半日、两展区联动、亲子、研学、老人、无障碍、雨天、
+  四条主题路线；均标注"项目整理建议，非馆方官方路线"，不写入知识图谱。
+
+## 交付物（docs/visitor_guidance/）
+
+- visitor_sources.csv：29 条采集记录，含任务书第 5 节全部扩展字段与正文 SHA-256。
+- structured_space_facts.csv：展区→建筑→楼层→展厅/设施 23 条层级事实，含置信度标注。
+- representative_relics.csv：12 件代表性文物，位置、官方推荐理由、适合人群、关联文物。
+- visitor_faq.csv：63 条游客真实问法与标准意图（覆盖开放票务、预约、交通、讲解、便民、无障碍、规则、路线、文物九类）。
+- curated_routes.md：12 条路线明细（适合人群、时长、站点、停留、官方依据）。
+- open_issues.md：9 项待馆方核实 + 5 项时效复查 + 5 项口径注意。
+- official_snapshots/：3 个官方页面快照（参观指南、通知公告、服务与陈列）。
+
+## 验证
+
+- scripts.validate_corpus：210 docs（原 181 + 新增 29），0 错误。
+- scripts.build_rag_index --force：385 chunks，索引已重建。
+- scripts.verify_rag：9/10（与扩充前基线一致）；scripts.verify_retrieval：通过。
+- 注：本轮在项目根目录新建 .venv 并安装项目依赖后运行上述脚本。
+
+## 时效提醒
+
+- 王宫展区暑期延时（9:00—18:00）2026-08-31 后失效（DOC_239）。
+- 社会机构研学讲解备案新规 2026-09-01 起施行（DOC_241）。
+- 常规开放票务每月复查；临时公告到期退出当前索引（见 open_issues.md B 类）。
