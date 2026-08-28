@@ -41,3 +41,4 @@ data/graph/*
 .npm-cache/
 .pip-cache/
 .tmp-pip/
+.tmp-pytest/

@@ -204,3 +204,10 @@
   - 儿童故事/讲解对文物人物类实体强制 KG，儿童模式跳过未知词守卫；
   - 儿童答案与证据 ID 使用同一排序文档（修复接地校验不一致 bug）。
 - 验证：120 题评测 100%、24 题冒烟全过、pytest 全量通过。
+
+## 2026-08-28 本地推进检查与远端提交
+
+- 当前本地工作在 `main`，相对 `origin/main` 超前 6 个已提交 commit：`9e4ab8f`、`fad9fb3`、`38b75d5`、`735dfbc`、`c1f9952`、`1791316`。
+- 为避免直接推送覆盖远端 `main`，远端提交应推到独立分支后再发 PR。
+- 本地验证结果：`scripts.validate_corpus` 通过，语料 220 份；`scripts.verify_agent` 通过 24/24；`scripts.verify_demo` 通过 5/5；`pytest` 通过 115 passed。
+- 本机 `.venv` 的 Python 启动器路径已失效；可临时使用 bundled Python 并设置 `PYTHONPATH=.\\.venv\\Lib\\site-packages`。pytest 需要把 `--basetemp` 指向项目内 `.tmp-pytest`。
