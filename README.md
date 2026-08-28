@@ -281,8 +281,8 @@ python -m scripts.run_evaluation_v2
 
 - 在提交 `360f786` 中继续扩充到 210 份资料，并新增历史文化、重点文物、参观攻略、稳定馆内信息和信息边界资料。
 - 增加 50 题回归评测，完善真实实体/别名识别、相关性门槛、参观问题重排、KG 跑题过滤、未知人物和未知方面保护。
-- 完善 Streamlit 内容与交互，并新增 `website/` React/Vite 静态展示站。该展示站目前用于项目成果演示，尚未连接 Python RAG 后端或 DeepSeek。
-- `dev` 通过合并提交 `827c603` 集成上述工作；本轮后端改进以该提交为基线，未调整 React 或 Streamlit 视觉页面。
+- 完善 Streamlit 内容与交互，并新增 `website/` React/Vite 展示站。
+- React 展示站现通过 `app.api` 与 Streamlit 共用 Python RAG、图谱与 DeepSeek 降级运行时，提供真实问答、来源追溯与一跳关系探索。
 
 ### 当前可信度改进（2026-08-27）
 

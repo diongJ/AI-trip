@@ -1,25 +1,28 @@
 import { Navbar } from '@/sections/Navbar'
 import { Hero } from '@/sections/Hero'
-import { Stats } from '@/sections/Stats'
-import { Features } from '@/sections/Features'
 import { QADemo } from '@/sections/QADemo'
 import { GraphExplorer } from '@/sections/GraphExplorer'
-import { Pipeline } from '@/sections/Pipeline'
-import { Evaluation } from '@/sections/Evaluation'
 import { Footer } from '@/sections/Footer'
+import { Treasures } from '@/sections/Treasures'
+import { Timeline } from '@/sections/Timeline'
+import { Themes } from '@/sections/Themes'
+import { Research } from '@/sections/Research'
+import { useState } from 'react'
 
 export default function Home() {
+  const [requestedEntity, setRequestedEntity] = useState<string>()
+  const explore = (entity: string) => setRequestedEntity(entity)
   return (
     <div className="min-h-screen">
       <Navbar />
       <main>
         <Hero />
-        <Stats />
-        <Features />
+        <Treasures />
         <QADemo />
-        <GraphExplorer />
-        <Pipeline />
-        <Evaluation />
+        <Timeline onExplore={explore} />
+        <GraphExplorer requestedEntity={requestedEntity} onConsumed={() => setRequestedEntity(undefined)} />
+        <Themes onExplore={explore} />
+        <Research />
       </main>
       <Footer />
     </div>
