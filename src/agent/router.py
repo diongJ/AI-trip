@@ -23,14 +23,19 @@ INCORRECT_PREMISE_RE = re.compile(
 )
 DOMAIN_OUT_OF_SCOPE_RE = re.compile(
     r"(路线导航|停车最方便|哪里停车|餐厅|酒店|公交换乘|地铁换乘|打车|机场|"
-    r"智能手机|恐龙|航空母舰|火星|月球|外星)"
+    r"智能手机|恐龙|航空母舰|火星|月球|外星|多远|距离|多少公里|机关暗器|暗器)"
 )
-RELATION_RE = re.compile(r"(关系|谁|属于|出土|材料|材质|纹饰|制作|反映|关联|葬)")
-DESCRIPTION_RE = re.compile(r"(介绍|讲讲|特点|意义|价值|如何|为什么|背景|过程|展示|展区)")
+ANECDOTE_RE = re.compile(r"(典故|成语|轶事|掌故|趣事|历史故事|民间传说|传说|故事)")
+RELATION_RE = re.compile(r"(关系|谁|属于|出土|材料|材质|纹饰|制作|反映|关联|葬|朝代|时期|年代)")
+DESCRIPTION_RE = re.compile(
+    r"(介绍|讲讲|特点|意义|价值|如何|为什么|背景|过程|展示|展区|"
+    r"自称|位于|哪里|在哪|哪个|几次|多少|放在|出土在|是什么|有什么|做什么|怎么|"
+    r"分别|是不是|是吗|哪座|多少件|多少片|多少年|叫什么|有哪些)"
+)
 HYBRID_RE = re.compile(
     r"(结合.*(?:文物|资料|证据)|文物证据|建立|创建|创立|开国|反映|观念)"
 )
-COMPARISON_RE = re.compile(r"(比较|区别|异同|不同|相同|对比)")
+COMPARISON_RE = re.compile(r"(比较|区别|异同|不同|相同|对比|分别|各自)")
 EXPLANATION_RE = re.compile(r"(为什么|意义|价值|反映了什么|体现|如何理解|影响)")
 TOURISM_RE = re.compile(
     r"(参观|游览|攻略|怎么逛|怎么玩|路线|动线|展厅|展区|开放时间|几点|门票|预约|地址|"
@@ -38,6 +43,7 @@ TOURISM_RE = re.compile(
     r"手语|多语种|语音|英语|英文|分钟|小时|雨天|食物|母婴|开门|开馆|营业|关门|"
     r"闭馆|最[佳优]|推荐|建议|值得看|看什么|怎么安排|怎么走|逛多久|多久能逛完|半天)"
 )
+WANGGONG_STABLE_INFO_RE = re.compile(r"(开放|延长|预约|时间|闭馆|几点|什么时候|票|暑期)")
 CROSS_ZONE_RE = re.compile(r"(两展区|王墓.*王宫|王宫.*王墓|一起参观|联动|展区区别|展区.*区别)")
 WANGGONG_ONLY_RE = re.compile(r"(南越王宫|王宫展区)")
 UNCONFIRMED_VISIT_RE = re.compile(
@@ -87,12 +93,64 @@ class RuleBasedRouter:
                 intent="out_of_scope",
                 scope="out_of_scope",
             )
+        if ANECDOTE_RE.search(normalized):
+            entity_query = self._find_entity_query(normalized)
+            return RouteDecision(
+                question_type=QuestionType.DESCRIPTION,
+                tool=ToolName.SEARCH_DOCUMENTS,
+                entity_query=entity_query,
+                reason="问题询问南越典故、成语或历史故事，优先检索历史文化资料。",
+                intent="anecdote",
+                entities=[entity_query] if entity_query else [],
+                subqueries=_anecdote_subqueries(normalized),
+                answer_mode=_default_answer_mode(normalized),
+            )
+        if re.search(r"博物院|博物馆", normalized) and not TOURISM_RE.search(normalized):
+            # 博物院/博物馆作为提问对象时走文档检索，避免被解析成
+            # 人物别名（如“南越王”→赵眜）导致答错主体。
+            return RouteDecision(
+                question_type=QuestionType.DESCRIPTION,
+                tool=ToolName.SEARCH_DOCUMENTS,
+                reason="问题以博物院/博物馆为对象，检索馆方概况与展区资料。",
+                intent="description",
+                subqueries=_compound_subqueries(
+                    normalized + " 南越王博物院 展区 简介 广州"
+                ),
+                answer_mode=_default_answer_mode(normalized),
+            )
 
         entity_query = self._find_entity_query(normalized)
         answer_mode = _default_answer_mode(normalized)
         explanation_intent = "comparison" if COMPARISON_RE.search(normalized) else (
             "explanation" if EXPLANATION_RE.search(normalized) else "description"
         )
+        entity_queries = _find_entity_queries(normalized, self.resolver, entity_query)
+        if (
+            entity_query
+            and len(entity_queries) >= 2
+            and not TOURISM_RE.search(normalized)
+            and not RELATION_RE.search(normalized)
+        ):
+            # 同时命中两个图谱实体（如“文帝行玺和丝缕玉衣分别是什么”）：
+            # 两个实体都纳入混合检索，避免只回答其中一个。关系类（什么关系）
+            # 与参观类问题仍走各自专用路由（KG / visit）。
+            return RouteDecision(
+                question_type=QuestionType.DESCRIPTION,
+                tool=ToolName.HYBRID_SEARCH,
+                entity_query=entity_query,
+                reason="问题同时涉及多个图谱实体，使用多实体混合检索。",
+                intent="comparison" if explanation_intent == "description" else explanation_intent,
+                entities=entity_queries,
+                subqueries=list(
+                    dict.fromkeys(
+                        [
+                            *_compound_subqueries(normalized),
+                            f"{entity_queries[0]} {entity_queries[1]} 介绍 文物",
+                        ]
+                    )
+                ),
+                answer_mode=answer_mode,
+            )
         if entity_query and HYBRID_RE.search(normalized):
             return RouteDecision(
                 question_type=QuestionType.DESCRIPTION,
@@ -106,6 +164,31 @@ class RuleBasedRouter:
             )
         if TOURISM_RE.search(normalized):
             if WANGGONG_ONLY_RE.search(normalized) and not CROSS_ZONE_RE.search(normalized):
+                if WANGGONG_STABLE_INFO_RE.search(normalized):
+                    # 王宫展区开放/预约/延长开放等稳定公告信息允许回答，
+                    # 其余王宫内容仍按非目标拒答。走普通文档检索（不走
+                    # 王墓导向的 visit 重排），让公告文档按 BM25 自然胜出。
+                    temporal_scope, as_of = _temporal_scope(normalized)
+                    return RouteDecision(
+                        question_type=QuestionType.DESCRIPTION,
+                        tool=ToolName.SEARCH_DOCUMENTS,
+                        entity_query=None,
+                        reason="问题询问王宫展区稳定开放/预约信息，检索官方公告资料。",
+                        intent="description",
+                        subqueries=list(
+                            dict.fromkeys(
+                                [
+                                    normalized,
+                                    "南越王博物院 王宫展区 开放时间 暑期 延长开放 公告",
+                                    "王宫展区 免费 预约 常规开放时间 闭馆",
+                                ]
+                            )
+                        ),
+                        answer_mode=answer_mode,
+                        temporal_scope=temporal_scope,
+                        as_of=as_of,
+                        visit_zone=VisitZone.CROSS_ZONE,
+                    )
                 return RouteDecision(
                     question_type=QuestionType.OUT_OF_SCOPE,
                     tool=ToolName.NONE,
@@ -147,7 +230,9 @@ class RuleBasedRouter:
                 subqueries=[normalized],
                 answer_mode=answer_mode,
             )
-        if entity_query and DESCRIPTION_RE.search(normalized):
+        if entity_query and DESCRIPTION_RE.search(normalized) or (
+            entity_query and explanation_intent == "comparison"
+        ):
             return RouteDecision(
                 question_type=QuestionType.DESCRIPTION,
                 tool=ToolName.HYBRID_SEARCH,
@@ -155,7 +240,7 @@ class RuleBasedRouter:
                 reason="问题需要实体关系和文档描述，使用混合检索。",
                 intent=explanation_intent,
                 entities=[entity_query],
-                subqueries=[normalized],
+                subqueries=_compound_subqueries(normalized),
                 answer_mode=answer_mode,
             )
         if entity_query:
@@ -175,7 +260,7 @@ class RuleBasedRouter:
                 tool=ToolName.SEARCH_DOCUMENTS,
                 reason="问题偏描述性，使用文档检索获取原文片段。",
                 intent=explanation_intent,
-                subqueries=[normalized],
+                subqueries=_compound_subqueries(normalized),
                 answer_mode=answer_mode,
             )
         return RouteDecision(
@@ -183,7 +268,7 @@ class RuleBasedRouter:
             tool=ToolName.SEARCH_DOCUMENTS,
             reason="未命中明确实体，使用文档检索作为保守默认策略。",
             intent=explanation_intent,
-            subqueries=[normalized],
+            subqueries=_compound_subqueries(normalized),
             answer_mode=answer_mode,
         )
 
@@ -198,6 +283,35 @@ class RuleBasedRouter:
             if self.resolver.resolve_entity_id(candidate):
                 return candidate
         return None
+
+
+def _find_entity_queries(
+    question: str, resolver: EntityResolver | None, primary: str | None
+) -> list[str]:
+    """探测问题中是否同时提到第二个图谱实体（用于“A和B分别…”类问题）。"""
+    if not resolver or not primary:
+        return [primary] if primary else []
+    remaining = re.sub(re.escape(primary), " ", question)
+    second = _entity_from_known_aliases(remaining, resolver)
+    if second and second != primary:
+        return [primary, second]
+    return [primary]
+
+
+def _compound_subqueries(question: str) -> list[str]:
+    """复合问题（含逗号/顿号）拆成子查询，保证两个子问题都能被检索到。"""
+    parts = [part.strip() for part in re.split(r"[，,、；;]", question) if part.strip()]
+    queries: list[str] = []
+    if len(parts) < 2:
+        queries.append(question)
+    else:
+        queries.extend(parts)
+        queries.append(question)
+    if re.search(r"多少年|几年|存在了|存世", question):
+        # 存续年限类问题：补“存世/建立/灭亡”查询，让记载存续年份的
+        # 历史资料（如“南越国存世的93年”）参与排名。
+        queries.append("南越国 存世 历史 建立 灭亡 年")
+    return list(dict.fromkeys(queries))
 
 
 def _entity_candidates(question: str) -> list[str]:
@@ -218,7 +332,15 @@ def _entity_candidates(question: str) -> list[str]:
         candidates.extend(cjk_text[index : index + size] for index in range(len(cjk_text) - size + 1))
     if question.strip() not in candidates:
         candidates.append(question.strip())
-    return list(dict.fromkeys(candidate for candidate in candidates if candidate))
+    # 实体名都是短名词（一般不超过 6 字）；跳过整句等长候选，避免
+    # “整句话命中某个实体别名”导致 entity_query 被误设为整句/长片段。
+    return list(
+        dict.fromkeys(
+            candidate
+            for candidate in candidates
+            if candidate and len(re.sub(r"[^一-鿿]", "", candidate)) <= 6
+        )
+    )
 
 
 def _visit_subqueries(question: str) -> list[str]:
@@ -229,6 +351,19 @@ def _visit_subqueries(question: str) -> list[str]:
                 "南越王博物院 王墓展区 参观攻略 开放时间 预约",
                 "南越王博物院 王墓展区 地址 交通 导览 服务",
                 "南越文王墓 展厅 游览 动线 重点文物",
+            ]
+        )
+    )
+
+
+def _anecdote_subqueries(question: str) -> list[str]:
+    return list(
+        dict.fromkeys(
+            [
+                question,
+                "南越国 典故 历史故事 传说 成语",
+                "赵佗 典故 陆贾 任嚣 故事",
+                "南越文王墓 典故 传说 文帝行玺",
             ]
         )
     )

@@ -32,9 +32,9 @@ def _retriever(tmp_path) -> RagRetriever:
 
 def test_visitor_corpus_has_roles_and_temporal_metadata() -> None:
     corpus = load_corpus()
-    assert len(corpus) == 210
+    assert len(corpus) == 220
     assert Counter(document.evidence_role for document in corpus) == {
-        "factual": 180,
+        "factual": 190,
         "curated_guidance": 30,
     }
     doc_238 = next(document for document in corpus if document.doc_id == "DOC_238")

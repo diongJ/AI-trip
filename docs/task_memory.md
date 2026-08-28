@@ -143,3 +143,71 @@
 - `python -m scripts.verify_agent` 通过：20/20。
 - `python -m scripts.verify_demo` 通过：5/5。
 - `python -m pytest` 通过：72 passed，6 skipped。
+
+## 2026-08-28 跟进同步与健康验证
+
+### 当前状态
+
+- 本地 `main` 由 `8635f4e` 快进同步至 `origin/main` `71691cd`，合入 PR #14（50 题评测基线）、PR #15（grounding 加固）与 PR #16（Day8++：网站重建为南越数字博物馆、游客导览 V2 扩充 DOC_234-DOC_262）。
+- 清理了本地未跟踪的 `website/`（仅含 `dist/` 与 `node_modules/`，无源码，可由远程源码重新生成）；`docs/website_design_agent_prompt.md` 已被 `.gitignore` 忽略，保留在本地不入库。
+- 本地 `.env` 仍为 `DEEPSEEK_MODEL=deepseek-chat`，README 新口径为 `deepseek-v4-flash`（个人凭据差异，不提交）。
+
+### 验证记录
+
+- 补齐 venv dev 依赖后 `python -m pytest` 通过：111 passed（较 08-26 的 72 passed + 6 skipped 新增 API 与游客导览 V2 测试）。
+- 沙箱环境注意：`pip install` 与 `pytest` 的临时目录需显式指向工作区内路径（如 `.tmp-pip`），否则 Windows 上会因系统 Temp 写入受限报 PermissionError。
+
+### 待办线索
+
+- `docs/visitor_guidance/open_issues.md` B1：王宫展区暑期延长开放 2026-08-31 后失效，需按复查要求更新语料。
+- `website/ASSET_CHECKLIST.md`：网站文物视觉仍为占位构图，待正式素材替换。
+
+## 2026-08-28 儿童板块与典故知识库
+
+### 当前状态
+
+- 儿童板块「小越的南越故事屋」已实现并上线：后端 `Audience.KIDS`、儿童意图识别（story/relic/chat）、儿童化回答与拒答语气；网站独立区块 + 导航入口；Streamlit 智能问答页加「儿童模式」开关。
+- 儿童模式**固定走离线证据生成**（`小越离线故事`）：DeepSeek 叙事化生成对儿童短句的接地校验不稳定，待提示词调优后按需启用。
+- 典故知识库扩充 DOC_263-DOC_267（陆贾使越、任嚣授命、赵佗称帝归汉、和辑百越、文帝行玺僭号），路由新增 `anecdote` 意图并跳过规划器。
+- 关键修复：故事/典故类问题在 `search_kg` 跳过离题过滤；儿童故事优先 KG 事实；典故文档检索后按关键词过滤，防止博物馆概况文档答偏。
+
+### 验证记录
+
+- `pytest` 全量通过（含 4 个儿童模式用例）。
+- `/api/ask` 实测（Python httpx，注意 PowerShell 发中文体会乱码）：儿童聊天返回 `chat` 状态；「南越时期有什么典故」「文帝行玺有什么典故？」返回带引用的典故回答；儿童故事返回 KG 事实故事。
+- 注意：沙箱环境下 pip/pytest/uvicorn 均需把临时目录指向工作区内 `.tmp-pip`；杀 uvicorn/streamlit 进程后需确认端口已释放再重启。
+
+## 2026-08-28 七项体验与质量优化
+
+- ① 儿童模式恢复 DeepSeek 智能故事：先生成、校验失败自动回退离线故事（实测返回 3 条引用的主题内回答）。
+- ② 新增儿童故事语料 DOC_268-DOC_272（文帝行玺/玉衣/角形玉杯/组玉佩/儿童参观动线），语料 220 份。
+- ③ 网站问答（QADemo 与 KidsQA）升级为多轮会话：保留最近 4 轮历史，追问可解析（实测「它出土在哪里？」正确指代文帝行玺）。
+- ④ 图谱探索加入防抖实时搜索。
+- ⑤ 语义检索未启用：沙箱无法访问 HuggingFace 下载 BGE 模型（torch 亦约 2GB），README 已有启用指引，留待正常网络环境。
+- ⑥ 新增 `.github/workflows/ci.yml`：pytest + 评测门禁（≥90%）+ 冒烟 24 题 + 网站 lint/build。
+- ⑦ 网站补全 OG/Twitter meta、theme-color，新增 404 页面；修复 SpotlightCard 的 `React.MouseEvent` 类型未导入问题（`npm run build` 的 tsc 通过）。
+- 验证：pytest 全量通过；60 题评测 100%；24 题冒烟全过；`npm run build` 成功。
+
+## 2026-08-28 智能体 IQ 优化（评测 60→120 题，全过）
+
+- 评测集扩展至 **120 题**（多跳/比较/否定/复合/时效/人物辨析/典故/儿童/参观/域外），从 85.8% 优化到 **100%**。
+- 核心改动（router/service/tools）：
+  - 描述词路由扩展（自称/位于/多少/是什么/分别等 → 混合检索，不再纯 KG 空转）；
+  - 实体候选限长 ≤6 字，修复"整句话被误当成实体"；
+  - KG 证据缺失时文档兜底放宽（实体在文档中即够）+ 样板页（备案/导航）过滤；
+  - "是…吗"确认问法：只扫实体前的未知主语（李鴻章拒答 / 用铜做的放行）；
+  - 比较/关系类问法：词表外方面词即拒答（赋税/西游记/皇帝的新衣）；
+  - 外来词（GDP）未知检查；动词+体貌后缀（灭掉→灭）不误判；
+  - 王宫展区开放/预约/延长公告问题放行（走普通文档检索，不再误拒）；
+  - 博物院/博物馆为主语时走文档检索，避免被解析成人物别名；
+  - 复合问题按逗号/顿号拆分查询；多实体问题（A和B分别是什么）双实体混合检索；
+  - 儿童故事/讲解对文物人物类实体强制 KG，儿童模式跳过未知词守卫；
+  - 儿童答案与证据 ID 使用同一排序文档（修复接地校验不一致 bug）。
+- 验证：120 题评测 100%、24 题冒烟全过、pytest 全量通过。
+
+## 2026-08-28 本地推进检查与远端提交
+
+- 当前本地工作在 `main`，相对 `origin/main` 超前 6 个已提交 commit：`9e4ab8f`、`fad9fb3`、`38b75d5`、`735dfbc`、`c1f9952`、`1791316`。
+- 为避免直接推送覆盖远端 `main`，远端提交应推到独立分支后再发 PR。
+- 本地验证结果：`scripts.validate_corpus` 通过，语料 220 份；`scripts.verify_agent` 通过 24/24；`scripts.verify_demo` 通过 5/5；`pytest` 通过 115 passed。
+- 本机 `.venv` 的 Python 启动器路径已失效；可临时使用 bundled Python 并设置 `PYTHONPATH=.\\.venv\\Lib\\site-packages`。pytest 需要把 `--basetemp` 指向项目内 `.tmp-pytest`。

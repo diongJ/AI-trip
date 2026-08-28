@@ -36,3 +36,9 @@ data/graph/*
 !data/graph/.gitkeep
 !data/graph/knowledge_graph_v1.json
 
+
+# local caches (not part of the repo)
+.npm-cache/
+.pip-cache/
+.tmp-pip/
+.tmp-pytest/

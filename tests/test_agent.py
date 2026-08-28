@@ -6,6 +6,7 @@ from src.extraction.models import Entity, ExtractionResult, Relation
 from src.agent.models import (
     AnswerClaim,
     AnswerMode,
+    Audience,
     ClaimType,
     ConversationTurn,
     GeneratedAnswer,
@@ -511,3 +512,51 @@ def test_synthesis_claim_without_two_evidence_items_is_rejected(tmp_path) -> Non
 
     assert answer.insufficient_evidence
     assert answer.citations == []
+
+
+def test_kids_chat_returns_conversational_reply(tmp_path) -> None:
+    service = AgentService(build_tools(tmp_path))
+
+    answer = service.answer("你是谁？", audience=Audience.KIDS)
+
+    assert answer.response_status.value == "chat"
+    assert not answer.insufficient_evidence
+    assert answer.citations == []
+    assert "小越" in answer.answer
+
+
+def test_kids_story_keeps_evidence_and_citations(tmp_path) -> None:
+    service = AgentService(build_tools(tmp_path))
+
+    answer = service.answer("给我讲一个文帝行玺的小故事", audience=Audience.KIDS)
+
+    assert not answer.insufficient_evidence
+    assert answer.citations
+    assert "文帝行玺" in answer.answer
+    assert any(citation.doc_id == "DOC_013" for citation in answer.citations)
+
+
+def test_kids_relic_explanation_is_short_and_grounded(tmp_path) -> None:
+    service = AgentService(build_tools(tmp_path))
+
+    answer = service.answer("文帝行玺是什么材料？", audience=Audience.KIDS)
+
+    assert not answer.insufficient_evidence
+    assert answer.citations
+    assert "金" in answer.answer
+    assert len(answer.answer) < 300
+
+
+def test_kids_mode_never_web_searches_realtime_question(tmp_path) -> None:
+    class UnexpectedWebSearch:
+        def search(self, question: str) -> WebSearchResult:
+            raise AssertionError("kids mode must never call web search")
+
+    service = AgentService(build_tools(tmp_path), web_search_generator=UnexpectedWebSearch())
+
+    answer = service.answer("今天馆内有多少游客？", audience=Audience.KIDS)
+
+    assert answer.insufficient_evidence
+    assert answer.citations == []
+    assert answer.web_sources == []
+    assert ToolName.WEB_SEARCH not in answer.used_tools

@@ -1,52 +1,1011 @@
 [
-  {"id": "kg-material-01", "question": "文帝行玺是什么材料？", "expect": "answered", "must_contain": ["金"], "note": "KG 关系事实：材质"},
-  {"id": "kg-material-02", "question": "丝缕玉衣是用什么做的？", "expect": "answered", "must_contain": ["玉片"], "note": "KG 关系事实：材质（无提示词问法）"},
-  {"id": "kg-material-03", "question": "角形玉杯是什么材质的？", "expect": "answered", "must_contain": ["玉"], "note": "KG 关系事实：材质"},
-  {"id": "kg-dynasty-01", "question": "丝缕玉衣制作于哪个朝代？", "expect": "answered", "must_contain": ["西汉"], "note": "KG 关系事实：朝代"},
-  {"id": "kg-dynasty-02", "question": "文帝行玺是哪个朝代的文物？", "expect": "answered", "must_contain": ["西汉"], "note": "KG 关系事实：朝代"},
-  {"id": "kg-pattern-01", "question": "文帝行玺有什么纹饰？", "expect": "answered", "must_contain": ["龙"], "note": "KG 关系事实：纹饰"},
-  {"id": "kg-pattern-02", "question": "船纹铜提筒上有什么图案？", "expect": "answered", "must_contain": ["船"], "note": "KG 关系事实：纹饰"},
-  {"id": "kg-excavation-01", "question": "文帝行玺出土于哪里？", "expect": "answered", "must_contain": ["南越文王墓"], "note": "KG 关系事实：出土地"},
-  {"id": "kg-excavation-02", "question": "丝缕玉衣出土于哪里？", "expect": "answered", "must_contain": ["南越文王墓"], "note": "KG 关系事实：出土地"},
-  {"id": "kg-person-01", "question": "赵眜是谁？", "expect": "answered", "must_contain": ["南越"], "note": "纯实体提问"},
-  {"id": "kg-person-02", "question": "南越文王墓的墓主人是谁？", "expect": "answered", "must_contain": ["赵眜"], "note": "墓主身份"},
-  {"id": "kg-person-03", "question": "赵佗是谁？", "expect": "answered", "must_contain": ["南越"], "note": "纯实体提问"},
-  {"id": "kg-person-04", "question": "赵婴齐是谁？", "expect": "answered", "must_contain": ["南越"], "note": "纯实体提问"},
-  {"id": "kg-person-05", "question": "南越文王墓是谁的墓？", "expect": "answered", "must_contain": ["赵眜"], "note": "墓主身份反向提问"},
-  {"id": "kg-founder-01", "question": "南越国是谁建立的？", "expect": "answered", "must_contain": ["赵佗"], "note": "建国人物"},
-  {"id": "kg-history-01", "question": "南越国是被谁灭掉的？", "expect": "answered", "must_contain": ["汉"], "note": "历史事件"},
-  {"id": "doc-desc-01", "question": "介绍一下角形玉杯", "expect": "answered", "must_contain": ["角形玉杯"], "note": "描述性问题"},
-  {"id": "doc-desc-02", "question": "请讲讲南越文王墓的墓葬结构", "expect": "answered", "must_contain": ["墓"], "note": "描述性问题"},
-  {"id": "doc-desc-03", "question": "丝缕玉衣为什么重要？", "expect": "answered", "must_contain": ["玉衣"], "note": "意义类问题"},
-  {"id": "doc-visit-01", "question": "南越王博物院王墓展区怎么玩？", "expect": "answered", "must_contain": ["王墓展区"], "note": "参观攻略"},
-  {"id": "doc-visit-02", "question": "王墓展区开放时间怎么安排？", "expect": "answered", "must_contain": ["开放"], "note": "开放时间"},
-  {"id": "doc-visit-03", "question": "王墓展区有哪些重点文物？", "expect": "answered", "must_contain": ["文帝行玺"], "note": "重点文物"},
-  {"id": "doc-visit-04", "question": "参观王墓展区需要预约吗？", "expect": "answered", "must_contain": ["预约"], "note": "预约信息"},
-  {"id": "doc-visit-05", "question": "王墓展区的地址在哪里？", "expect": "answered", "must_contain": ["广州"], "note": "地址信息"},
-  {"id": "doc-visit-family-01", "question": "带孩子参观王墓展区有什么推荐？", "expect": "answered", "must_contain": ["王墓"], "note": "亲子游"},
-  {"id": "doc-visit-family-02", "question": "亲子参观可以让孩子观察哪些文物？", "expect": "answered", "must_contain": ["观察"], "note": "亲子观察任务"},
-  {"id": "doc-visit-study-01", "question": "学生研学参观王墓展区怎么安排？", "expect": "answered", "must_contain": ["学生"], "note": "研学游"},
-  {"id": "doc-visit-guide-01", "question": "王墓展区有讲解服务吗？", "expect": "answered", "must_contain": ["讲解"], "note": "讲解服务"},
-  {"id": "doc-visit-route-01", "question": "半天时间怎么参观王墓展区？", "expect": "answered", "must_contain": ["参观"], "note": "半日行程"},
-  {"id": "doc-visit-weather-01", "question": "下雨天适合参观王墓展区吗？", "expect": "answered", "must_contain": ["雨"], "note": "雨天参观"},
-  {"id": "refuse-unknown-person-01", "question": "赵高是谁？", "expect": "refused", "note": "知识库未收录人物，不得拿同姓资料冒充"},
-  {"id": "refuse-unknown-person-02", "question": "李鸿章来过南越王墓吗？", "expect": "refused", "note": "知识库未收录人物"},
-  {"id": "refuse-unknown-person-03", "question": "刘邦和赵佗是什么关系？", "expect": "answered", "must_contain": ["刘邦", "赵佗"], "note": "语料实际收录了汉高祖刘邦与赵佗的互动（册封诏书），应回答"},
-  {"id": "refuse-unknown-person-04", "question": "赵高和南越国有什么关系？", "expect": "refused", "note": "未收录人物与已收录实体"},
-  {"id": "refuse-unknown-topic-01", "question": "南越国的货币是什么样子的？", "expect": "refused", "note": "知识库未收录主题"},
-  {"id": "refuse-unknown-topic-02", "question": "南越国的GDP是多少？", "expect": "refused", "note": "英文主题词超纲"},
-  {"id": "refuse-unknown-topic-03", "question": "王墓展区有WiFi吗？", "expect": "refused", "note": "设施信息未收录"},
-  {"id": "refuse-unknown-topic-04", "question": "南越王墓里有没有机关暗器？", "expect": "refused", "note": "演绎化主题未收录"},
-  {"id": "refuse-unknown-aspect-01", "question": "赵佗的老婆是谁？", "expect": "refused", "note": "已收录人物的未收录方面"},
-  {"id": "refuse-unknown-aspect-02", "question": "赵眜的父亲是谁？", "expect": "refused", "note": "已收录人物的未收录亲属"},
-  {"id": "refuse-offtopic-aspect-01", "question": "南越国和秦朝的赋税制度有何异同？", "expect": "refused", "note": "命中实体但方面超纲"},
-  {"id": "refuse-realtime-01", "question": "今天馆内有多少游客？", "expect": "refused", "note": "实时信息超纲"},
-  {"id": "refuse-realtime-02", "question": "今天王墓展区还剩多少预约名额？", "expect": "refused", "note": "实时余票超纲"},
-  {"id": "refuse-realtime-03", "question": "现在去王墓展区要排队多久？", "expect": "refused", "note": "实时排队超纲"},
-  {"id": "refuse-domain-01", "question": "火星上的南越王墓是谁建的？", "expect": "refused", "note": "荒谬前提"},
-  {"id": "refuse-domain-02", "question": "王墓展区附近哪里停车最方便？", "expect": "refused", "note": "停车导航超纲"},
-  {"id": "refuse-domain-03", "question": "王墓展区附近有什么好吃的餐厅？", "expect": "refused", "note": "餐饮推荐超纲"},
-  {"id": "refuse-domain-04", "question": "南越文王墓出土了恐龙化石吗？", "expect": "refused", "note": "荒谬主题词"},
-  {"id": "refuse-poem-01", "question": "葡萄美酒夜光杯的诗意是什么？", "expect": "refused", "note": "文学问题超纲"},
-  {"id": "refuse-empty-01", "question": "怎么玩", "expect": "answered", "must_contain": ["王墓"], "note": "极简参观问法，允许回答官方攻略"}
+  {
+    "id": "kg-material-01",
+    "question": "文帝行玺是什么材料？",
+    "expect": "answered",
+    "must_contain": [
+      "金"
+    ],
+    "note": "KG 关系事实：材质"
+  },
+  {
+    "id": "kg-material-02",
+    "question": "丝缕玉衣是用什么做的？",
+    "expect": "answered",
+    "must_contain": [
+      "玉片"
+    ],
+    "note": "KG 关系事实：材质（无提示词问法）"
+  },
+  {
+    "id": "kg-material-03",
+    "question": "角形玉杯是什么材质的？",
+    "expect": "answered",
+    "must_contain": [
+      "玉"
+    ],
+    "note": "KG 关系事实：材质"
+  },
+  {
+    "id": "kg-dynasty-01",
+    "question": "丝缕玉衣制作于哪个朝代？",
+    "expect": "answered",
+    "must_contain": [
+      "西汉"
+    ],
+    "note": "KG 关系事实：朝代"
+  },
+  {
+    "id": "kg-dynasty-02",
+    "question": "文帝行玺是哪个朝代的文物？",
+    "expect": "answered",
+    "must_contain": [
+      "西汉"
+    ],
+    "note": "KG 关系事实：朝代"
+  },
+  {
+    "id": "kg-pattern-01",
+    "question": "文帝行玺有什么纹饰？",
+    "expect": "answered",
+    "must_contain": [
+      "龙"
+    ],
+    "note": "KG 关系事实：纹饰"
+  },
+  {
+    "id": "kg-pattern-02",
+    "question": "船纹铜提筒上有什么图案？",
+    "expect": "answered",
+    "must_contain": [
+      "船"
+    ],
+    "note": "KG 关系事实：纹饰"
+  },
+  {
+    "id": "kg-excavation-01",
+    "question": "文帝行玺出土于哪里？",
+    "expect": "answered",
+    "must_contain": [
+      "南越文王墓"
+    ],
+    "note": "KG 关系事实：出土地"
+  },
+  {
+    "id": "kg-excavation-02",
+    "question": "丝缕玉衣出土于哪里？",
+    "expect": "answered",
+    "must_contain": [
+      "南越文王墓"
+    ],
+    "note": "KG 关系事实：出土地"
+  },
+  {
+    "id": "kg-person-01",
+    "question": "赵眜是谁？",
+    "expect": "answered",
+    "must_contain": [
+      "南越"
+    ],
+    "note": "纯实体提问"
+  },
+  {
+    "id": "kg-person-02",
+    "question": "南越文王墓的墓主人是谁？",
+    "expect": "answered",
+    "must_contain": [
+      "赵眜"
+    ],
+    "note": "墓主身份"
+  },
+  {
+    "id": "kg-person-03",
+    "question": "赵佗是谁？",
+    "expect": "answered",
+    "must_contain": [
+      "南越"
+    ],
+    "note": "纯实体提问"
+  },
+  {
+    "id": "kg-person-04",
+    "question": "赵婴齐是谁？",
+    "expect": "answered",
+    "must_contain": [
+      "南越"
+    ],
+    "note": "纯实体提问"
+  },
+  {
+    "id": "kg-person-05",
+    "question": "南越文王墓是谁的墓？",
+    "expect": "answered",
+    "must_contain": [
+      "赵眜"
+    ],
+    "note": "墓主身份反向提问"
+  },
+  {
+    "id": "kg-founder-01",
+    "question": "南越国是谁建立的？",
+    "expect": "answered",
+    "must_contain": [
+      "赵佗"
+    ],
+    "note": "建国人物"
+  },
+  {
+    "id": "kg-history-01",
+    "question": "南越国是被谁灭掉的？",
+    "expect": "answered",
+    "must_contain": [
+      "汉"
+    ],
+    "note": "历史事件"
+  },
+  {
+    "id": "doc-desc-01",
+    "question": "介绍一下角形玉杯",
+    "expect": "answered",
+    "must_contain": [
+      "角形玉杯"
+    ],
+    "note": "描述性问题"
+  },
+  {
+    "id": "doc-desc-02",
+    "question": "请讲讲南越文王墓的墓葬结构",
+    "expect": "answered",
+    "must_contain": [
+      "墓"
+    ],
+    "note": "描述性问题"
+  },
+  {
+    "id": "doc-desc-03",
+    "question": "丝缕玉衣为什么重要？",
+    "expect": "answered",
+    "must_contain": [
+      "玉衣"
+    ],
+    "note": "意义类问题"
+  },
+  {
+    "id": "doc-visit-01",
+    "question": "南越王博物院王墓展区怎么玩？",
+    "expect": "answered",
+    "must_contain": [
+      "王墓展区"
+    ],
+    "note": "参观攻略"
+  },
+  {
+    "id": "doc-visit-02",
+    "question": "王墓展区开放时间怎么安排？",
+    "expect": "answered",
+    "must_contain": [
+      "开放"
+    ],
+    "note": "开放时间"
+  },
+  {
+    "id": "doc-visit-03",
+    "question": "王墓展区有哪些重点文物？",
+    "expect": "answered",
+    "must_contain": [
+      "文帝行玺"
+    ],
+    "note": "重点文物"
+  },
+  {
+    "id": "doc-visit-04",
+    "question": "参观王墓展区需要预约吗？",
+    "expect": "answered",
+    "must_contain": [
+      "预约"
+    ],
+    "note": "预约信息"
+  },
+  {
+    "id": "doc-visit-05",
+    "question": "王墓展区的地址在哪里？",
+    "expect": "answered",
+    "must_contain": [
+      "广州"
+    ],
+    "note": "地址信息"
+  },
+  {
+    "id": "doc-visit-family-01",
+    "question": "带孩子参观王墓展区有什么推荐？",
+    "expect": "answered",
+    "must_contain": [
+      "王墓"
+    ],
+    "note": "亲子游"
+  },
+  {
+    "id": "doc-visit-family-02",
+    "question": "亲子参观可以让孩子观察哪些文物？",
+    "expect": "answered",
+    "must_contain": [
+      "观察"
+    ],
+    "note": "亲子观察任务"
+  },
+  {
+    "id": "doc-visit-study-01",
+    "question": "学生研学参观王墓展区怎么安排？",
+    "expect": "answered",
+    "must_contain": [
+      "学生"
+    ],
+    "note": "研学游"
+  },
+  {
+    "id": "doc-visit-guide-01",
+    "question": "王墓展区有讲解服务吗？",
+    "expect": "answered",
+    "must_contain": [
+      "讲解"
+    ],
+    "note": "讲解服务"
+  },
+  {
+    "id": "doc-visit-route-01",
+    "question": "半天时间怎么参观王墓展区？",
+    "expect": "answered",
+    "must_contain": [
+      "参观"
+    ],
+    "note": "半日行程"
+  },
+  {
+    "id": "doc-visit-weather-01",
+    "question": "下雨天适合参观王墓展区吗？",
+    "expect": "answered",
+    "must_contain": [
+      "雨"
+    ],
+    "note": "雨天参观"
+  },
+  {
+    "id": "refuse-unknown-person-01",
+    "question": "赵高是谁？",
+    "expect": "refused",
+    "note": "知识库未收录人物，不得拿同姓资料冒充"
+  },
+  {
+    "id": "refuse-unknown-person-02",
+    "question": "李鸿章来过南越王墓吗？",
+    "expect": "refused",
+    "note": "知识库未收录人物"
+  },
+  {
+    "id": "refuse-unknown-person-03",
+    "question": "刘邦和赵佗是什么关系？",
+    "expect": "answered",
+    "must_contain": [
+      "刘邦",
+      "赵佗"
+    ],
+    "note": "语料实际收录了汉高祖刘邦与赵佗的互动（册封诏书），应回答"
+  },
+  {
+    "id": "refuse-unknown-person-04",
+    "question": "赵高和南越国有什么关系？",
+    "expect": "refused",
+    "note": "未收录人物与已收录实体"
+  },
+  {
+    "id": "refuse-unknown-topic-01",
+    "question": "南越国的货币是什么样子的？",
+    "expect": "refused",
+    "note": "知识库未收录主题"
+  },
+  {
+    "id": "refuse-unknown-topic-02",
+    "question": "南越国的GDP是多少？",
+    "expect": "refused",
+    "note": "英文主题词超纲"
+  },
+  {
+    "id": "refuse-unknown-topic-03",
+    "question": "王墓展区有WiFi吗？",
+    "expect": "refused",
+    "note": "设施信息未收录"
+  },
+  {
+    "id": "refuse-unknown-topic-04",
+    "question": "南越王墓里有没有机关暗器？",
+    "expect": "refused",
+    "note": "演绎化主题未收录"
+  },
+  {
+    "id": "refuse-unknown-aspect-01",
+    "question": "赵佗的老婆是谁？",
+    "expect": "refused",
+    "note": "已收录人物的未收录方面"
+  },
+  {
+    "id": "refuse-unknown-aspect-02",
+    "question": "赵眜的父亲是谁？",
+    "expect": "refused",
+    "note": "已收录人物的未收录亲属"
+  },
+  {
+    "id": "refuse-offtopic-aspect-01",
+    "question": "南越国和秦朝的赋税制度有何异同？",
+    "expect": "refused",
+    "note": "命中实体但方面超纲"
+  },
+  {
+    "id": "refuse-realtime-01",
+    "question": "今天馆内有多少游客？",
+    "expect": "refused",
+    "note": "实时信息超纲"
+  },
+  {
+    "id": "refuse-realtime-02",
+    "question": "今天王墓展区还剩多少预约名额？",
+    "expect": "refused",
+    "note": "实时余票超纲"
+  },
+  {
+    "id": "refuse-realtime-03",
+    "question": "现在去王墓展区要排队多久？",
+    "expect": "refused",
+    "note": "实时排队超纲"
+  },
+  {
+    "id": "refuse-domain-01",
+    "question": "火星上的南越王墓是谁建的？",
+    "expect": "refused",
+    "note": "荒谬前提"
+  },
+  {
+    "id": "refuse-domain-02",
+    "question": "王墓展区附近哪里停车最方便？",
+    "expect": "refused",
+    "note": "停车导航超纲"
+  },
+  {
+    "id": "refuse-domain-03",
+    "question": "王墓展区附近有什么好吃的餐厅？",
+    "expect": "refused",
+    "note": "餐饮推荐超纲"
+  },
+  {
+    "id": "refuse-domain-04",
+    "question": "南越文王墓出土了恐龙化石吗？",
+    "expect": "refused",
+    "note": "荒谬主题词"
+  },
+  {
+    "id": "refuse-poem-01",
+    "question": "葡萄美酒夜光杯的诗意是什么？",
+    "expect": "refused",
+    "note": "文学问题超纲"
+  },
+  {
+    "id": "refuse-empty-01",
+    "question": "怎么玩",
+    "expect": "answered",
+    "must_contain": [
+      "王墓"
+    ],
+    "note": "极简参观问法，允许回答官方攻略"
+  },
+  {
+    "id": "kids-story-01",
+    "question": "给我讲一个文帝行玺的小故事",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "文帝行玺"
+    ],
+    "note": "儿童故事：图谱事实成文"
+  },
+  {
+    "id": "kids-story-02",
+    "question": "给我讲一个南越的故事",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "南越"
+    ],
+    "note": "儿童故事：南越主题故事（赵佗典故或文物故事均可）"
+  },
+  {
+    "id": "kids-relic-01",
+    "question": "丝缕玉衣是做什么用的？",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "玉衣"
+    ],
+    "note": "儿童讲解文物"
+  },
+  {
+    "id": "kids-chat-01",
+    "question": "你是谁呀？",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "小越"
+    ],
+    "note": "儿童聊天"
+  },
+  {
+    "id": "kids-refuse-01",
+    "question": "今天馆内有多少游客？",
+    "audience": "kids",
+    "expect": "refused",
+    "note": "儿童模式实时拒答"
+  },
+  {
+    "id": "kids-refuse-02",
+    "question": "火星上的南越王墓是谁建的？",
+    "audience": "kids",
+    "expect": "refused",
+    "note": "儿童模式荒谬前提拒答"
+  },
+  {
+    "id": "anecdote-01",
+    "question": "南越时期有什么典故",
+    "expect": "answered",
+    "must_contain": [
+      "赵佗"
+    ],
+    "note": "典故意图：历史文化检索"
+  },
+  {
+    "id": "anecdote-02",
+    "question": "赵佗和陆贾之间有什么典故？",
+    "expect": "answered",
+    "must_contain": [
+      "陆贾"
+    ],
+    "note": "典故意图：陆贾使越"
+  },
+  {
+    "id": "anecdote-03",
+    "question": "文帝行玺有什么典故？",
+    "expect": "answered",
+    "must_contain": [
+      "文帝行玺"
+    ],
+    "note": "典故意图：文帝行玺僭号"
+  },
+  {
+    "id": "anecdote-refuse-01",
+    "question": "南越王博物院有恐龙化石吗？",
+    "expect": "refused",
+    "note": "荒谬主题拒答"
+  },
+  {
+    "id": "multi-hop-01",
+    "question": "南越文王墓的墓主人是谁？",
+    "expect": "answered",
+    "must_contain": [
+      "赵眜"
+    ],
+    "note": "多跳：墓→墓主"
+  },
+  {
+    "id": "multi-hop-02",
+    "question": "文帝行玺是谁的印章？",
+    "expect": "answered",
+    "must_contain": [
+      "赵眜"
+    ],
+    "note": "多跳：印→主人"
+  },
+  {
+    "id": "multi-hop-03",
+    "question": "丝缕玉衣在哪个墓里出土？",
+    "expect": "answered",
+    "must_contain": [
+      "南越文王墓"
+    ],
+    "note": "多跳：文物→墓葬"
+  },
+  {
+    "id": "multi-hop-04",
+    "question": "南越国的都城在哪里？",
+    "expect": "answered",
+    "must_contain": [
+      "番禺"
+    ],
+    "note": "多跳：国→都城"
+  },
+  {
+    "id": "multi-hop-05",
+    "question": "赵佗建立了什么国家？",
+    "expect": "answered",
+    "must_contain": [
+      "南越国"
+    ],
+    "note": "多跳：人物→政权"
+  },
+  {
+    "id": "multi-hop-06",
+    "question": "南越王墓出土了多少件文物？",
+    "expect": "answered",
+    "must_contain": [
+      "1000"
+    ],
+    "note": "多跳：墓→文物数量"
+  },
+  {
+    "id": "multi-hop-07",
+    "question": "丝缕玉衣由多少片玉片组成？",
+    "expect": "answered",
+    "must_contain": [
+      "2291"
+    ],
+    "note": "多跳：文物→组成"
+  },
+  {
+    "id": "multi-hop-08",
+    "question": "文帝行玺出土时放在哪里？",
+    "expect": "answered",
+    "must_contain": [
+      "胸前"
+    ],
+    "note": "多跳：文物→出土细节"
+  },
+  {
+    "id": "multi-hop-09",
+    "question": "赵眜在位时自称什么？",
+    "expect": "answered",
+    "must_contain": [
+      "文帝"
+    ],
+    "note": "多跳：人物→称号"
+  },
+  {
+    "id": "multi-hop-10",
+    "question": "南越文王墓位于哪座山？",
+    "expect": "answered",
+    "must_contain": [
+      "象岗"
+    ],
+    "note": "多跳：墓→位置"
+  },
+  {
+    "id": "compare-01",
+    "question": "王墓展区和王宫展区有什么区别？",
+    "expect": "answered",
+    "must_contain": [
+      "王墓"
+    ],
+    "note": "比较：两展区辨析"
+  },
+  {
+    "id": "compare-02",
+    "question": "南越国和汉朝是什么关系？",
+    "expect": "answered",
+    "must_contain": [
+      "南越"
+    ],
+    "note": "比较：政权关系"
+  },
+  {
+    "id": "compare-03",
+    "question": "丝缕玉衣和普通衣服有什么不同？",
+    "expect": "answered",
+    "must_contain": [
+      "玉"
+    ],
+    "note": "比较：玉衣vs衣服"
+  },
+  {
+    "id": "compare-04",
+    "question": "王墓展区和王宫展区可以一起参观吗？",
+    "expect": "answered",
+    "must_contain": [
+      "展区"
+    ],
+    "note": "比较：两展区联动"
+  },
+  {
+    "id": "compare-05",
+    "question": "赵佗和赵眜谁建立的南越国？",
+    "expect": "answered",
+    "must_contain": [
+      "赵佗"
+    ],
+    "note": "比较：人物辨析"
+  },
+  {
+    "id": "negate-01",
+    "question": "南越王墓是秦始皇的墓吗？",
+    "expect": "answered",
+    "must_contain": [
+      "赵眜"
+    ],
+    "note": "否定：非秦始皇墓"
+  },
+  {
+    "id": "negate-02",
+    "question": "丝缕玉衣是用金缕做的吗？",
+    "expect": "answered",
+    "must_contain": [
+      "丝缕"
+    ],
+    "note": "否定：非金缕"
+  },
+  {
+    "id": "negate-03",
+    "question": "文帝行玺是用铜做的吗？",
+    "expect": "answered",
+    "must_contain": [
+      "金"
+    ],
+    "note": "否定：非铜"
+  },
+  {
+    "id": "negate-04",
+    "question": "赵眜是南越国第一任国王吗？",
+    "expect": "answered",
+    "must_contain": [
+      "第二代"
+    ],
+    "note": "否定：非第一任"
+  },
+  {
+    "id": "negate-05",
+    "question": "南越王博物院在广州吗？",
+    "expect": "answered",
+    "must_contain": [
+      "广州"
+    ],
+    "note": "确认性提问"
+  },
+  {
+    "id": "compound-01",
+    "question": "文帝行玺是什么材料，出土在哪里？",
+    "expect": "answered",
+    "must_contain": [
+      "金"
+    ],
+    "note": "复合：材料+出土"
+  },
+  {
+    "id": "compound-02",
+    "question": "丝缕玉衣是什么做的，为什么重要？",
+    "expect": "answered",
+    "must_contain": [
+      "玉片"
+    ],
+    "note": "复合：材质+意义"
+  },
+  {
+    "id": "compound-03",
+    "question": "王墓展区在哪里，怎么预约？",
+    "expect": "answered",
+    "must_contain": [
+      "预约"
+    ],
+    "note": "复合：地址+预约"
+  },
+  {
+    "id": "compound-04",
+    "question": "文帝行玺和丝缕玉衣分别是什么？",
+    "expect": "answered",
+    "must_contain": [
+      "文帝行玺"
+    ],
+    "note": "复合：两物分别介绍"
+  },
+  {
+    "id": "temporal-01",
+    "question": "王墓展区开放时间是什么？",
+    "expect": "answered",
+    "must_contain": [
+      "9:00"
+    ],
+    "note": "时效：稳定开放时间"
+  },
+  {
+    "id": "temporal-02",
+    "question": "王宫展区暑期延长开放到什么时候结束？",
+    "expect": "answered",
+    "must_contain": [
+      "8月31"
+    ],
+    "note": "时效：暑期公告有效期"
+  },
+  {
+    "id": "temporal-03",
+    "question": "王墓展区周一开放吗？",
+    "expect": "answered",
+    "must_contain": [
+      "周一"
+    ],
+    "note": "时效：闭馆日"
+  },
+  {
+    "id": "person-01",
+    "question": "陆贾去过几次南越？",
+    "expect": "answered",
+    "must_contain": [
+      "陆贾"
+    ],
+    "note": "人物：陆贾两次出使"
+  },
+  {
+    "id": "person-02",
+    "question": "赵佗是哪里人？",
+    "expect": "answered",
+    "must_contain": [
+      "真定"
+    ],
+    "note": "人物：籍贯"
+  },
+  {
+    "id": "person-03",
+    "question": "赵佗和赵眜是什么关系？",
+    "expect": "answered",
+    "must_contain": [
+      "赵佗"
+    ],
+    "note": "人物：祖孙关系"
+  },
+  {
+    "id": "anecdote-04",
+    "question": "什么是和辑百越？",
+    "expect": "answered",
+    "must_contain": [
+      "赵佗"
+    ],
+    "note": "典故：和辑百越"
+  },
+  {
+    "id": "anecdote-05",
+    "question": "陆贾使越的故事讲的是什么？",
+    "expect": "answered",
+    "must_contain": [
+      "陆贾"
+    ],
+    "note": "典故：陆贾使越"
+  },
+  {
+    "id": "anecdote-06",
+    "question": "赵佗为什么自称南越武帝？",
+    "expect": "answered",
+    "must_contain": [
+      "吕后"
+    ],
+    "note": "典故：称帝缘由"
+  },
+  {
+    "id": "anecdote-07",
+    "question": "赵眜为什么叫文帝？",
+    "expect": "answered",
+    "must_contain": [
+      "文帝"
+    ],
+    "note": "典故：僭号"
+  },
+  {
+    "id": "anecdote-08",
+    "question": "任嚣临终前把什么交给了赵佗？",
+    "expect": "answered",
+    "must_contain": [
+      "赵佗"
+    ],
+    "note": "典故：临终授命"
+  },
+  {
+    "id": "anecdote-09",
+    "question": "南越有哪些历史传说？",
+    "expect": "answered",
+    "must_contain": [
+      "赵佗"
+    ],
+    "note": "典故：传说汇总"
+  },
+  {
+    "id": "kids-story-03",
+    "question": "给我讲一个丝缕玉衣的小故事",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "玉衣"
+    ],
+    "note": "儿童故事：玉衣"
+  },
+  {
+    "id": "kids-story-04",
+    "question": "给我讲一个角形玉杯的故事",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "角形玉杯"
+    ],
+    "note": "儿童故事：玉杯"
+  },
+  {
+    "id": "kids-relic-02",
+    "question": "组玉佩是什么？",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "玉佩"
+    ],
+    "note": "儿童讲解：组玉佩"
+  },
+  {
+    "id": "kids-chat-02",
+    "question": "谢谢你小越",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "不客气"
+    ],
+    "note": "儿童聊天：致谢"
+  },
+  {
+    "id": "kids-chat-03",
+    "question": "再见",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "再见"
+    ],
+    "note": "儿童聊天：告别"
+  },
+  {
+    "id": "kids-visit-01",
+    "question": "第一次带孩子去王墓展区可以看什么？",
+    "audience": "kids",
+    "expect": "answered",
+    "must_contain": [
+      "王墓"
+    ],
+    "note": "儿童参观引导"
+  },
+  {
+    "id": "doc-visit-ticket-01",
+    "question": "王墓展区门票多少钱？",
+    "expect": "answered",
+    "must_contain": [
+      "10"
+    ],
+    "note": "参观：票价"
+  },
+  {
+    "id": "doc-visit-photo-01",
+    "question": "王墓展区可以拍照吗？",
+    "expect": "refused",
+    "note": "参观：拍照规则未收录"
+  },
+  {
+    "id": "doc-visit-nursery-01",
+    "question": "王墓展区有母婴室吗？",
+    "expect": "refused",
+    "note": "参观：母婴设施未收录"
+  },
+  {
+    "id": "doc-visit-tomb-01",
+    "question": "墓室下层可以参观吗？",
+    "expect": "answered",
+    "must_contain": [
+      "预约"
+    ],
+    "note": "参观：墓室下层预约"
+  },
+  {
+    "id": "doc-visit-close-01",
+    "question": "王墓展区什么时候闭馆？",
+    "expect": "answered",
+    "must_contain": [
+      "周一"
+    ],
+    "note": "参观：闭馆时间"
+  },
+  {
+    "id": "refuse-realtime-04",
+    "question": "现在去王宫展区要预约吗？",
+    "expect": "refused",
+    "note": "实时：现在+预约判定"
+  },
+  {
+    "id": "refuse-realtime-05",
+    "question": "今天王墓展区有临时闭馆吗？",
+    "expect": "answered",
+    "must_contain": [
+      "周二至周日"
+    ],
+    "note": "临时闭馆无当日数据，回答常规开放信息并提示以官方公告为准"
+  },
+  {
+    "id": "refuse-domain-05",
+    "question": "王墓展区附近有酒店吗？",
+    "expect": "refused",
+    "note": "域外：酒店"
+  },
+  {
+    "id": "refuse-domain-06",
+    "question": "广州塔离王墓展区多远？",
+    "expect": "refused",
+    "note": "域外：未收录主题"
+  },
+  {
+    "id": "refuse-domain-07",
+    "question": "皇帝的新衣和丝缕玉衣一样吗？",
+    "expect": "refused",
+    "note": "域外：童话类比"
+  },
+  {
+    "id": "refuse-domain-08",
+    "question": "南越国和西游记有关系吗？",
+    "expect": "refused",
+    "note": "域外：文学无关"
+  },
+  {
+    "id": "kg-detail-01",
+    "question": "文帝行玺的印钮是什么形状？",
+    "expect": "answered",
+    "must_contain": [
+      "龙"
+    ],
+    "note": "细节：印钮"
+  },
+  {
+    "id": "kg-detail-02",
+    "question": "南越王墓出土了多少枚玺印？",
+    "expect": "answered",
+    "must_contain": [
+      "23"
+    ],
+    "note": "细节：玺印数量"
+  },
+  {
+    "id": "kg-detail-03",
+    "question": "赵眜印是做什么用的？",
+    "expect": "answered",
+    "must_contain": [
+      "赵眜"
+    ],
+    "note": "细节：私印"
+  },
+  {
+    "id": "kg-detail-04",
+    "question": "南越国存在了多少年？",
+    "expect": "answered",
+    "must_contain": [
+      "93"
+    ],
+    "note": "细节：南越国存世93年（前203-前111）"
+  },
+  {
+    "id": "kg-detail-05",
+    "question": "汉代人为什么用玉做衣服？",
+    "expect": "answered",
+    "must_contain": [
+      "玉"
+    ],
+    "note": "细节：丧葬观念"
+  },
+  {
+    "id": "kg-detail-06",
+    "question": "南越王墓出土了多少件玉璧？",
+    "expect": "answered",
+    "must_contain": [
+      "71"
+    ],
+    "note": "细节：玉璧数量"
+  },
+  {
+    "id": "kg-detail-07",
+    "question": "组玉佩由哪些玉器组成？",
+    "expect": "answered",
+    "must_contain": [
+      "玉"
+    ],
+    "note": "细节：组玉佩构成"
+  }
 ]

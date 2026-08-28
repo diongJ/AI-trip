@@ -26,6 +26,7 @@ class ToolName(StrEnum):
 class AnswerStatus(StrEnum):
     ANSWERED = "answered"
     WEB_SEARCH_ANSWERED = "web_search_answered"
+    CHAT = "chat"
     CLARIFICATION_NEEDED = "clarification_needed"
     INSUFFICIENT_EVIDENCE = "insufficient_evidence"
     OUT_OF_SCOPE = "out_of_scope"
@@ -37,6 +38,11 @@ class AnswerMode(StrEnum):
     AUTO = "auto"
     BRIEF = "brief"
     DEEP = "deep"
+
+
+class Audience(StrEnum):
+    ADULT = "adult"
+    KIDS = "kids"
 
 
 class TemporalScope(StrEnum):
@@ -77,6 +83,7 @@ class RouteDecision(BaseModel):
     relations: list[str] = Field(default_factory=list)
     scope: Literal["in_scope", "out_of_scope"] = "in_scope"
     answer_mode: AnswerMode = AnswerMode.AUTO
+    kids_intent: Literal["story", "relic", "chat"] | None = None
     temporal_scope: TemporalScope = TemporalScope.CURRENT
     as_of: str | None = None
     visit_zone: VisitZone = VisitZone.WANGMU
@@ -154,6 +161,9 @@ class AgentAnswer(BaseModel):
         elif self.response_status == AnswerStatus.WEB_SEARCH_ANSWERED:
             if self.insufficient_evidence or self.citations or not self.web_sources:
                 raise ValueError("web search answers require web sources and no local citations")
+        elif self.response_status == AnswerStatus.CHAT:
+            if self.insufficient_evidence or self.citations or self.web_sources:
+                raise ValueError("chat answers cannot carry citations or insufficiency")
         else:
             if not self.insufficient_evidence:
                 raise ValueError("non-answer response must be marked insufficient")

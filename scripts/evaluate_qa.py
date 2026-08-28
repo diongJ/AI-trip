@@ -23,6 +23,7 @@ from pathlib import Path
 
 from src.agent.service import AgentService
 from src.agent.tools import AgentTools
+from src.agent.models import Audience
 from src.graph.retriever import LocalGraphRetriever
 from src.rag.retriever import RagRetriever
 
@@ -53,7 +54,8 @@ def build_service() -> AgentService:
 
 
 def run_case(service: AgentService, case: dict) -> CaseResult:
-    answer = service.answer(case["question"])
+    audience = Audience.KIDS if case.get("audience") == "kids" else Audience.ADULT
+    answer = service.answer(case["question"], audience=audience)
     expect = case["expect"]
     if expect == "answered":
         required = case.get("must_contain", [])

@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from app.runtime import AppRuntime
-from src.agent.models import AnswerMode, ConversationTurn
+from src.agent.models import AnswerMode, Audience, ConversationTurn
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class AskRequest(BaseModel):
     question: str = Field(min_length=1, max_length=500)
     answer_mode: AnswerMode = Field(default=AnswerMode.AUTO, alias="answerMode")
+    audience: Audience = Field(default=Audience.ADULT)
     history: list[ConversationTurn] = Field(default_factory=list, max_length=6)
     prefer_llm: bool = True
 
@@ -121,6 +122,7 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
                 history=request.history,
                 answer_mode=request.answer_mode,
                 prefer_llm=request.prefer_llm,
+                audience=request.audience,
             )
         except Exception as exc:  # Avoid exposing settings, paths, or provider details to visitors.
             raise HTTPException(status_code=503, detail="问答服务暂时不可用，请稍后重试。") from exc
