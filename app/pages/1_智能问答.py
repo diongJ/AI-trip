@@ -19,7 +19,7 @@ from app.components.ui import (
     render_outcome,
     render_sidebar,
 )
-from src.agent.models import AnswerMode, ConversationTurn
+from src.agent.models import AnswerMode, Audience, ConversationTurn
 
 
 EXAMPLES = [
@@ -42,6 +42,14 @@ answer_mode = {
     "简洁": AnswerMode.BRIEF,
     "深入": AnswerMode.DEEP,
 }[st.selectbox("回答风格", ["自动", "简洁", "深入"], help="深入模式会综合多条证据并逐条核验。")]
+audience = (
+    Audience.KIDS
+    if st.checkbox(
+        "儿童模式（小越讲故事）",
+        help="用儿童能懂的语言讲故事、讲文物；不联网、不编造，证据仍然可查。",
+    )
+    else Audience.ADULT
+)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -87,6 +95,8 @@ if question:
                 )
                 for item in st.session_state.chat_history[-4:]
             ]
-            outcome = runtime.ask(question, history=history, answer_mode=answer_mode)
+            outcome = runtime.ask(
+                question, history=history, answer_mode=answer_mode, audience=audience
+            )
         render_outcome(outcome)
     st.session_state.chat_history.append({"question": question, "outcome": outcome})

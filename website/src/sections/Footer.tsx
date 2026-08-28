@@ -18,7 +18,7 @@ export function Footer() {
               <span className="font-serif-sc font-semibold">南越数字博物志</span>
             </div>
             <p className="mt-4 max-w-md text-xs leading-relaxed text-muted-foreground">
-              当前覆盖南越王博物院、南越国历史、考古与文物专题，包含 210 份分层可信资料、78 个可靠实体与 87 条可追溯关系。
+              当前覆盖南越王博物院、南越国历史、考古与文物专题，包含 215 份分层可信资料、78 个可靠实体与 87 条可追溯关系。
               不提供实时客流、天气、餐饮和路线导航；可靠性优先于规模，证据不足时系统拒答而非编造。
             </p>
           </div>

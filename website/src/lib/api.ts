@@ -1,4 +1,5 @@
 export type AnswerMode = 'auto' | 'brief' | 'deep'
+export type Audience = 'adult' | 'kids'
 
 export interface Citation {
   doc_id: string
@@ -48,8 +49,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>
 }
 
-export function ask(question: string, answerMode: AnswerMode): Promise<AskResponse> {
-  return request('/api/ask', { method: 'POST', body: JSON.stringify({ question, answerMode }) })
+export function ask(question: string, answerMode: AnswerMode, audience: Audience = 'adult'): Promise<AskResponse> {
+  return request('/api/ask', { method: 'POST', body: JSON.stringify({ question, answerMode, audience }) })
 }
 
 export function findEntities(q = '', type?: string): Promise<{ entities: Entity[] }> {

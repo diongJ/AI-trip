@@ -6,5 +6,6 @@ export function Timeline({ onExplore }: { onExplore: (entity: string) => void })
     <div className="timeline-track">{TIMELINE.map((item) => <button key={item.year + item.title} onClick={() => onExplore(item.target)} className="timeline-item">
       <span>{item.year}</span><h3>{item.title}</h3><p>{item.text}</p><small>查看相关线索 →</small>
     </button>)}</div>
+    <div className="timeline-slot"><img src="/images/sections/tomb-hall.png" alt="南越文王墓展厅" loading="lazy" /></div>
   </section>
 }

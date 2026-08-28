@@ -198,6 +198,11 @@ VERB_ASPECT_SUFFIXES = frozenset("掉了过着")
 GENERIC_DESCRIPTION_RE = re.compile(
     r"(介绍|讲讲|讲解|导览|说明|特点|意义|价值|背景|过程|如何|为什么|怎么样)"
 )
+# 故事/典故/传说类请求：不按“方面词”过滤邻居关系，
+# 否则“讲个文帝行玺的故事”会把全部图谱证据滤空。
+STORY_QUERY_RE = re.compile(
+    r"(故事|典故|传说|趣事|掌故|历史故事|小故事|讲个|讲一个|讲一下|讲一段|睡前|猜猜)"
+)
 
 
 @dataclass
@@ -329,7 +334,12 @@ class AgentTools:
                     seen.add(key)
                     hits.append(hit)
         hits = _filter_relevant_relations(query, hits)
-        if hits and not _relation_hint_matches(query) and not GENERIC_DESCRIPTION_RE.search(query):
+        if (
+            hits
+            and not _relation_hint_matches(query)
+            and not GENERIC_DESCRIPTION_RE.search(query)
+            and not STORY_QUERY_RE.search(query)
+        ):
             entity_names = [name for name in (entity_queries or [entity_query]) if name]
             vocabulary = getattr(self.document_retriever, "idf", None)
             hits = _filter_offtopic_hits(query, hits, entity_names, vocabulary)

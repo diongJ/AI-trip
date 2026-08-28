@@ -23,7 +23,7 @@ export function Evaluation() {
                 <div>
                   <h3 className="font-serif-sc text-lg font-bold">专题升级版问答系统 · 评测 v2</h3>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    210 份分层可信语料 · 离线抽取式生成模式 · {EVAL_V2.questionCount} 题
+                    215 份分层可信语料 · 离线抽取式生成模式 · {EVAL_V2.questionCount} 题
                   </p>
                 </div>
                 <Badge variant="outline" className="gap-1 border-accent/50 text-[11px] text-accent">

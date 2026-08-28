@@ -25,6 +25,7 @@ DOMAIN_OUT_OF_SCOPE_RE = re.compile(
     r"(路线导航|停车最方便|哪里停车|餐厅|酒店|公交换乘|地铁换乘|打车|机场|"
     r"智能手机|恐龙|航空母舰|火星|月球|外星)"
 )
+ANECDOTE_RE = re.compile(r"(典故|成语|轶事|掌故|趣事|历史故事|民间传说|传说|故事)")
 RELATION_RE = re.compile(r"(关系|谁|属于|出土|材料|材质|纹饰|制作|反映|关联|葬)")
 DESCRIPTION_RE = re.compile(r"(介绍|讲讲|特点|意义|价值|如何|为什么|背景|过程|展示|展区)")
 HYBRID_RE = re.compile(
@@ -86,6 +87,18 @@ class RuleBasedRouter:
                 reason="问题超出南越专题和馆内稳定信息范围。",
                 intent="out_of_scope",
                 scope="out_of_scope",
+            )
+        if ANECDOTE_RE.search(normalized):
+            entity_query = self._find_entity_query(normalized)
+            return RouteDecision(
+                question_type=QuestionType.DESCRIPTION,
+                tool=ToolName.SEARCH_DOCUMENTS,
+                entity_query=entity_query,
+                reason="问题询问南越典故、成语或历史故事，优先检索历史文化资料。",
+                intent="anecdote",
+                entities=[entity_query] if entity_query else [],
+                subqueries=_anecdote_subqueries(normalized),
+                answer_mode=_default_answer_mode(normalized),
             )
 
         entity_query = self._find_entity_query(normalized)
@@ -229,6 +242,19 @@ def _visit_subqueries(question: str) -> list[str]:
                 "南越王博物院 王墓展区 参观攻略 开放时间 预约",
                 "南越王博物院 王墓展区 地址 交通 导览 服务",
                 "南越文王墓 展厅 游览 动线 重点文物",
+            ]
+        )
+    )
+
+
+def _anecdote_subqueries(question: str) -> list[str]:
+    return list(
+        dict.fromkeys(
+            [
+                question,
+                "南越国 典故 历史故事 传说 成语",
+                "赵佗 典故 陆贾 任嚣 故事",
+                "南越文王墓 典故 传说 文帝行玺",
             ]
         )
     )

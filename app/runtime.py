@@ -9,6 +9,7 @@ from src.agent.models import (
     AgentAnswer,
     AnswerMode,
     AnswerStatus,
+    Audience,
     Citation,
     ConversationTurn,
     ToolResult,
@@ -127,23 +128,34 @@ class AppRuntime:
         history: list[ConversationTurn] | None = None,
         answer_mode: AnswerMode = AnswerMode.AUTO,
         prefer_llm: bool = True,
+        audience: Audience = Audience.ADULT,
     ) -> QueryOutcome:
         started = time.perf_counter()
         warning = None
         mode = "离线证据摘录"
-        if prefer_llm and self.deepseek_service is not None:
+        if audience == Audience.KIDS:
+            # 儿童模式固定走离线证据生成：确定性、可追溯、不会答偏。
+            # DeepSeek 叙事化生成对儿童短句的接地校验不稳定，待提示词
+            # 调优后再按需启用。
+            response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
+            mode = "小越离线故事"
+            if prefer_llm:
+                warning = self._deepseek_setup_warning or self._semantic_setup_warning
+        elif prefer_llm and self.deepseek_service is not None:
             try:
-                response = _ask_service(self.deepseek_service, question, history, answer_mode)
+                response = _ask_service(self.deepseek_service, question, history, answer_mode, audience)
                 mode = "DeepSeek 证据综合" if response.claims_verified else "DeepSeek 智能生成"
             except AnswerGenerationError:
-                response = _ask_service(self.extractive_service, question, history, answer_mode)
+                response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
                 warning = "智能生成服务暂时不可用，本次已回退到离线证据摘录。"
         else:
-            response = _ask_service(self.extractive_service, question, history, answer_mode)
+            response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
             if prefer_llm:
                 warning = self._deepseek_setup_warning or self._semantic_setup_warning
         if response.response_status == AnswerStatus.WEB_SEARCH_ANSWERED:
             mode = "DeepSeek 联网搜索"
+        elif response.response_status == AnswerStatus.CHAT:
+            mode = "小越聊天"
         elif response.insufficient_evidence:
             mode = "规则拒答 / 证据不足"
         elapsed_ms = round((time.perf_counter() - started) * 1000, 1)
@@ -237,8 +249,12 @@ def _ask_service(
     question: str,
     history: list[ConversationTurn] | None,
     answer_mode: AnswerMode,
+    audience: Audience,
 ) -> AgentAnswer:
     """Keep test doubles and third-party service adapters using the legacy signature working."""
-    if not history and answer_mode == AnswerMode.AUTO:
+    if audience == Audience.ADULT and not history and answer_mode == AnswerMode.AUTO:
         return service.answer(question)
-    return service.answer(question, history=history, answer_mode=answer_mode)
+    kwargs: dict = {"history": history, "answer_mode": answer_mode}
+    if audience == Audience.KIDS:
+        kwargs["audience"] = audience
+    return service.answer(question, **kwargs)
