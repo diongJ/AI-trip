@@ -176,3 +176,14 @@
 - `pytest` 全量通过（含 4 个儿童模式用例）。
 - `/api/ask` 实测（Python httpx，注意 PowerShell 发中文体会乱码）：儿童聊天返回 `chat` 状态；「南越时期有什么典故」「文帝行玺有什么典故？」返回带引用的典故回答；儿童故事返回 KG 事实故事。
 - 注意：沙箱环境下 pip/pytest/uvicorn 均需把临时目录指向工作区内 `.tmp-pip`；杀 uvicorn/streamlit 进程后需确认端口已释放再重启。
+
+## 2026-08-28 七项体验与质量优化
+
+- ① 儿童模式恢复 DeepSeek 智能故事：先生成、校验失败自动回退离线故事（实测返回 3 条引用的主题内回答）。
+- ② 新增儿童故事语料 DOC_268-DOC_272（文帝行玺/玉衣/角形玉杯/组玉佩/儿童参观动线），语料 220 份。
+- ③ 网站问答（QADemo 与 KidsQA）升级为多轮会话：保留最近 4 轮历史，追问可解析（实测「它出土在哪里？」正确指代文帝行玺）。
+- ④ 图谱探索加入防抖实时搜索。
+- ⑤ 语义检索未启用：沙箱无法访问 HuggingFace 下载 BGE 模型（torch 亦约 2GB），README 已有启用指引，留待正常网络环境。
+- ⑥ 新增 `.github/workflows/ci.yml`：pytest + 评测门禁（≥90%）+ 冒烟 24 题 + 网站 lint/build。
+- ⑦ 网站补全 OG/Twitter meta、theme-color，新增 404 页面；修复 SpotlightCard 的 `React.MouseEvent` 类型未导入问题（`npm run build` 的 tsc 通过）。
+- 验证：pytest 全量通过；60 题评测 100%；24 题冒烟全过；`npm run build` 成功。

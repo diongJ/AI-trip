@@ -134,13 +134,26 @@ class AppRuntime:
         warning = None
         mode = "离线证据摘录"
         if audience == Audience.KIDS:
-            # 儿童模式固定走离线证据生成：确定性、可追溯、不会答偏。
-            # DeepSeek 叙事化生成对儿童短句的接地校验不稳定，待提示词
-            # 调优后再按需启用。
-            response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
-            mode = "小越离线故事"
-            if prefer_llm:
-                warning = self._deepseek_setup_warning or self._semantic_setup_warning
+            # 儿童模式：优先尝试 DeepSeek 智能故事（更生动），一旦证据校验
+            # 不通过（答偏/接地失败）立即回退到确定性更强的离线故事版本。
+            if prefer_llm and self.deepseek_service is not None:
+                try:
+                    response = _ask_service(self.deepseek_service, question, history, answer_mode, audience)
+                    if response.insufficient_evidence:
+                        response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
+                        warning = "小越尝试了智能生成但校验未通过，已改用更稳妥的离线故事版本。"
+                        mode = "小越离线故事"
+                    else:
+                        mode = "小越智能故事"
+                except AnswerGenerationError:
+                    response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
+                    warning = "智能生成服务暂时不可用，本次已回退到离线故事版本。"
+                    mode = "小越离线故事"
+            else:
+                response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
+                mode = "小越离线故事"
+                if prefer_llm:
+                    warning = self._deepseek_setup_warning or self._semantic_setup_warning
         elif prefer_llm and self.deepseek_service is not None:
             try:
                 response = _ask_service(self.deepseek_service, question, history, answer_mode, audience)

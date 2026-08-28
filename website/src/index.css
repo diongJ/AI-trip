@@ -35,6 +35,10 @@ h1,h2,h3,p { margin-top:0; } h1,h2,h3,.font-serif-sc { font-family:'Noto Serif S
 .spot-card:hover::before { opacity:1; }
 .relic-link { display:block; position:relative; z-index:2; }
 .answer-state { display:flex; align-items:center; gap:13px; color:#746a5c; line-height:1.8; }
+.answer-turn { padding-bottom:18px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+.answer-turn:last-child { border-bottom:0; margin-bottom:0; padding-bottom:0; }
+.answer-user { display:inline-block; font-family:'Noto Serif SC',serif; font-size:14px; color:#6f6352; background:rgba(164,135,82,.1); padding:6px 12px; border-radius:3px; margin-bottom:12px; }
+.kids-answer { display:grid; gap:18px; }
 .seal-stamp { width:50px; height:50px; flex:none; display:grid; place-items:center; border:2px solid var(--cinnabar); border-radius:4px; color:var(--cinnabar); font:bold 17px 'Noto Serif SC',serif; animation:stamp 1.15s ease-in-out infinite; box-shadow:0 0 0 0 rgba(135,55,45,.18); }
 @keyframes stamp { 0%,100% { transform:translateY(0) scale(1); box-shadow:0 0 0 0 rgba(135,55,45,.18); } 50% { transform:translateY(7px) scale(.96); box-shadow:0 12px 0 -3px rgba(135,55,45,.1); } }
 .museum-nav nav a { position:relative; }
@@ -57,7 +61,8 @@ h1,h2,h3,p { margin-top:0; } h1,h2,h3,.font-serif-sc { font-family:'Noto Serif S
 .theme-slot img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
 .theme-card:hover .theme-slot img { transform:scale(1.04); }
 .research-slot { margin-top:22px; }
-.detail-slot { margin-top:22px; max-width:440px; }
+.detail-slot { margin-top:22px; max-width:440px; aspect-ratio:16/9; overflow:hidden; border-radius:4px; }
+.detail-slot img { width:100%; height:100%; object-fit:cover; display:block; }
 /* ==== 小越的南越故事屋（儿童板块） ==== */
 .kids-section { border-top:1px solid var(--line); }
 .kids-intents { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; margin-top:30px; border:1px solid var(--line); background:var(--line); }

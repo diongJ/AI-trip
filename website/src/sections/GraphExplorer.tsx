@@ -21,6 +21,11 @@ export function GraphExplorer({ requestedEntity, onConsumed }: { requestedEntity
     return () => window.clearTimeout(timer)
   }, [])
   useEffect(() => {
+    if (!query.trim()) return
+    const timer = window.setTimeout(() => { void search(query, type) }, 300)
+    return () => window.clearTimeout(timer)
+  }, [query, type])
+  useEffect(() => {
     if (!requestedEntity) return
     const timer = window.setTimeout(() => {
       void getNeighbors(requestedEntity).then((result) => {

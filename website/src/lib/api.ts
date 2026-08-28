@@ -1,6 +1,8 @@
 export type AnswerMode = 'auto' | 'brief' | 'deep'
 export type Audience = 'adult' | 'kids'
 
+export interface ChatTurn { question: string; answer: string }
+
 export interface Citation {
   doc_id: string
   title: string
@@ -49,8 +51,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>
 }
 
-export function ask(question: string, answerMode: AnswerMode, audience: Audience = 'adult'): Promise<AskResponse> {
-  return request('/api/ask', { method: 'POST', body: JSON.stringify({ question, answerMode, audience }) })
+export function ask(question: string, answerMode: AnswerMode, audience: Audience = 'adult', history: ChatTurn[] = []): Promise<AskResponse> {
+  return request('/api/ask', { method: 'POST', body: JSON.stringify({ question, answerMode, audience, history }) })
 }
 
 export function findEntities(q = '', type?: string): Promise<{ entities: Entity[] }> {

@@ -7,22 +7,25 @@ const INTENTS = [
   { key: 'chat', mark: '越', title: '聊聊天', prompt: '你是谁呀？', desc: '和小越说说悄悄话' },
 ] as const
 
+interface Turn { question: string; result: AskResponse }
+
 export function KidsQA() {
   const [question, setQuestion] = useState('')
+  const [turns, setTurns] = useState<Turn[]>([])
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<AskResponse | null>(null)
   const [error, setError] = useState('')
-  const [proofOpen, setProofOpen] = useState(false)
+  const [proofOpen, setProofOpen] = useState<number | null>(null)
 
   const submit = async (value: string) => {
     if (!value.trim() || loading) return
     setQuestion(value)
     setLoading(true)
     setError('')
-    setResult(null)
-    setProofOpen(false)
+    setProofOpen(null)
+    const history = turns.slice(-4).map((turn) => ({ question: turn.question, answer: turn.result.answer }))
     try {
-      setResult(await ask(value.trim(), 'auto', 'kids'))
+      const result = await ask(value.trim(), 'auto', 'kids', history)
+      setTurns((prev) => [...prev, { question: value.trim(), result }])
     } catch (err) {
       setError(err instanceof Error ? err.message : '小越暂时走神了，请稍后再试。')
     } finally {
@@ -30,7 +33,6 @@ export function KidsQA() {
     }
   }
 
-  const answered = result && !result.insufficient_evidence && result.response_status !== 'chat'
   return (
     <section id="kids" className="museum-section scroll-mt-20 kids-section">
       <div className="museum-heading"><span>肆</span><div><p>小越的南越故事屋</p><h2>给小朋友的博物馆</h2></div></div>
@@ -54,24 +56,25 @@ export function KidsQA() {
           </div>
         </div>
         <div className="kids-answer" aria-live="polite">
-          {loading && <div className="kids-loading"><span className="seal-stamp" aria-hidden>越</span><span>小越正在翻阅博物馆的“藏宝图”…</span></div>}
-          {error && <p className="answer-error">{error}</p>}
-          {result && <div className="kids-reply">
+          {turns.map((turn, index) => { const result = turn.result; const answered = !result.insufficient_evidence && result.response_status !== 'chat'; return <div className="kids-reply" key={index}>
             <p className="kids-avatar" aria-hidden>越</p>
             <div className="kids-reply-body">
-              <p className="kids-name">小越</p>
-              <div className="kids-text">{result.answer.split('\n').map((line, index) => <p key={index}>{line}</p>)}</div>
+              <p className="kids-name">小越 · 你问：{turn.question}</p>
+              <div className="kids-text">{result.answer.split('\n').map((line, lineIndex) => <p key={lineIndex}>{line}</p>)}</div>
               {result.warning && <p className="answer-warning">{result.warning}</p>}
               <p className="kids-foot">{result.generation_mode} · {Math.round(result.elapsed_ms)}ms</p>
               {answered && result.citations.length > 0 && (
-                <button className="kids-proof-toggle" onClick={() => setProofOpen(!proofOpen)} aria-expanded={proofOpen}>
-                  {proofOpen ? '收起给大人的依据' : '给大人的依据（证据可查）'}
+                <button className="kids-proof-toggle" onClick={() => setProofOpen(proofOpen === index ? null : index)} aria-expanded={proofOpen === index}>
+                  {proofOpen === index ? '收起给大人的依据' : '给大人的依据（证据可查）'}
                 </button>
               )}
-              {proofOpen && result.citations.length > 0 && <div className="kids-proof">{result.citations.map((citation) => <article key={citation.doc_id}><b>{citation.doc_id} · {citation.title}</b><blockquote>{citation.evidence}</blockquote><a href={citation.source_url} target="_blank" rel="noreferrer">查看原始史料 ↗</a></article>)}</div>}
+              {proofOpen === index && result.citations.length > 0 && <div className="kids-proof">{result.citations.map((citation) => <article key={citation.doc_id}><b>{citation.doc_id} · {citation.title}</b><blockquote>{citation.evidence}</blockquote><a href={citation.source_url} target="_blank" rel="noreferrer">查看原始史料 ↗</a></article>)}</div>}
               {result.suggested_questions.length > 0 && <div className="suggestions">{result.suggested_questions.map((item) => <button key={item} onClick={() => submit(item)}>{item}</button>)}</div>}
             </div>
-          </div>}
+          </div> })}
+          {loading && <div className="kids-loading"><span className="seal-stamp" aria-hidden>越</span><span>小越正在翻阅博物馆的“藏宝图”…</span></div>}
+          {error && <p className="answer-error">{error}</p>}
+          {!turns.length && !loading && !error && <div className="kids-loading"><span className="kids-avatar" aria-hidden>越</span><span>点上面的卡片，或者直接告诉小越你想听什么。</span></div>}
         </div>
       </div>
     </section>

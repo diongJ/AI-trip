@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react'
+import { useRef, type MouseEvent, type ReactNode } from 'react'
 
 /**
  * SpotlightCard（React Bits / Aceternity 风格）：光标经过时在卡片内投射暖色光影。
@@ -7,7 +7,7 @@ import { useRef, type ReactNode } from 'react'
 export function SpotlightCard({ children, className = '' }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
 
-  const onMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  const onMove = (event: MouseEvent<HTMLDivElement>) => {
     const el = ref.current
     if (!el) return
     const rect = el.getBoundingClientRect()

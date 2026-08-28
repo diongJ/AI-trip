@@ -11,7 +11,7 @@ class FakeRuntime:
         corpus_ready=True,
         graph_ready=True,
         deepseek_configured=False,
-        document_count=215,
+        document_count=220,
         entity_count=78,
         relation_count=87,
     )
@@ -36,7 +36,7 @@ class FakeRuntime:
 def test_api_health_stats_and_ask():
     client = TestClient(create_app(runtime_provider=FakeRuntime))
     assert client.get("/api/health").json()["fallback_mode"] is True
-    assert client.get("/api/stats").json()["documents"] == 215
+    assert client.get("/api/stats").json()["documents"] == 220
     payload = client.post("/api/ask", json={"question": "南越文王墓"}).json()
     assert payload["response_status"] == "insufficient_evidence"
     assert payload["suggested_questions"]
