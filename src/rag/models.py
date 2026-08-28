@@ -23,6 +23,14 @@ class DocumentChunk(BaseModel):
     retrieved_at: str = ""
     published_at: str | None = None
     content_hash: str = ""
+    effective_from: str | None = None
+    effective_until: str | None = None
+    last_checked_at: str | None = None
+    volatility: str = "stable"
+    zone: str | None = None
+    floor: str | None = None
+    visitor_types: list[str] = Field(default_factory=list)
+    recommended_duration: int | None = None
 
 
 class RetrievalHit(BaseModel):

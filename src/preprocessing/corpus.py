@@ -10,6 +10,7 @@ from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator, 
 
 DOC_ID_RE = re.compile(r"^DOC_\d{3}$")
 EvidenceRole = Literal["factual", "curated_guidance"]
+TemporalScope = Literal["all", "current", "historical", "future"]
 
 
 class CorpusValidationError(ValueError):
@@ -36,6 +37,14 @@ class CorpusDocument(BaseModel):
     content_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     review_status: Literal["approved", "sample_review", "pending", "rejected"]
     version: int = Field(default=1, ge=1)
+    effective_from: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    effective_until: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    last_checked_at: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    volatility: str = "stable"
+    zone: str | None = None
+    floor: str | None = None
+    visitor_types: list[str] = Field(default_factory=list)
+    recommended_duration: int | None = Field(default=None, ge=1)
 
     @field_validator("doc_id")
     @classmethod

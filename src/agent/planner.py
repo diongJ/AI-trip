@@ -63,10 +63,15 @@ class DeepSeekQueryPlanner:
             raw = json.loads(response.json()["choices"][0]["message"]["content"])
             scope = raw.get("scope", "in_scope")
             tool = ToolName(raw.get("tool", fallback.tool.value))
-            if scope == "out_of_scope":
-                tool = ToolName.NONE
             subqueries = [str(item).strip() for item in raw.get("subqueries", []) if str(item).strip()]
             subqueries = list(dict.fromkeys([question, *subqueries]))[:4]
+            # The deterministic router owns scope safety. The model may enrich
+            # a valid route, but cannot reject it before local retrieval and
+            # the evidence-backed fallback have had a chance to run.
+            if fallback.scope == "in_scope" and (scope == "out_of_scope" or tool == ToolName.NONE):
+                return fallback.model_copy(update={"subqueries": subqueries or fallback.subqueries})
+            if scope == "out_of_scope":
+                tool = ToolName.NONE
             entities = [str(item).strip() for item in raw.get("entities", []) if str(item).strip()]
             return RouteDecision(
                 question_type=_question_type(str(raw.get("intent", fallback.intent)), tool),
@@ -78,6 +83,10 @@ class DeepSeekQueryPlanner:
                 subqueries=subqueries,
                 relations=[str(item).strip() for item in raw.get("relations", []) if str(item).strip()],
                 scope=scope,
+                answer_mode=fallback.answer_mode,
+                temporal_scope=fallback.temporal_scope,
+                as_of=fallback.as_of,
+                visit_zone=fallback.visit_zone,
             )
         except Exception:
             return fallback.model_copy(update={"subqueries": fallback.subqueries or [question]})

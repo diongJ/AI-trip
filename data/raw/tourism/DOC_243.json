@@ -1,0 +1,35 @@
+{
+  "doc_id": "DOC_243",
+  "title": "馆内便民服务（行李寄存、租借、医药箱）",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/VisitIndex/Visit-0",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "南越王博物院馆内便民服务包括：行李寄存方面，王宫展区提供免费行李寄存服务，王墓展区提供自助行李寄存柜。服务台提供咨询、受理投诉处理和应急医药箱。租借服务提供老花镜、助听器、婴儿车、拐杖、轮椅和盲文简介。据博物院服务建设介绍，还提供充电宝租借、披肩出借和免费自助讲解器（含普通话、粤语、英语、日语、德语、西班牙语、韩语等多语种语音导览）、导览机等便民装置。以上服务内容以展区服务台当日提供为准。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "便民服务",
+    "行李寄存",
+    "租借服务",
+    "医药箱",
+    "充电宝"
+  ],
+  "published_at": null,
+  "content_hash": "e6ec6acdb11baa42149992df882dc5367b8c11fd7befd3f4eb412ea2efa0631d",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "monthly_check",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [
+    "family",
+    "senior",
+    "disabled"
+  ],
+  "recommended_duration": null
+}

@@ -5,12 +5,21 @@ import time
 from dataclasses import dataclass
 
 from src.agent.context import citations_from_result
-from src.agent.models import AgentAnswer, Citation, ToolResult
+from src.agent.models import (
+    AgentAnswer,
+    AnswerMode,
+    AnswerStatus,
+    Citation,
+    ConversationTurn,
+    ToolResult,
+)
 from src.agent.planner import DeepSeekQueryPlanner
 from src.agent.service import (
     AgentService,
     AnswerGenerationError,
     DeepSeekAnswerGenerator,
+    DeepSeekClaimVerifier,
+    DeepSeekWebSearchAnswerGenerator,
     ExtractiveAnswerGenerator,
 )
 from src.agent.tools import AgentTools
@@ -20,6 +29,7 @@ from src.graph.retriever import LocalGraphRetriever
 from src.rag.index import build_rag_index
 from src.rag.models import GraphEntity, GraphHit
 from src.rag.retriever import RagIndexError, RagRetriever
+from src.rag.semantic import SemanticRagRetriever, SemanticUnavailable
 
 
 EXPLANATION_STYLES = {
@@ -42,7 +52,9 @@ class RuntimeStatus:
     corpus_ready: bool
     rag_ready: bool
     graph_ready: bool
+    semantic_ready: bool
     deepseek_configured: bool
+    web_search_configured: bool
     neo4j_configured: bool
     document_count: int
     entity_count: int
@@ -60,18 +72,34 @@ class AppRuntime:
         except RagIndexError:
             build_rag_index(force=True)
             rag = RagRetriever()
+        semantic_ready = False
+        semantic_warning: str | None = None
+        document_retriever = rag
+        if self.settings.semantic_retrieval_enabled:
+            try:
+                document_retriever = SemanticRagRetriever(
+                    rag,
+                    embedding_model=self.settings.semantic_embedding_model,
+                    reranker_model=self.settings.semantic_reranker_model,
+                )
+                semantic_ready = document_retriever.available
+            except SemanticUnavailable:
+                semantic_warning = "本地语义检索未安装，已使用 BM25 检索。"
         self.graph = LocalGraphRetriever()
-        tools = AgentTools(document_retriever=rag, graph_retriever=self.graph)
+        tools = AgentTools(document_retriever=document_retriever, graph_retriever=self.graph)
         self.extractive_service = AgentService(
             tools,
             generator=ExtractiveAnswerGenerator(),
         )
         self.deepseek_service: AgentService | None = None
         self._deepseek_setup_warning: str | None = None
+        self._semantic_setup_warning = semantic_warning
         try:
             self.deepseek_service = AgentService(
                 tools,
                 generator=DeepSeekAnswerGenerator(self.settings),
+                web_search_generator=DeepSeekWebSearchAnswerGenerator(self.settings),
+                claim_verifier=DeepSeekClaimVerifier(self.settings),
                 planner=DeepSeekQueryPlanner(self.settings),
             )
         except ConfigurationError:
@@ -83,29 +111,40 @@ class AppRuntime:
             corpus_ready=bool(rag.chunks),
             rag_ready=True,
             graph_ready=bool(self.graph.entities),
+            semantic_ready=semantic_ready,
             deepseek_configured=self.deepseek_service is not None,
+            web_search_configured=self.deepseek_service is not None,
             neo4j_configured=_neo4j_is_configured(self.settings),
             document_count=int(manifest.get("document_count", 0)),
             entity_count=len(self.graph.entities),
             relation_count=len(self.graph.relations),
         )
 
-    def ask(self, question: str, *, prefer_llm: bool = True) -> QueryOutcome:
+    def ask(
+        self,
+        question: str,
+        *,
+        history: list[ConversationTurn] | None = None,
+        answer_mode: AnswerMode = AnswerMode.AUTO,
+        prefer_llm: bool = True,
+    ) -> QueryOutcome:
         started = time.perf_counter()
         warning = None
         mode = "离线证据摘录"
         if prefer_llm and self.deepseek_service is not None:
             try:
-                response = self.deepseek_service.answer(question)
-                mode = "DeepSeek 智能生成"
+                response = _ask_service(self.deepseek_service, question, history, answer_mode)
+                mode = "DeepSeek 证据综合" if response.claims_verified else "DeepSeek 智能生成"
             except AnswerGenerationError:
-                response = self.extractive_service.answer(question)
+                response = _ask_service(self.extractive_service, question, history, answer_mode)
                 warning = "智能生成服务暂时不可用，本次已回退到离线证据摘录。"
         else:
-            response = self.extractive_service.answer(question)
+            response = _ask_service(self.extractive_service, question, history, answer_mode)
             if prefer_llm:
-                warning = self._deepseek_setup_warning
-        if response.insufficient_evidence:
+                warning = self._deepseek_setup_warning or self._semantic_setup_warning
+        if response.response_status == AnswerStatus.WEB_SEARCH_ANSWERED:
+            mode = "DeepSeek 联网搜索"
+        elif response.insufficient_evidence:
             mode = "规则拒答 / 证据不足"
         elapsed_ms = round((time.perf_counter() - started) * 1000, 1)
         return QueryOutcome(
@@ -191,3 +230,15 @@ def _neo4j_is_configured(settings: Settings) -> bool:
         and settings.neo4j_password
         and settings.neo4j_password.get_secret_value()
     )
+
+
+def _ask_service(
+    service: object,
+    question: str,
+    history: list[ConversationTurn] | None,
+    answer_mode: AnswerMode,
+) -> AgentAnswer:
+    """Keep test doubles and third-party service adapters using the legacy signature working."""
+    if not history and answer_mode == AnswerMode.AUTO:
+        return service.answer(question)
+    return service.answer(question, history=history, answer_mode=answer_mode)

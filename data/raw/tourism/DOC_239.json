@@ -1,0 +1,34 @@
+{
+  "doc_id": "DOC_239",
+  "title": "王宫展区2026年暑期延长开放服务时间公告",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12596",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "据南越王博物院2026年7月7日公告：2026年暑假期间（7月11日至8月31日），王宫展区延长开放服务时间，开放时间调整为9:00—18:00，17:00停止入场；王宫展区免费开放，逢周一闭馆（遇国家法定假期正常开放）。王墓展区开放时间不变，仍为9:00—17:30，17:00停止售票、入场，逢周一闭馆（遇国家法定假期正常开放）。王宫展区预约及进场均不收取任何费用，须通过“南越王博物院”官方微信公众号菜单栏“王宫展区→门票讲解预约”提前预约；预约成功后无需取票，中国大陆观众携本人有效身份证原件在预约时段内至王宫展区东门闸机刷身份证进馆，港澳台、持永居证及海外观众刷二维码检票进馆。该延时安排2026年8月31日后失效，此后恢复常规开放时间。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "暑期",
+    "延长开放",
+    "王宫展区",
+    "开放时间",
+    "临时公告"
+  ],
+  "published_at": "2026-07-07",
+  "content_hash": "76ff8884e3be999b03ddff3fe485634f165a8983c3cc2cb5a11971b74833735a",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2026-07-11",
+  "effective_until": "2026-08-31",
+  "last_checked_at": "2026-08-27",
+  "volatility": "weekly_check",
+  "zone": "王宫展区",
+  "floor": null,
+  "visitor_types": [
+    "family",
+    "student"
+  ],
+  "recommended_duration": null
+}

@@ -1,0 +1,38 @@
+{
+  "doc_id": "DOC_234",
+  "title": "王墓展区参观指南（2026年版）",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12532",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "王墓展区地址为广州市越秀区解放北路867号，地铁二号线越秀公园站E出口，公交越秀公园站、解放北路口站、盘福路站。开放时间为周二至周日9:00—17:30，17:00停止售票及进场；逢周一闭馆，遇国家法定假期正常开放。门票全票10元、半价票5元，门票不含南越文王墓墓室下层参观。所有观众无论购买何种票价类型，均须通过“南越王博物院”微信公众号菜单栏“王墓展区→门票讲解预约”实名制预约购票，或凭有效身份证件现场购票，凭身份证核验参观。半价票适用于全日制大学本科及以下学历学生、60周岁（含）至64周岁（含）人士，以及盲人、智力残疾人、双下肢残疾人和其他重度残疾人的1名陪护人员。免费票适用于65周岁（含）以上长者、18周岁（不含）以下未成年人、残障人士、现役军人、残疾军人、军队离退休干部、退役军人和三属、消防救援人员、无偿献血优待对象及民政部门确认的困难群体等，免费不免票，需凭相关证件线上预约或在人工窗口申领免费票。南越文王墓墓室下层参观票需另行免费预约，一人一票，可提前一天通过微信公众号“王墓展区→门票讲解预约→墓室下层参观”预约。展区提供自助行李寄存柜。咨询电话020-36182920（周二至周日9:00—17:30）。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "参观指南",
+    "开放时间",
+    "门票",
+    "预约",
+    "王墓展区",
+    "交通",
+    "行李寄存"
+  ],
+  "published_at": null,
+  "content_hash": "4860e6510b667b4cfc8272f8c84c25b1d8d8e608d39be494eb6461dbccb61f08",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "monthly_check",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time",
+    "family",
+    "senior",
+    "student"
+  ],
+  "recommended_duration": null
+}

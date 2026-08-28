@@ -1,0 +1,34 @@
+{
+  "doc_id": "DOC_250",
+  "title": "南越藏珍陈列单元结构与官方重点文物表述",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/Exhibition/BDetails/jbcl?nid=7647",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "“南越藏珍——西汉南越王墓出土文物陈列”位于王墓展区主体陈列楼，展出1983年发现的南越国第二代国王赵眜墓出土文物。该墓是岭南地区所发现的规模最大的唯一汉代彩绘石室墓，1996年被列为全国重点文物保护单位，出土文物1000多套、一万余件。陈列分为“南越文帝”“美玉大观”“兵器车马”“海路扬帆”“生活器具”“宫廷宴乐”六个单元。馆方明确表述：“文帝行玺”金印、玉角杯、错金铭文虎节、印花铜板模、平板玻璃铜牌饰等文物具有重大历史、科学、艺术价值。墓中出土“文帝行玺”“帝印”“赵眜”等玺印共23枚，材质有金、铜、玉、水晶、玛瑙、绿松石和象牙等7种，为判断墓主及殉人身份提供直接依据。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "南越藏珍",
+    "展览单元",
+    "重点文物",
+    "基本陈列",
+    "主体陈列楼"
+  ],
+  "published_at": null,
+  "content_hash": "c813a5c2363bf1ec4b90d8132b62ecfa0095428671ed646a7d2c3a169f34fc95",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "quarterly_check",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time",
+    "student"
+  ],
+  "recommended_duration": null
+}

@@ -1,0 +1,31 @@
+{
+  "doc_id": "DOC_257",
+  "title": "亲子观察路线（项目整理）",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "【项目整理建议，非馆方官方路线】亲子参观建议控制在1.5—2小时，以“找一找”观察任务组织：在主体陈列楼找一找金印上的龙钮（文帝行玺）、玉衣上的玉片和丝线（丝缕玉衣）、像犀牛角的杯子（角形玉杯）、老虎形状的凭证（错金铭文铜虎节）、刻有船的大铜筒（船纹铜提筒）。未满18周岁观众免票但需凭证预约领票；婴儿车可在服务台租借；未满14周岁（含）儿童进入墓室下层须成人陪同。建议避开孩子疲劳时段，中途在休息区调整。官方依据：王墓展区参观指南票务细则、墓室下层参观公告、便民服务介绍。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "路线",
+    "亲子",
+    "儿童",
+    "观察任务",
+    "项目整理建议"
+  ],
+  "published_at": null,
+  "content_hash": "dadd721f0dbd65f16d9996490b46b41925c2a14db8fb304dc7350f9ad0fe78a7",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "review_on_official_change",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
+}

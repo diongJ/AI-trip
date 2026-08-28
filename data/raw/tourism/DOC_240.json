@@ -1,0 +1,30 @@
+{
+  "doc_id": "DOC_240",
+  "title": "台风“红霞”后恢复开放公告（2026年7月）",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12604",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "【一次性时效公告，已执行完毕】南越王博物院2026年7月27日公告：由于台风“红霞”影响减弱，全市台风预警信号均已解除，博物院自2026年7月28日（周二）9:00起恢复正常开放（逢周一闭馆），王墓展区、王宫展区均正常对外开放。本条说明台风等极端天气可能造成临时闭馆，出行前应查看官方公众号最新通知。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "恢复开放",
+    "台风",
+    "临时公告",
+    "闭馆"
+  ],
+  "published_at": "2026-07-27",
+  "content_hash": "756b40b2641d130dc8982918f0a34f3e91d004785dc33f9fb071767fd173497f",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2026-07-28",
+  "effective_until": "2026-07-28",
+  "last_checked_at": "2026-08-27",
+  "volatility": "expired",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
+}

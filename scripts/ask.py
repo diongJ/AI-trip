@@ -6,9 +6,11 @@ from scripts.verify_retrieval import _ensure_local_graph
 from src.agent.service import (
     AgentService,
     DeepSeekAnswerGenerator,
+    DeepSeekWebSearchAnswerGenerator,
     ExtractiveAnswerGenerator,
 )
 from src.agent.planner import DeepSeekQueryPlanner
+from src.agent.models import AnswerStatus
 from src.agent.tools import AgentTools
 from src.config import get_settings
 from src.config.settings import ConfigurationError
@@ -45,10 +47,12 @@ def main() -> None:
     )
     generator = ExtractiveAnswerGenerator()
     planner = None
+    web_search_generator = None
     if args.llm:
         try:
             settings = get_settings()
             generator = DeepSeekAnswerGenerator(settings)
+            web_search_generator = DeepSeekWebSearchAnswerGenerator(settings)
             planner = DeepSeekQueryPlanner(settings)
         except ConfigurationError as exc:
             raise SystemExit(f"Cannot use --llm: {exc}") from None
@@ -56,17 +60,24 @@ def main() -> None:
     response = AgentService(
         tools,
         generator=generator,
+        web_search_generator=web_search_generator,
         planner=planner,
     ).answer(args.question)
     if args.json:
         print(response.model_dump_json(indent=2))
         return
 
+    if response.response_status == AnswerStatus.WEB_SEARCH_ANSWERED:
+        print("【DeepSeek 联网搜索补充｜内容未进入本地知识库，请结合来源注意甄别】")
     print(response.answer)
     if response.citations:
         print("\n来源：")
         for citation in response.citations:
             print(f"- {citation.doc_id} {citation.title}: {citation.source_url}")
+    if response.web_sources:
+        print("\n联网来源（请注意甄别）：")
+        for source in response.web_sources:
+            print(f"- {source.title}: {source.url}")
 
 
 if __name__ == "__main__":

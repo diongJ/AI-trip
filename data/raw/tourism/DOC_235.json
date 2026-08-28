@@ -1,0 +1,37 @@
+{
+  "doc_id": "DOC_235",
+  "title": "王宫展区参观指南",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12498",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "王宫展区地址为广州市越秀区中山四路316号，地铁一、二号线公园前站F出口，公交财厅站、中山五路站。开放时间为周二至周日9:00—17:30，17:00停止进场；逢周一闭馆，遇国家法定假期正常开放。王宫展区免费预约参观，请通过“南越王博物院”官方微信公众号菜单栏“王宫展区→门票讲解预约”预约，成功预约后无需取票，中国大陆观众到闸机刷身份证入场，港澳台及海外观众刷二维码入场。参观流线为从王宫展区东门（中山四路316号，近城隍庙）进入展区，从王宫展区西门（北京路374号，近广东省财政厅）离开展区，入口与出口不同。展区提供咨询、受理投诉建议、应急医药箱、婴儿车和轮椅出借、免费行李寄存等服务。咨询电话020-83896501（周二至周日9:00—17:30）。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "参观指南",
+    "开放时间",
+    "免费预约",
+    "王宫展区",
+    "交通",
+    "出入口"
+  ],
+  "published_at": null,
+  "content_hash": "a5d1bf5d2ca37adebc36b02b539a07d8ec39264fb3551a0c0402563fb6076c21",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "monthly_check",
+  "zone": "王宫展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time",
+    "family",
+    "senior",
+    "student"
+  ],
+  "recommended_duration": null
+}

@@ -1,0 +1,32 @@
+{
+  "doc_id": "DOC_246",
+  "title": "参观须知（全员实名预约制）",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/VisitIndex/Visit-0",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "南越王博物院实行全员预约参观制度：观众须关注微信服务号“南越王博物院”，点击“王墓展区”或“王宫展区”—“门票预约”进行实名制预约；预约成功后须按所预约的参观时段到达，非预约时段到达会给入场带来不便；到达后请配合现场工作人员指引，验票后有序进入展区。如有疑问可致电020-36182920（王墓展区）、020-83896501（王宫展区）。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "参观须知",
+    "实名预约",
+    "入馆流程",
+    "咨询投诉"
+  ],
+  "published_at": null,
+  "content_hash": "4fb0d054087932a1c083aa67d8a3eb8ce1cbb5ca6d3a0121eff76a47918836c9",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "monthly_check",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time"
+  ],
+  "recommended_duration": null
+}

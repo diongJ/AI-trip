@@ -18,7 +18,11 @@ class Settings(BaseSettings):
 
     deepseek_api_key: SecretStr | None = None
     deepseek_base_url: str = "https://api.deepseek.com"
-    deepseek_model: str = "deepseek-chat"
+    deepseek_model: str = "deepseek-v4-flash"
+    deepseek_search_model: str = "deepseek-v4-flash"
+    semantic_retrieval_enabled: bool = True
+    semantic_embedding_model: str = "BAAI/bge-small-zh-v1.5"
+    semantic_reranker_model: str = "BAAI/bge-reranker-base"
 
     neo4j_uri: str | None = None
     neo4j_username: str | None = None
@@ -49,4 +53,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

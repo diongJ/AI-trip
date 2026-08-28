@@ -10,7 +10,7 @@ Day 1 已提供以下技术底座：
 - Neo4j Aura 约束、幂等写入和局部关系查询。
 - DeepSeek、Neo4j 及端到端样例验证脚本。
 
-Day 2 与 Day 3 已在此基础上完成 36 份核心官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。专题升级后，RAG 语料扩展为 181 份分层可信资料，并补充王墓展区参观攻略；核心图谱证据基线保持不变。
+Day 2 与 Day 3 已在此基础上完成 36 份核心官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。专题升级后，RAG 语料扩展为 210 份分层可信资料，并补充王墓展区参观攻略；核心图谱证据基线保持不变。
 
 ## 环境要求
 
@@ -32,12 +32,20 @@ python -m pip install -e ".[dev]"
 Copy-Item .env.example .env
 ```
 
+如需启用本地语义检索与重排（首次运行会下载 BGE 模型）：
+
+```powershell
+python -m pip install -e ".[dev,semantic]"
+python -m scripts.build_rag_index --semantic
+```
+
 编辑 `.env`，填入真实凭据：
 
 ```dotenv
 DEEPSEEK_API_KEY=your-key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
-DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_MODEL=deepseek-v4-flash
+DEEPSEEK_SEARCH_MODEL=deepseek-v4-flash
 NEO4J_URI=neo4j+s://your-instance.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-password
@@ -148,7 +156,7 @@ python -m scripts.load_graph_v1
 
 ## Day 4 检索底座
 
-Day 4 检索底座现已升级为纯 Python `multi-field-bm25-v2`，对标题、主题标签和正文分别加权，并支持多查询倒数排名融合；不依赖 GPU、FAISS 或额外模型下载。
+Day 4 检索底座默认使用纯 Python `multi-field-bm25-v2`，对标题、主题标签和正文分别加权，并支持多查询倒数排名融合。安装 `semantic` 可选依赖后，系统会加入 BGE 向量召回与重排；模型不可用时自动降级为 BM25。
 
 构建 RAG 索引：
 
@@ -178,7 +186,7 @@ RAG 索引产物位于 `data/processed/rag/`，属于可重复生成文件，不
 
 ## Day 5 Agent MVP
 
-Day 5 提供 KG、RAG 和 Hybrid 三类工具路由，并生成带引用回答。默认使用离线抽取式回答生成器，不需要 DeepSeek；配置 `DEEPSEEK_API_KEY` 后可用 `--llm` 让 DeepSeek 只基于检索证据组织语言。
+Day 5 提供 KG、RAG 和 Hybrid 三类工具路由，并生成带引用回答。它支持最近四轮会话的追问消歧、深入模式的两跳图谱取证，以及 DeepSeek 可用时的结论级证据核验。默认使用离线抽取式回答生成器，不需要 DeepSeek；配置 `DEEPSEEK_API_KEY` 后可用 `--llm` 让 DeepSeek 只基于检索证据组织语言。
 
 命令行提问：
 
@@ -204,7 +212,15 @@ python -m scripts.ask "讲讲丝缕玉衣的特点" --llm
 python -m scripts.verify_agent
 ```
 
-Agent 回答包含 `answer`、`citations`、`used_tools`、`route_reason`、`insufficient_evidence`、`response_status` 和 `suggested_questions`。稳定的开放时间、预约边界、游览动线和重点文物推荐会进入参观攻略检索；实时客流、当天余票、实时天气、停车空位和路线导航等动态或范围外问题会返回对应的柔和提示。DeepSeek 只能根据选中的本地证据组织答案；没有足够证据时不调用通用知识生成事实结论。
+Agent 回答包含 `answer`、`citations`、`web_sources`、`used_tools`、`route_reason`、`insufficient_evidence`、`response_status` 和 `suggested_questions`。稳定的开放时间、预约边界、游览动线和重点文物推荐会进入参观攻略检索；实时客流、当天余票、实时天气、停车空位和路线导航等动态或范围外问题会返回对应的柔和提示。DeepSeek 首先只能根据选中的本地证据组织答案；专题内没有足够证据时，才使用 Responses API 的真实 `web_search` 补充，并标记为未审核联网内容。
+
+联网兜底只在 `--llm` 模式启用：
+
+```powershell
+python -m scripts.ask "赵眜的父亲是谁？" --llm --json
+```
+
+联网回答使用 `response_status=web_search_answered`，本地引用保持为空，来源单独放在 `web_sources`。API 必须返回已完成的 `web_search_call` 和至少一个可解析 URL，否则该回答会被丢弃并继续使用柔和提示。联网结果不会自动写入语料库或知识图谱。
 
 ## Day 6 Streamlit 完整 Demo
 
@@ -229,7 +245,7 @@ python -m scripts.verify_demo
 
 ## 南越专题知识库升级
 
-- 语料由 36 份核心馆方资料扩展为 181 份：核心资料 36 份、扩展可信资料与参观攻略 145 份，共 78,781 个汉字。
+- 语料由 36 份核心馆方资料扩展为 210 份：核心资料 36 份、扩展可信资料与参观攻略 174 份，共 85,000 余个汉字。
 - 白名单覆盖南越王博物院、广州博物馆、政府文物与考古相关页面；无关页面会进入本地隔离目录且不参与索引。
 - 规则路由会优先识别真实实体名和别名；参观攻略问题使用 `tourism` 资料和专用查询扩展，非参观问题不再注入宽泛的南越主题查询。DeepSeek 模式先生成实体、意图和多查询检索计划，再从 BM25 与 KG 候选中选择证据；回答必须返回真实证据 ID。
 - 核心资料保持不可变，确保原有 78 个实体、87 条关系的逐字证据审计仍可复算。
@@ -248,7 +264,7 @@ python -m scripts.build_rag_index --force
 python -m scripts.run_evaluation_v2
 ```
 
-当前 90 题结果：专题有效回答率 87.5%，Top-5 召回率 88.75%，引用正确率 100%，无答案拒答准确率 100%，离线 P95 延迟约 10.39 毫秒；全部指标达到评测集配置的验收线。
+当前 90 题结果：专题有效回答率 87.5%，Top-5 召回率 88.75%，引用正确率 100%，无答案拒答准确率 100%，离线 P95 延迟约 10.57 毫秒；全部指标达到评测集配置的验收线。
 
 ## Day 7 与后续协作记录
 
@@ -263,19 +279,20 @@ python -m scripts.run_evaluation_v2
 
 ### 队友在 `dev` 的工作（2026-08-26）
 
-- 在提交 `360f786` 中继续扩充到 181 份资料，并新增历史文化、重点文物、参观攻略、稳定馆内信息和信息边界资料。
+- 在提交 `360f786` 中继续扩充到 210 份资料，并新增历史文化、重点文物、参观攻略、稳定馆内信息和信息边界资料。
 - 增加 50 题回归评测，完善真实实体/别名识别、相关性门槛、参观问题重排、KG 跑题过滤、未知人物和未知方面保护。
-- 完善 Streamlit 内容与交互，并新增 `website/` React/Vite 静态展示站。该展示站目前用于项目成果演示，尚未连接 Python RAG 后端或 DeepSeek。
-- `dev` 通过合并提交 `827c603` 集成上述工作；本轮后端改进以该提交为基线，未调整 React 或 Streamlit 视觉页面。
+- 完善 Streamlit 内容与交互，并新增 `website/` React/Vite 展示站。
+- React 展示站现通过 `app.api` 与 Streamlit 共用 Python RAG、图谱与 DeepSeek 降级运行时，提供真实问答、来源追溯与一跳关系探索。
 
 ### 当前可信度改进（2026-08-27）
 
-- 为 181 份文档持久化 `content_hash` 和显式 `review_status`，并审核为 163 份 `factual` 事实资料、18 份 `curated_guidance` 项目整理建议；迁移脚本为 `python -m scripts.migrate_corpus_trust`。
+- 为 210 份文档持久化 `content_hash` 和显式 `review_status`，并审核为 180 份 `factual` 事实资料、30 份 `curated_guidance` 项目整理建议；迁移脚本为 `python -m scripts.migrate_corpus_trust`。
 - 未审核、哈希错误或缺少信任字段的文档不能进入索引。项目整理建议只允许进入参观攻略 RAG，不能回答历史事实、进入知识图谱或充当博物院规定。
 - 历史、人物、文物和考古查询仅检索事实资料；参观查询先返回官方稳定信息，再补充最多两条项目整理建议，并明确标记“项目整理建议”。
-- 移除无证据的 DeepSeek 通用知识兜底。证据不足、问题模糊、超出范围、实时信息和服务异常分别返回固定柔和提示；无证据提示不附伪引用，也不生成事实结论。
+- 移除无来源的 DeepSeek 通用知识兜底。问题模糊、超出范围、实时信息、错误前提，以及联网搜索失败或来源不可核验时，分别返回固定柔和提示；这些提示不附伪引用，也不生成事实结论。
 - 保留 DeepSeek 失败时的本地证据摘录回退；正常事实答案必须带有效证据 ID、来源类型、证据角色、来源层级、内容哈希和采集时间。
-- 当前验证：94 项离线测试全部通过，20/20 Agent 冒烟测试通过，50/50 回归题通过，90 题全部指标达标。真实 DeepSeek 联网复测需在明确允许向 DeepSeek 发送本地检索证据的环境中执行。
+- 新增 DeepSeek Responses API 真实联网搜索兜底：只处理南越专题内的本地无证据问题，强制执行 `web_search`；实时、范围外、问题模糊和错误前提不会触发。页面显示“联网搜索补充”、甄别提醒、来源 URL 和访问时间，联网结果不进入知识库。
+- 当前验证：98 项离线测试全部通过，20/20 Agent 冒烟测试通过，50/50 回归题通过，90 题全部指标达标。真实联网测试“赵眜的父亲是谁？”成功返回 `web_search_answered` 和可访问来源；测试过程未输出 API 密钥，也未向联网搜索发送本地知识库正文。
 
 推荐的后端验收命令：
 

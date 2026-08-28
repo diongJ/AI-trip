@@ -1,0 +1,31 @@
+{
+  "doc_id": "DOC_260",
+  "title": "无障碍参观路线（项目整理）",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "【项目整理建议，非馆方官方路线】行动不便观众建议：提前2天电话预约入展区当日的爱心服务（王墓展区020-36182920，王宫展区020-83896501）；服务台可租借轮椅、助听器，展区内多处设有无障碍坡道；盲人、智力残疾人、双下肢残疾人和其他重度残疾人的1名陪护人员可购半价票，残障人士本人免费；视障观众可索取盲文简介、扫码收听“追光主播讲解”，听障观众可提前7个工作日扫码预约手语导赏。路线以主体陈列楼为主，墓原址及墓室下层的轮椅可达性未获官方明确说明，建议预约时向服务台电话确认。官方依据：无障碍与爱心服务资料、票务细则。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "路线",
+    "无障碍",
+    "轮椅",
+    "爱心服务",
+    "项目整理建议"
+  ],
+  "published_at": null,
+  "content_hash": "dc869578d49f877518aff1bdb753e7202c11d46232553863976a5d9cdb86c50a",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "review_on_official_change",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
+}

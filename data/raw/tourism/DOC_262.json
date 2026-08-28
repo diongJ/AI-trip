@@ -1,0 +1,33 @@
+{
+  "doc_id": "DOC_262",
+  "title": "四条主题参观路线（项目整理）",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "【项目整理建议，非馆方官方路线】四条主题路线均以主体陈列楼“南越藏珍”六个单元为基础组织。墓主身份线：墓原址→南越文帝单元，重点看文帝行玺、帝印、赵眜印等玺印。丧葬观念线：南越文帝单元，重点看丝缕玉衣、珠玉敛葬与组玉佩，了解玉衣敛葬与殉人制度。工艺技术线：美玉大观、生活器具、宫廷宴乐单元，重点看角形玉杯、透雕龙凤纹重环玉佩、八节铁芯龙虎玉带钩、铜烤炉与印花铜板模。海上交流线：海路扬帆单元，重点看船纹铜提筒，并联想平板玻璃铜牌饰等域外因素器物；时间充裕可延伸参观王宫展区，了解海上丝绸之路形成发展的遗址见证。官方依据：南越藏珍陈列介绍、王宫展区介绍。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "路线",
+    "主题",
+    "墓主身份",
+    "丧葬观念",
+    "工艺",
+    "海上交流",
+    "项目整理建议"
+  ],
+  "published_at": null,
+  "content_hash": "bde8a7b9f3fc5f1f4d94827105e10fa3c15a14b6d385be779a74779c5776ead0",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "review_on_official_change",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
+}

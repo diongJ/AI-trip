@@ -1,0 +1,33 @@
+{
+  "doc_id": "DOC_249",
+  "title": "王宫展区空间构成与展览分布",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/About/Index/wgzq",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "王宫展区依托南越国宫署遗址，其中南越国时期的大型石构水池在岭南地区尚属首见，曲流石渠遗迹是迄今为止发现的年代最早、保存较为完好的秦汉王家宫苑实例，二者分别被评为1995年、1997年全国十大考古新发现之一。遗址于1996年被列为全国重点文物保护单位。据馆方假期开放指南公布的展览地点：基本陈列“岭南两千年中心地”位于陈列楼，陈列楼一楼设有南越工坊教育活动空间；南越宫苑馆二楼设临展厅，一楼设收费讲解服务台；南越宫苑二楼设有室外展示休闲区。展区入口为东门（中山四路316号，近城隍庙），出口为西门（北京路374号，近广东省财政厅）。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "空间分布",
+    "王宫展区",
+    "南越国宫署遗址",
+    "陈列楼",
+    "南越宫苑馆"
+  ],
+  "published_at": null,
+  "content_hash": "f3eef2adf9bf71c3bbe15da9f8681d31f691d0a8f25521f3eb132db4f420696d",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "quarterly_check",
+  "zone": "王宫展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time"
+  ],
+  "recommended_duration": null
+}

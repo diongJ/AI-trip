@@ -1,8 +1,8 @@
-// 全站真实内容数据：与仓库 main（Day 7 专题升级后）口径一致
-// 181 份分层可信资料（36 份核心馆方 + 145 份扩展可信与参观攻略）、78 个实体、87 条关系、90 题评测 v2
+// 历史兼容组件的数据源；统计口径与 README 和运行时保持一致。
+// 210 份分层可信资料（36 份核心馆方 + 174 份扩展可信与参观攻略）、78 个实体、87 条关系、90 题评测 v2
 
 export const PROJECT_STATS = [
-  { value: 181, unit: '份', label: '分层可信资料', note: '36 份核心馆方 + 145 份扩展可信与参观攻略，共 9 万余字' },
+  { value: 210, unit: '份', label: '分层可信资料', note: '36 份核心馆方 + 174 份扩展可信与参观攻略，共 8.5 万余字' },
   { value: 78, unit: '个', label: '可靠实体', note: '经人工消歧与融合后确认，核心图谱证据基线' },
   { value: 87, unit: '条', label: '可追溯关系', note: '每条关系保留 document_id 与原文证据' },
   { value: 100, unit: '%', label: '引用正确率', note: '90 题实测：引用全部真实支持答案，证据不足时拒答' },
@@ -218,7 +218,7 @@ export const GRAPH_EDGES: GraphEdge[] = [
 ]
 
 export const PIPELINE_STEPS = [
-  { title: '可靠资料', desc: '181 份分层可信资料：36 份核心馆方 + 145 份扩展可信与参观攻略，白名单准入与逐份审核' },
+  { title: '可靠资料', desc: '210 份分层可信资料：36 份核心馆方 + 174 份扩展可信与参观攻略，白名单准入与逐份审核' },
   { title: 'LLM 抽取', desc: '实体与关系抽取，保留原文证据定位' },
   { title: '人工消歧', desc: '别名合并、冲突裁决，形成 78 实体 / 87 关系' },
   { title: 'Neo4j 图谱', desc: '图谱 V1 幂等写入 Aura，支持本地降级' },
@@ -232,10 +232,10 @@ export const EVAL_V2 = {
   questionCount: 90,
   note: '指标由 scripts/run_evaluation_v2.py 从原始结果自动汇总，未做手工修改。',
   metrics: [
-    { name: '回答率', value: 96.3, target: 80, pass: true },
+    { name: '回答率', value: 87.5, target: 80, pass: true },
     { name: '检索命中率 Hit@5', value: 88.8, target: 85, pass: true },
     { name: '引用正确率', value: 100, target: 90, pass: true },
     { name: '拒答准确率', value: 100, target: 90, pass: true },
   ],
-  p95LatencyMs: 3.1,
+  p95LatencyMs: 10.565,
 }

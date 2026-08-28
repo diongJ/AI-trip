@@ -1,0 +1,33 @@
+{
+  "doc_id": "DOC_242",
+  "title": "警惕院外无授权商铺消费风险公告",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12597",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "据南越王博物院2026年7月7日公告：场馆周边存在商铺未取得院方授权，擅自冒用博物院名义售卖文创纪念品、私自承揽付费讲解和票务代办。院方提醒：官方文创售卖、官方讲解导览、票务咨询等全部服务仅开设于展区内讲解服务中心及官方文创商店，场馆外商铺及摊位均未获授权；请勿轻信“官方独家授权”“限定内部文创”“馆内持证讲解”等宣传，不要在非官方渠道选购商品、预约服务。如遇虚假营销、消费骗局，请保存证据并拨打12315或110维权。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "消费提示",
+    "防骗",
+    "官方渠道",
+    "讲解",
+    "文创"
+  ],
+  "published_at": "2026-07-07",
+  "content_hash": "61fe5d8190a8c7d2d07e82d725169b4e67cf2acdf346fa693632329c73d12d2a",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2026-07-07",
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "stable",
+  "zone": "两展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time"
+  ],
+  "recommended_duration": null
+}

@@ -1,0 +1,30 @@
+{
+  "doc_id": "DOC_254",
+  "title": "2小时深度路线（项目整理）",
+  "source_name": "AI-trip 项目整理",
+  "source_url": "https://github.com/diongJ/AI-trip",
+  "source_type": "other",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "【项目整理建议，非馆方官方路线】2小时深度参观：第一站古墓保护区墓原址上层（约30分钟）；第二站主体陈列楼“南越藏珍”陈列完整走一遍六个单元（约70分钟），重点文物各停留3—5分钟；第三站综合陈列楼二楼“杨永德伉俪捐赠藏枕专题陈列”（约20分钟）。已提前一天预约墓室下层参观票的观众，按预约时段前往墓原址区检票，墓室下层停留上限20分钟，需相应压缩藏枕陈列时间。官方依据：王墓展区空间构成、墓室下层参观公告、假期开放指南中的展览地点信息。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "路线",
+    "两小时",
+    "深度",
+    "项目整理建议"
+  ],
+  "published_at": null,
+  "content_hash": "062ed514b259b00394eb47d895c33f407b8eff16219a0dc7c30a8ac3a94cc537",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "curated_guidance",
+  "effective_from": null,
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "review_on_official_change",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [],
+  "recommended_duration": null
+}

@@ -1,0 +1,33 @@
+{
+  "doc_id": "DOC_237",
+  "title": "南越文王墓原址展示区恢复对外开放公告",
+  "source_name": "南越王博物院",
+  "source_url": "https://www.nywmuseum.org.cn/News/Details/tzgg?nid=12524",
+  "source_type": "official",
+  "category": "tourism",
+  "retrieved_at": "2026-08-27",
+  "text": "据南越王博物院2025年12月16日公告：南越文王墓原址展示区域预防性保护施工已完成，2025年12月16日起墓原址展示区恢复对外开放。出于文物保护的考量，南越文王墓原址展示区分上下层，其中墓原址上层全面对外开放，下层实行预约限流参观管理，详情请参考《关于南越文王墓下层参观的公告》（2025年7月9日发布）。",
+  "source_tier": "extended",
+  "topic_tags": [
+    "墓原址",
+    "恢复开放",
+    "王墓展区",
+    "古墓保护区",
+    "公告"
+  ],
+  "published_at": "2025-12-16",
+  "content_hash": "8811dc1310f7197fb143ae7781d818aefb8152ec48304a24350b97cd77905864",
+  "review_status": "approved",
+  "version": 1,
+  "evidence_role": "factual",
+  "effective_from": "2025-12-16",
+  "effective_until": null,
+  "last_checked_at": "2026-08-27",
+  "volatility": "stable",
+  "zone": "王墓展区",
+  "floor": null,
+  "visitor_types": [
+    "first_time"
+  ],
+  "recommended_duration": null
+}

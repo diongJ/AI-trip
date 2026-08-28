@@ -30,10 +30,11 @@ def offline_runtime() -> AppRuntime:
 
 
 def test_runtime_status_is_ready_and_contains_no_secrets(offline_runtime) -> None:
-    assert offline_runtime.status.document_count == 181
+    assert offline_runtime.status.document_count == 210
     assert offline_runtime.status.entity_count == 78
     assert offline_runtime.status.relation_count == 87
     assert not offline_runtime.status.deepseek_configured
+    assert not offline_runtime.status.web_search_configured
     assert "password" not in repr(offline_runtime.status).lower()
     assert "api_key" not in repr(offline_runtime.status).lower()
 

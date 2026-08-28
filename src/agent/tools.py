@@ -17,6 +17,9 @@ class DocumentRetriever(Protocol):
         category: str | None = None,
         min_score: float = 0.0,
         evidence_role: str | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> list[RetrievalHit]: ...
 
     def search_many(
@@ -28,6 +31,9 @@ class DocumentRetriever(Protocol):
         category: str | None = None,
         source_tier: str | None = None,
         evidence_role: str | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> list[RetrievalHit]: ...
 
 
@@ -56,13 +62,16 @@ RELATION_HINTS: tuple[tuple[re.Pattern[str], frozenset[str]], ...] = (
     (re.compile(r"纹饰|图案"), frozenset({"HAS_PATTERN"})),
     (re.compile(r"出土"), frozenset({"EXCAVATED_FROM"})),
     (re.compile(r"埋葬|墓葬|葬于"), frozenset({"BURIED_IN"})),
+    (re.compile(r"主人|谁的|归谁|属于谁|使用者|穿戴者"), frozenset({"RELATED_TO_PERSON"})),
     (re.compile(r"类别|种类"), frozenset({"BELONGS_TO_CATEGORY"})),
     (re.compile(r"朝代|时期|年代|制作于"), frozenset({"CREATED_IN"})),
     (re.compile(r"文化|反映"), frozenset({"REFLECTS_CULTURE"})),
     (re.compile(r"属于哪国|哪个国家|所属国家"), frozenset({"BELONGS_TO_STATE"})),
 )
 VISIT_HINT_RE = re.compile(
-    r"(参观|游览|攻略|怎么逛|怎么玩|开放时间|几点|门票|预约|地址|交通|导览|讲解|服务|展厅|展区|动线|行程)"
+    r"(参观|游览|攻略|怎么逛|怎么玩|开放时间|几点|门票|预约|地址|交通|导览|讲解|服务|展厅|展区|动线|行程|"
+    r"寄存|轮椅|婴儿车|无障碍|手语|多语种|语音|英语|英文|老人|分钟|小时|雨天|食物|母婴|"
+    r"开门|开馆|营业|关门|闭馆|最[佳优]|推荐|建议|值得看|看什么|怎么安排|怎么走|逛多久|多久能逛完|半天)"
 )
 VISIT_QUERIES = [
     "南越王博物院 王墓展区 参观攻略 开放时间 预约",
@@ -70,6 +79,8 @@ VISIT_QUERIES = [
     "南越文王墓 展厅 游览 动线 重点文物",
 ]
 FIRST_VISIT_RE = re.compile(r"第一次|初次|首次|第一次去|应该怎么看|参观重点|重点看")
+ROUTE_REQUEST_RE = re.compile(r"(路线|动线|行程|最[佳优]|推荐|建议|怎么安排|怎么逛|怎么玩|逛多久|多久能逛完|半天|小时|分钟)")
+BOUNDARY_REQUEST_RE = re.compile(r"(实时|当天|今天|边界|官网|确认|公告)")
 VISIT_AUDIENCE_QUERIES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
     (
         FIRST_VISIT_RE,
@@ -102,10 +113,43 @@ VISIT_AUDIENCE_QUERIES: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
         ),
     ),
     (
+        re.compile(r"老人|长者|老年"),
+        (
+            "老人 长者 王墓展区 轻松参观 路线 休息 建议",
+            "王墓展区 老年观众 参观时长 无障碍 服务",
+        ),
+    ),
+    (
+        re.compile(r"轮椅|无障碍|婴儿车"),
+        (
+            "王墓展区 轮椅 婴儿车 无障碍 服务台 租借",
+            "南越王博物院 无障碍 轮椅 参观服务",
+        ),
+    ),
+    (
+        re.compile(r"寄存|行李"),
+        (
+            "王墓展区 行李 寄存柜 服务",
+        ),
+    ),
+    (
+        re.compile(r"手语|多语种|英语|英文|语音"),
+        (
+            "南越王博物院 英语 多语种 语音导览 手语导赏 服务",
+        ),
+    ),
+    (
         re.compile(r"下雨|雨天|降雨"),
         (
             "雨天参观 王墓展区 室内展陈 行程建议",
             "下雨 王墓展区 参观攻略 天气 信息边界",
+        ),
+    ),
+    (
+        re.compile(r"两展区|王墓.*王宫|王宫.*王墓|一起参观|联动|展区.*区别"),
+        (
+            "王墓 王宫 两展区 联动参观 路线 预约 交通",
+            "王墓展区 王宫展区 区别 一天参观 建议",
         ),
     ),
 )
@@ -115,8 +159,8 @@ AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
         ("第一次", "初次", "重点", "文帝行玺", "丝缕玉衣", "墓主人", "代表文物", "动线"),
     ),
     (
-        re.compile(r"开放时间|几点|门票|预约|闭馆|入馆|官方|购票"),
-        ("开放时间", "9:00-17:30", "17:00", "预约", "官方", "门票", "入馆"),
+        re.compile(r"开放时间|几点|开门|开馆|营业|关门|闭馆|入馆|官方|购票"),
+        ("开放时间", "9:00-17:30", "17:00", "开门", "闭馆", "预约", "官方", "门票", "入馆"),
     ),
     (
         re.compile(r"地址|交通|怎么去|在哪|地铁|公交"),
@@ -127,9 +171,14 @@ AUDIENCE_HINTS: tuple[tuple[re.Pattern[str], tuple[str, ...]], ...] = (
         ("学生", "研学", "任务", "问题", "证据", "墓主人", "文帝行玺", "学生参观", "证据链"),
     ),
     (re.compile(r"亲子|孩子|儿童|小朋友|家庭"), ("亲子", "孩子", "儿童", "观察", "任务")),
-    (re.compile(r"半小时|一小时|两小时|半日|小时|分钟|路线|动线|行程"), ("半小时", "一小时", "两小时", "半日", "路线")),
+    (re.compile(r"老人|长者|老年"), ("老人", "长者", "轻松", "休息", "路线", "服务")),
+    (re.compile(r"半小时|一小时|两小时|半日|小时|分钟|路线|动线|行程|最[佳优]|推荐|建议|怎么安排|逛多久|多久能逛完"), ("半小时", "一小时", "两小时", "半日", "路线", "动线", "建议")),
     (re.compile(r"讲解|导览"), ("讲解", "导览", "提问", "问题", "线索")),
+    (re.compile(r"寄存|行李"), ("寄存", "行李", "服务", "入馆")),
+    (re.compile(r"轮椅|无障碍|婴儿车"), ("轮椅", "无障碍", "婴儿车", "服务", "咨询")),
+    (re.compile(r"手语|多语种|英语|英文|语音"), ("手语", "多语种", "英语", "导览", "服务")),
     (re.compile(r"下雨|雨天|降雨"), ("雨天", "下雨", "降雨", "室内展陈", "天气", "信息边界")),
+    (re.compile(r"两展区|王墓.*王宫|王宫.*王墓|一起参观|联动|展区.*区别"), ("两展区", "王墓", "王宫", "联动", "路线", "预约")),
 )
 
 # Generic interrogative scaffolding: stripped before measuring whether a
@@ -164,6 +213,9 @@ class AgentTools:
         category: str | None = None,
         queries: list[str] | None = None,
         include_curated_guidance: bool = False,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> ToolResult:
         expanded_queries = _expand_document_queries(query, queries)
         should_rerank_visit = bool(VISIT_HINT_RE.search(query))
@@ -174,6 +226,9 @@ class AgentTools:
                 top_k=search_top_k,
                 category=category,
                 evidence_role="factual",
+                temporal_scope=temporal_scope,
+                as_of=as_of,
+                zones=zones,
             )
             if hasattr(self.document_retriever, "search_many")
             else self.document_retriever.search(
@@ -181,6 +236,9 @@ class AgentTools:
                 top_k=search_top_k,
                 category=category,
                 evidence_role="factual",
+                temporal_scope=temporal_scope,
+                as_of=as_of,
+                zones=zones,
             )
         )
         if not factual and category is not None:
@@ -189,12 +247,18 @@ class AgentTools:
                     expanded_queries,
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
                 if hasattr(self.document_retriever, "search_many")
                 else self.document_retriever.search(
                     query,
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
             )
         if not factual:
@@ -204,12 +268,18 @@ class AgentTools:
                     fallback_queries,
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
                 if hasattr(self.document_retriever, "search_many")
                 else self.document_retriever.search(
                     fallback_queries[0],
                     top_k=search_top_k,
                     evidence_role="factual",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
             )
         if should_rerank_visit:
@@ -222,6 +292,9 @@ class AgentTools:
                     top_k=search_top_k,
                     category="tourism",
                     evidence_role="curated_guidance",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
                 if hasattr(self.document_retriever, "search_many")
                 else self.document_retriever.search(
@@ -229,6 +302,9 @@ class AgentTools:
                     top_k=search_top_k,
                     category="tourism",
                     evidence_role="curated_guidance",
+                    temporal_scope=temporal_scope,
+                    as_of=as_of,
+                    zones=zones,
                 )
             )
             curated = _rerank_visit_documents(query, curated)
@@ -269,6 +345,9 @@ class AgentTools:
         limit: int = 12,
         queries: list[str] | None = None,
         entity_queries: list[str] | None = None,
+        temporal_scope: str = "all",
+        as_of: str | None = None,
+        zones: set[str] | None = None,
     ) -> ToolResult:
         graph = self.search_kg(
             query,
@@ -277,7 +356,14 @@ class AgentTools:
             depth=depth,
             limit=limit,
         ).graph if (entity_query or entity_queries) else []
-        documents = self.search_documents(query, top_k=top_k, queries=queries).documents
+        documents = self.search_documents(
+            query,
+            top_k=top_k,
+            queries=queries,
+            temporal_scope=temporal_scope,
+            as_of=as_of,
+            zones=zones,
+        ).documents
         return ToolResult(documents=documents, graph=graph)
 
 
@@ -456,6 +542,16 @@ def _rerank_visit_documents(query: str, documents: list[RetrievalHit]) -> list[R
             ]
         )
         bonus = sum(0.28 for hint in hints if hint in searchable)
+        topic_tags = {str(tag) for tag in hit.metadata.get("topic_tags", [])}
+        # “参观前准备/信息边界”对用户问路线、时长、亲子时只是辅助提醒，
+        # 不能压过实际的路线或服务证据。
+        if "信息边界" in topic_tags and not BOUNDARY_REQUEST_RE.search(query):
+            bonus -= 0.8
+        if ROUTE_REQUEST_RE.search(query):
+            if hit.metadata.get("evidence_role") == "curated_guidance":
+                bonus += 0.45
+            if "路线" in " ".join(topic_tags) or "动线" in " ".join(topic_tags):
+                bonus += 0.35
         scored.append((hit.score + bonus, hit))
 
     scored.sort(key=lambda item: (-item[0], item[1].rank, str(item[1].metadata.get("doc_id", ""))))

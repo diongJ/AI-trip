@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Protocol
+from urllib.parse import urlsplit
 
 from src.agent.context import (
     build_grounded_context,
@@ -14,11 +16,17 @@ from src.agent.context import (
 )
 from src.agent.models import (
     AgentAnswer,
+    AnswerClaim,
+    AnswerMode,
     AnswerStatus,
+    ClaimType,
+    ConversationTurn,
     GeneratedAnswer,
     RouteDecision,
     ToolName,
     ToolResult,
+    WebSearchResult,
+    WebSource,
 )
 from src.agent.planner import QueryPlanner
 from src.agent.router import RuleBasedRouter
@@ -48,6 +56,55 @@ class AnswerGenerationError(RuntimeError):
 
 class AnswerGenerator(Protocol):
     def generate(self, question: str, route: RouteDecision, result: ToolResult) -> GeneratedAnswer: ...
+
+
+class WebSearchAnswerGenerator(Protocol):
+    def search(self, question: str) -> WebSearchResult: ...
+
+
+class ClaimVerifier(Protocol):
+    def verify(
+        self, question: str, answer: str, claims: list[AnswerClaim], result: ToolResult
+    ) -> list[AnswerClaim]: ...
+
+
+class ConversationRewriter:
+    """Resolve short follow-ups deterministically without treating history as evidence."""
+
+    FOLLOW_UP_RE = re.compile(r"^(它|这[件个座]|那[件个座]|其|为什么|那为什么|它们|两者|这个)(.*)$")
+
+    def __init__(self, resolver: object) -> None:
+        self.resolver = resolver
+
+    def rewrite(self, question: str, history: list[ConversationTurn] | None) -> str:
+        if not history or not self.FOLLOW_UP_RE.search(question.strip()):
+            return question
+        # Known entity names are the safest antecedents. Scan user questions only:
+        # previous assistant prose must never become an unverified source of facts.
+        try:
+            entities = self.resolver.list_entities(limit=300)
+        except Exception:
+            return question
+        entity = ""
+        for turn in reversed(history[-4:]):
+            candidates = [
+                entity.name
+                for entity in entities
+                if getattr(entity, "name", "") and getattr(entity, "name", "") in turn.question
+            ]
+            if candidates:
+                entity = sorted(set(candidates), key=lambda value: (-len(value), value))[0]
+                break
+        if not entity:
+            return question
+        match = self.FOLLOW_UP_RE.match(question.strip())
+        assert match is not None
+        suffix = match.group(2).strip()
+        if question.startswith(("为什么", "那为什么")):
+            return f"{entity}为什么{suffix}" if suffix else f"{entity}为什么重要？"
+        if question.startswith("两者"):
+            return f"{entity}与前述对象{suffix}"
+        return f"{entity}{suffix}" if suffix else f"介绍一下{entity}。"
 
 
 class ExtractiveAnswerGenerator:
@@ -153,6 +210,124 @@ class DeepSeekAnswerGenerator:
             raise AnswerGenerationError(f"DeepSeek answer generation failed: {exc}") from exc
 
 
+class DeepSeekClaimVerifier:
+    """A second, evidence-only pass that removes unsupported generated claims."""
+
+    def __init__(self, settings: Settings, *, http_client: object | None = None) -> None:
+        if httpx is None:
+            raise ConfigurationError("httpx is required for claim verification.")
+        settings.require_deepseek()
+        self.settings = settings
+        self._owns_client = http_client is None
+        self.client = http_client or httpx.Client(timeout=30.0)
+
+    def close(self) -> None:
+        if self._owns_client:
+            self.client.close()
+
+    def verify(
+        self, question: str, answer: str, claims: list[AnswerClaim], result: ToolResult
+    ) -> list[AnswerClaim]:
+        if not claims:
+            return []
+        prompt = (
+            "你是证据核验器。只根据给定证据判断每条结论是否可保留。"
+            "direct_fact 必须被所列证据明确支持；synthesis 必须引用至少两条证据，"
+            "且不能添加证据中没有的人物、年代、数字或确定因果。"
+            "只输出 JSON：{\\\"kept_claim_indexes\\\":[0,1]}。"
+        )
+        payload = {
+            "model": self.settings.deepseek_model,
+            "messages": [
+                {"role": "system", "content": prompt},
+                {
+                    "role": "user",
+                    "content": (
+                        f"问题：{question}\\n回答：{answer}\\n"
+                        f"结论：{json.dumps([claim.model_dump(mode='json') for claim in claims], ensure_ascii=False)}\\n\\n"
+                        f"证据：\\n{build_grounded_context(result, max_chars=6000)}"
+                    ),
+                },
+            ],
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
+        }
+        try:
+            response = self.client.post(
+                f"{self.settings.deepseek_base_url.rstrip('/')}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.settings.deepseek_api_key.get_secret_value()}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            response.raise_for_status()
+            raw = json.loads(_strip_code_fence(response.json()["choices"][0]["message"]["content"]))
+            indexes = raw.get("kept_claim_indexes", [])
+            if not isinstance(indexes, list):
+                raise ValueError("kept_claim_indexes must be a list")
+            return [claims[index] for index in indexes if isinstance(index, int) and 0 <= index < len(claims)]
+        except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise AnswerGenerationError(f"claim verification failed: {exc}") from exc
+
+
+class DeepSeekWebSearchAnswerGenerator:
+    """Run a real server-side DeepSeek web search and keep only traceable results."""
+
+    def __init__(self, settings: Settings, *, http_client: object | None = None) -> None:
+        if httpx is None:
+            raise ConfigurationError("httpx is required for DeepSeek web search.")
+        settings.require_deepseek()
+        self.settings = settings
+        self._owns_client = http_client is None
+        self.client = http_client or httpx.Client(timeout=45.0)
+
+    def close(self) -> None:
+        if self._owns_client:
+            self.client.close()
+
+    def search(self, question: str) -> WebSearchResult:
+        payload = {
+            "model": self.settings.deepseek_search_model,
+            "instructions": (
+                "你是南越专题资料检索助手。必须先执行联网搜索，只根据搜索结果回答。"
+                "优先博物馆、政府文物部门、考古研究机构和学术机构来源。"
+                "用中文简洁回答；无法确认时明确说明，不得虚构来源、网址或实时信息。"
+            ),
+            "input": question,
+            "tools": [{"type": "web_search"}],
+            "tool_choice": {"type": "web_search"},
+            "reasoning": {"effort": "low"},
+            "max_output_tokens": 900,
+        }
+        try:
+            response = self.client.post(
+                f"{self.settings.deepseek_base_url.rstrip('/')}/responses",
+                headers={
+                    "Authorization": f"Bearer {self.settings.deepseek_api_key.get_secret_value()}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            response.raise_for_status()
+            raw = response.json()
+            output = raw["output"]
+            searched = any(
+                item.get("type") == "web_search_call" and item.get("status") == "completed"
+                for item in output
+                if isinstance(item, dict)
+            )
+            if not searched:
+                raise ValueError("response did not complete a web search call")
+            answer = "\n".join(_response_output_texts(output)).strip()
+            sources = _web_sources_from_payload(output)
+            if not answer or not sources:
+                raise ValueError("web search returned no answer or traceable source")
+            return WebSearchResult(answer=answer, sources=sources)
+        except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
+            raise AnswerGenerationError(f"DeepSeek web search failed: {exc}") from exc
+
+
 class AgentService:
     def __init__(
         self,
@@ -160,24 +335,46 @@ class AgentService:
         *,
         router: RuleBasedRouter | None = None,
         generator: AnswerGenerator | None = None,
+        web_search_generator: WebSearchAnswerGenerator | None = None,
+        claim_verifier: ClaimVerifier | None = None,
         planner: QueryPlanner | None = None,
         source_lookup: dict[str, CorpusDocument] | None = None,
     ) -> None:
         self.tools = tools
         self.router = router or RuleBasedRouter(tools.graph_retriever)
         self.generator = generator or ExtractiveAnswerGenerator()
+        self.web_search_generator = web_search_generator
+        self.claim_verifier = claim_verifier
         self.planner = planner
         self.source_lookup = source_lookup if source_lookup is not None else _safe_source_lookup()
+        self.conversation_rewriter = ConversationRewriter(tools.graph_retriever)
 
-    def answer(self, question: str) -> AgentAnswer:
-        route = self.router.route(question)
+    def answer(
+        self,
+        question: str,
+        *,
+        history: list[ConversationTurn] | None = None,
+        answer_mode: AnswerMode = AnswerMode.AUTO,
+    ) -> AgentAnswer:
+        question = self.conversation_rewriter.rewrite(question, history)
+        route = self.router.route(question).model_copy(update={"answer_mode": answer_mode})
         if self.planner is not None and route.tool != ToolName.NONE and not _is_fast_path(route):
             route = self.planner.plan(question, route)
+            if answer_mode != AnswerMode.AUTO:
+                route = route.model_copy(update={"answer_mode": answer_mode})
         if route.tool == ToolName.NONE:
             return self._route_failure(question, route)
 
         unknown_focus = self._unknown_focus_terms(question, route)
         if unknown_focus:
+            web_answer = self._web_search_response(
+                question,
+                route,
+                used_tools=[],
+                reason=f"本地资料未收录：{'、'.join(unknown_focus)}",
+            )
+            if web_answer is not None:
+                return web_answer
             return AgentAnswer(
                 answer=self._unknown_focus_answer(question, unknown_focus),
                 citations=[],
@@ -251,11 +448,15 @@ class AgentService:
                 graph_facts=result.graph,
                 reason=generated.refusal_reason or "证据不足",
             )
-        selected_result = _select_evidence(result, generated.selected_evidence_ids)
-        selected_citations = citations_from_result(
-            selected_result, source_lookup=self.source_lookup
+        claims = _normalized_claims(generated)
+        initial_claims = list(claims)
+        initial_evidence_ids = list(
+            dict.fromkeys(
+                [*generated.selected_evidence_ids, *[evidence_id for claim in claims for evidence_id in claim.evidence_ids]]
+            )
         )
-        if not selected_citations:
+        selected_result = _select_evidence(result, initial_evidence_ids)
+        if not citations_from_result(selected_result, source_lookup=self.source_lookup):
             return self._insufficient_response(
                 question,
                 route,
@@ -264,7 +465,25 @@ class AgentService:
                 graph_facts=result.graph,
                 reason="模型未选择有效证据",
             )
-        if not _answer_is_grounded(generated.answer, selected_result):
+        verified = False
+        if self.claim_verifier is not None:
+            try:
+                claims = self.claim_verifier.verify(question, generated.answer, claims, selected_result)
+                verified = True
+            except AnswerGenerationError:
+                # A verifier outage must not make the application unusable; retain the
+                # conservative local faithfulness check as a safe fallback.
+                verified = False
+        claims = _locally_valid_claims(claims, selected_result)
+        evidence_ids = list(dict.fromkeys(evidence_id for claim in claims for evidence_id in claim.evidence_ids))
+        selected_result = _select_evidence(result, evidence_ids)
+        selected_citations = citations_from_result(selected_result, source_lookup=self.source_lookup)
+        answer = generated.answer
+        if claims != initial_claims:
+            # Once a verifier removes a claim, rebuild from the surviving statements
+            # so unsupported prose cannot remain in the final response.
+            answer = "\n".join(claim.text for claim in claims)
+        if not claims or not selected_citations or not _answer_is_grounded(answer, selected_result):
             return self._insufficient_response(
                 question,
                 route,
@@ -273,7 +492,7 @@ class AgentService:
                 graph_facts=result.graph,
                 reason="生成答案与所选证据一致性不足",
             )
-        answer_text = _label_curated_guidance(generated.answer, selected_result)
+        answer_text = _label_curated_guidance(answer, selected_result)
         return AgentAnswer(
             answer=answer_text,
             citations=selected_citations,
@@ -282,32 +501,52 @@ class AgentService:
             insufficient_evidence=False,
             retrieved_documents=result.documents,
             graph_facts=result.graph,
-            selected_evidence_ids=generated.selected_evidence_ids,
+            selected_evidence_ids=evidence_ids,
+            claims=claims,
+            claims_verified=verified,
             source_tiers=list(dict.fromkeys(citation.source_tier for citation in selected_citations)),
             response_status=AnswerStatus.ANSWERED,
         )
 
     def _run_tool(self, question: str, route: RouteDecision) -> ToolResult:
+        depth = 2 if route.intent in {"explanation", "comparison", "hybrid_explanation"} or route.answer_mode == AnswerMode.DEEP else 1
+        top_k = 8 if route.answer_mode == AnswerMode.DEEP or route.intent in {"explanation", "comparison", "hybrid_explanation"} else 5
         if route.tool == ToolName.SEARCH_KG:
             return self.tools.search_kg(
                 question,
                 entity_query=route.entity_query,
                 entity_queries=route.entities or None,
+                depth=depth,
+                limit=20 if depth == 2 else 12,
             )
         if route.tool == ToolName.SEARCH_DOCUMENTS:
             category = "tourism" if route.intent == "visit_guidance" else None
+            zones = (
+                {"王墓展区", "两展区"}
+                if route.visit_zone.value == "wangmu"
+                else {"王墓展区", "王宫展区", "两展区"}
+            ) if route.intent == "visit_guidance" else None
             return self.tools.search_documents(
                 question,
                 queries=route.subqueries or [question],
                 category=category,
                 include_curated_guidance=route.intent == "visit_guidance",
+                top_k=top_k,
+                temporal_scope=route.temporal_scope.value,
+                as_of=route.as_of,
+                zones=zones,
             )
         if route.tool == ToolName.HYBRID_SEARCH:
             return self.tools.hybrid_search(
                 question,
                 entity_query=route.entity_query,
+                top_k=top_k,
+                depth=depth,
+                limit=20 if depth == 2 else 12,
                 queries=route.subqueries or [question],
                 entity_queries=route.entities or None,
+                temporal_scope=route.temporal_scope.value,
+                as_of=route.as_of,
             )
         raise ValueError(f"unsupported tool: {route.tool}")
 
@@ -315,7 +554,19 @@ class AgentService:
         if route.tool == ToolName.SEARCH_DOCUMENTS:
             return ToolResult()
         queries = list(dict.fromkeys([question, *route.subqueries]))
-        return self.tools.search_documents(question, top_k=5, queries=queries)
+        zones = (
+            {"王墓展区", "两展区"}
+            if route.visit_zone.value == "wangmu"
+            else {"王墓展区", "王宫展区", "两展区"}
+        ) if route.intent == "visit_guidance" else None
+        return self.tools.search_documents(
+            question,
+            top_k=5,
+            queries=queries,
+            temporal_scope=route.temporal_scope.value,
+            as_of=route.as_of,
+            zones=zones,
+        )
 
     def _filter_focus_documents(
         self, question: str, route: RouteDecision, documents: list
@@ -335,7 +586,12 @@ class AgentService:
         # 参观问题已经在 AgentTools 中按 tourism 分类、证据角色和专用提示词
         # 完成分路检索与重排。此处再按字面 bigram 过滤，会把“第一次怎么看”
         # 这类自然说法误判为无证据。
-        if route.intent == "visit_guidance" and FIRST_VISIT_RE.search(question):
+        if route.intent == "visit_guidance":
+            # Visitor intent has already been narrowed to tourism documents,
+            # time/zone validity and dedicated reranking. Natural questions
+            # such as “什么时候开门” or “最佳游览路线” often have no exact
+            # content bigram in a source, so the generic history-QA focus
+            # filter must not discard their otherwise grounded evidence.
             return list(documents)
         entity_names = list(
             route.entities or ([] if route.entity_query is None else [route.entity_query])
@@ -406,6 +662,16 @@ class AgentService:
         retrieved_documents: list | None = None,
         graph_facts: list | None = None,
     ) -> AgentAnswer:
+        web_answer = self._web_search_response(
+            question,
+            route,
+            used_tools=used_tools,
+            reason=reason,
+            retrieved_documents=retrieved_documents,
+            graph_facts=graph_facts,
+        )
+        if web_answer is not None:
+            return web_answer
         return AgentAnswer(
             answer=self._insufficient_answer(question, route),
             citations=[],
@@ -417,6 +683,38 @@ class AgentService:
             refusal_reason=reason,
             response_status=AnswerStatus.INSUFFICIENT_EVIDENCE,
             suggested_questions=self._suggested_questions(question, route),
+        )
+
+    def _web_search_response(
+        self,
+        question: str,
+        route: RouteDecision,
+        *,
+        used_tools: list[ToolName],
+        reason: str,
+        retrieved_documents: list | None = None,
+        graph_facts: list | None = None,
+    ) -> AgentAnswer | None:
+        if self.web_search_generator is None or not _web_search_allowed(question, route):
+            return None
+        web_question = question
+        if route.intent == "visit_guidance" and not NANYUE_SCOPE_RE.search(question):
+            web_question = f"南越王博物院王墓展区：{question}"
+        try:
+            result = self.web_search_generator.search(web_question)
+        except AnswerGenerationError:
+            return None
+        return AgentAnswer(
+            answer=result.answer,
+            citations=[],
+            web_sources=result.sources,
+            used_tools=[*used_tools, ToolName.WEB_SEARCH],
+            route_reason=f"{route.reason} {reason}，已使用 DeepSeek 联网搜索补充。",
+            insufficient_evidence=False,
+            retrieved_documents=retrieved_documents or [],
+            graph_facts=graph_facts or [],
+            source_tiers=["web"],
+            response_status=AnswerStatus.WEB_SEARCH_ANSWERED,
         )
 
     def _route_failure(self, question: str, route: RouteDecision) -> AgentAnswer:
@@ -435,6 +733,12 @@ class AgentService:
                 "可靠资料与问题中的前提不一致，因此我不能沿用这个前提作答。"
                 "你可以改问该人物、文物或墓葬在可靠资料中的实际情况。"
             )
+        elif route.intent == "wanggong_visit_out_of_scope":
+            status = AnswerStatus.OUT_OF_SCOPE
+            answer = "当前智慧导览以王墓展区为主。王宫资料只用于两展区比较、交通和联动路线；你可以改问“王墓和王宫怎样联动参观？”。"
+        elif route.intent == "visit_uncertain":
+            status = AnswerStatus.INSUFFICIENT_EVIDENCE
+            answer = "暂未在可靠资料中找到这项参观细节的馆方依据，建议出行前向馆方咨询确认。"
         else:
             status = AnswerStatus.OUT_OF_SCOPE
             answer = (
@@ -502,6 +806,11 @@ class AgentService:
         if _relation_hint_matches(question):
             # 材料/出土/纹饰等概念词由关系提示映射到 KG 关系，不要求字面命中词表。
             return []
+        if route.intent == "visit_guidance":
+            # Visitor-service vocabulary is intentionally paraphrase-heavy;
+            # it is validated by tourism retrieval and evidence roles rather
+            # than the generic unknown-subject guard.
+            return []
         if route.entities or route.entity_query:
             # 已锚定到知识库实体的问题：未知词多为“方面”而非“主题”，
             # 交给 KG 方面过滤和文档焦点覆盖校验处理（如“灭掉→灭”）。
@@ -558,8 +867,94 @@ def create_deepseek_generator(settings: Settings) -> DeepSeekAnswerGenerator:
         raise
 
 
+NANYUE_SCOPE_RE = re.compile(
+    r"南越|王墓|王宫|博物院|博物馆|赵佗|赵眜|赵胡|文帝行玺|丝缕玉衣|"
+    r"南越文王墓|番禺|象岗|墓室|墓葬|岭南|汉代|秦汉"
+)
+
+
+def _web_search_allowed(question: str, route: RouteDecision) -> bool:
+    if route.scope != "in_scope" or route.tool == ToolName.NONE:
+        return False
+    if route.intent in {
+        "realtime_unavailable",
+        "out_of_scope",
+        "clarification_needed",
+        "incorrect_premise",
+    }:
+        return False
+    return bool(
+        route.intent == "visit_guidance"
+        or route.entity_query
+        or route.entities
+        or NANYUE_SCOPE_RE.search(question)
+    )
+
+
+def _response_output_texts(output: list[object]) -> list[str]:
+    texts: list[str] = []
+    for item in output:
+        if not isinstance(item, dict) or item.get("type") != "message":
+            continue
+        for part in item.get("content", []):
+            if isinstance(part, dict) and part.get("type") == "output_text":
+                value = str(part.get("text", "")).strip()
+                if value:
+                    texts.append(value)
+    return texts
+
+
+def _web_sources_from_payload(output: list[object]) -> list[WebSource]:
+    accessed_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    candidates: dict[str, str] = {}
+
+    def visit(value: object) -> None:
+        if isinstance(value, dict):
+            raw_url = next(
+                (
+                    str(value[key]).strip()
+                    for key in ("url", "uri", "page_url", "source_url")
+                    if value.get(key)
+                ),
+                "",
+            )
+            if raw_url.startswith(("https://", "http://")):
+                title = str(
+                    value.get("title")
+                    or value.get("name")
+                    or urlsplit(raw_url).netloc
+                    or "联网来源"
+                ).strip()
+                current = candidates.get(raw_url)
+                domain = urlsplit(raw_url).netloc
+                if current is None or (current == domain and title != domain):
+                    candidates[raw_url] = title
+            for nested in value.values():
+                visit(nested)
+        elif isinstance(value, list):
+            for nested in value:
+                visit(nested)
+
+    visit(output)
+    sources: list[WebSource] = []
+    seen: set[str] = set()
+    for url, title in candidates.items():
+        if url in seen:
+            continue
+        seen.add(url)
+        try:
+            sources.append(WebSource(title=title, url=url, accessed_at=accessed_at))
+        except ValueError:
+            continue
+        if len(sources) >= 6:
+            break
+    return sources
+
+
 def _is_fast_path(route: RouteDecision) -> bool:
-    return route.tool == ToolName.SEARCH_KG and bool(route.entity_query)
+    return (
+        route.tool == ToolName.SEARCH_KG and bool(route.entity_query)
+    ) or route.intent == "visit_guidance"
 
 
 def _select_evidence(result: ToolResult, evidence_ids: list[str]) -> ToolResult:
@@ -568,6 +963,39 @@ def _select_evidence(result: ToolResult, evidence_ids: list[str]) -> ToolResult:
         documents=[hit for hit in result.documents if document_evidence_id(hit) in selected],
         graph=[hit for hit in result.graph if graph_evidence_id(hit) in selected],
     )
+
+
+def _normalized_claims(generated: GeneratedAnswer) -> list[AnswerClaim]:
+    """Keep legacy and offline generators compatible with claim-level answers."""
+    if generated.claims:
+        return generated.claims
+    if not generated.selected_evidence_ids:
+        return []
+    return [
+        AnswerClaim(
+            text=generated.answer,
+            claim_type=ClaimType.DIRECT_FACT,
+            evidence_ids=generated.selected_evidence_ids,
+        )
+    ]
+
+
+def _locally_valid_claims(claims: list[AnswerClaim], result: ToolResult) -> list[AnswerClaim]:
+    """Validate evidence wiring even when the optional LLM verifier is unavailable."""
+    available = {
+        *[graph_evidence_id(hit) for hit in result.graph],
+        *[document_evidence_id(hit) for hit in result.documents],
+    }
+    valid: list[AnswerClaim] = []
+    for claim in claims:
+        evidence_ids = list(dict.fromkeys(claim.evidence_ids))
+        if not evidence_ids or not set(evidence_ids).issubset(available):
+            continue
+        if claim.claim_type == ClaimType.SYNTHESIS:
+            if len(evidence_ids) < 2 or "结合" not in claim.text:
+                continue
+        valid.append(claim.model_copy(update={"evidence_ids": evidence_ids}))
+    return valid
 
 
 def _format_extract(hit: object) -> str:
