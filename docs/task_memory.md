@@ -143,3 +143,21 @@
 - `python -m scripts.verify_agent` 通过：20/20。
 - `python -m scripts.verify_demo` 通过：5/5。
 - `python -m pytest` 通过：72 passed，6 skipped。
+
+## 2026-08-28 跟进同步与健康验证
+
+### 当前状态
+
+- 本地 `main` 由 `8635f4e` 快进同步至 `origin/main` `71691cd`，合入 PR #14（50 题评测基线）、PR #15（grounding 加固）与 PR #16（Day8++：网站重建为南越数字博物馆、游客导览 V2 扩充 DOC_234-DOC_262）。
+- 清理了本地未跟踪的 `website/`（仅含 `dist/` 与 `node_modules/`，无源码，可由远程源码重新生成）；`docs/website_design_agent_prompt.md` 已被 `.gitignore` 忽略，保留在本地不入库。
+- 本地 `.env` 仍为 `DEEPSEEK_MODEL=deepseek-chat`，README 新口径为 `deepseek-v4-flash`（个人凭据差异，不提交）。
+
+### 验证记录
+
+- 补齐 venv dev 依赖后 `python -m pytest` 通过：111 passed（较 08-26 的 72 passed + 6 skipped 新增 API 与游客导览 V2 测试）。
+- 沙箱环境注意：`pip install` 与 `pytest` 的临时目录需显式指向工作区内路径（如 `.tmp-pip`），否则 Windows 上会因系统 Temp 写入受限报 PermissionError。
+
+### 待办线索
+
+- `docs/visitor_guidance/open_issues.md` B1：王宫展区暑期延长开放 2026-08-31 后失效，需按复查要求更新语料。
+- `website/ASSET_CHECKLIST.md`：网站文物视觉仍为占位构图，待正式素材替换。
