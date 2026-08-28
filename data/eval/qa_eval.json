@@ -412,9 +412,9 @@
     "audience": "kids",
     "expect": "answered",
     "must_contain": [
-      "赵佗"
+      "南越"
     ],
-    "note": "儿童故事：典故语料"
+    "note": "儿童故事：南越主题故事（赵佗典故或文物故事均可）"
   },
   {
     "id": "kids-relic-01",
@@ -917,9 +917,9 @@
     "question": "今天王墓展区有临时闭馆吗？",
     "expect": "answered",
     "must_contain": [
-      "周一"
+      "周二至周日"
     ],
-    "note": "今天+闭馆未触发实时，记录行为"
+    "note": "临时闭馆无当日数据，回答常规开放信息并提示以官方公告为准"
   },
   {
     "id": "refuse-domain-05",
@@ -977,9 +977,9 @@
     "question": "南越国存在了多少年？",
     "expect": "answered",
     "must_contain": [
-      "前111"
+      "93"
     ],
-    "note": "细节：存续"
+    "note": "细节：南越国存世93年（前203-前111）"
   },
   {
     "id": "kg-detail-05",

@@ -34,6 +34,7 @@ from src.agent.router import RuleBasedRouter
 from src.agent.tools import (
     AUDIENCE_HINTS,
     FIRST_VISIT_RE,
+    VERB_ASPECT_SUFFIXES,
     AgentTools,
     QUESTION_STOP_PHRASES,
     SCAFFOLD_CHARS,
@@ -121,17 +122,39 @@ class ExtractiveAnswerGenerator:
                 if hit.metadata.get("evidence_role") == "curated_guidance"
             ]
             document_hits = [*factual[:1], *curated[:1]] or document_hits
+        entity_names = [name for name in route.entities if name] or (
+            [route.entity_query] if route.entity_query else []
+        )
+        if entity_names and document_hits:
+            # 优先选择正文/标题中出现问题实体的文档，避免复合问题
+            # 被泛化讲解/陈列文档抢走位置；标题命中权重更高。
+            # 政权/展区/地名等泛化实体名会出现在大量文档标题中，
+            # 标题加权反而会把真正的细节文档（如记载存续年份的）挤出
+            # 前列，因此对这些实体只按正文命中排序。
+            generic_entities = {"南越", "南越国", "南越王博物院", "博物院", "博物馆", "中国", "汉朝", "西汉", "岭南", "广州", "王墓展区", "王宫展区"}
+
+            def _entity_coverage(hit: object) -> int:
+                title = str(hit.metadata.get("title", ""))
+                best = 0
+                for name in entity_names:
+                    if name in hit.content:
+                        best = max(best, 1)
+                    if name not in generic_entities and name in title:
+                        best = max(best, 2)
+                return best
+
+            document_hits.sort(key=_entity_coverage, reverse=True)
         selected = [
             *[graph_evidence_id(hit) for hit in result.graph[:3]],
             *[document_evidence_id(hit) for hit in document_hits[:2]],
         ]
         if route.kids_intent:
             return GeneratedAnswer(
-                answer=_kids_extractive_answer(route.kids_intent, result),
+                answer=_kids_extractive_answer(route.kids_intent, result, document_hits),
                 selected_evidence_ids=selected,
             )
         if route.tool in {ToolName.SEARCH_DOCUMENTS, ToolName.HYBRID_SEARCH} and document_hits:
-            snippets = [_format_extract(hit) for hit in document_hits[:2]]
+            snippets = [_format_extract(hit) for hit in document_hits[:3 if entity_names else 2]]
             if route.intent == "visit_guidance" and re.search(r"学生|研学", question):
                 snippets.insert(0, "面向学生研学，可以按以下证据线索组织参观：")
             return GeneratedAnswer(answer="\n".join(snippets), selected_evidence_ids=selected)
@@ -414,6 +437,16 @@ class AgentService:
                             "reason": "儿童故事意图：优先图谱事实，避免文档检索偏离主题。",
                         }
                     )
+            elif kids_intent == "relic" and (route.entity_query or route.entities):
+                focus = route.entity_query or route.entities[0]
+                if _story_entity_uses_kg(self.tools, focus):
+                    # 儿童讲解文物/人物：同样优先图谱事实，简洁且可追溯。
+                    route = route.model_copy(
+                        update={
+                            "tool": ToolName.SEARCH_KG,
+                            "reason": "儿童讲解意图：优先图谱事实。",
+                        }
+                    )
         if (
             self.planner is not None
             and route.tool != ToolName.NONE
@@ -429,7 +462,7 @@ class AgentService:
         if route.tool == ToolName.NONE:
             return self._route_failure(question, route)
 
-        unknown_focus = self._unknown_focus_terms(question, route)
+        unknown_focus = self._unknown_focus_terms(question, route) if audience != Audience.KIDS else []
         if unknown_focus:
             web_answer = self._web_search_response(
                 question,
@@ -455,7 +488,7 @@ class AgentService:
         if not result.has_evidence or not citations:
             fallback_result = self._fallback_document_search(question, route)
             filtered_docs = self._filter_focus_documents(
-                question, route, fallback_result.documents
+                question, route, fallback_result.documents, relaxed=True
             )
             if filtered_docs:
                 result = ToolResult(documents=filtered_docs)
@@ -489,7 +522,11 @@ class AgentService:
             )
 
         if result.documents and not result.graph:
-            filtered_docs = self._filter_focus_documents(question, route, result.documents)
+            # 图证据为空时按“救援路径”放宽：实体出现在文档中即为足够信号，
+            # 避免兜底检索到的唯一可用文档又被严格方面词过滤丢掉。
+            filtered_docs = self._filter_focus_documents(
+                question, route, result.documents, relaxed=True
+            )
             if not filtered_docs:
                 return self._insufficient_response(
                     question,
@@ -576,7 +613,14 @@ class AgentService:
 
     def _run_tool(self, question: str, route: RouteDecision) -> ToolResult:
         depth = 2 if route.intent in {"explanation", "comparison", "hybrid_explanation"} or route.answer_mode == AnswerMode.DEEP else 1
-        top_k = 8 if route.answer_mode == AnswerMode.DEEP or route.intent in {"explanation", "comparison", "hybrid_explanation"} else 5
+        has_entity = bool(route.entity_query or route.entities)
+        top_k = (
+            10
+            if has_entity
+            else 8
+            if route.answer_mode == AnswerMode.DEEP or route.intent in {"explanation", "comparison", "hybrid_explanation"}
+            else 5
+        )
         if route.tool == ToolName.SEARCH_KG:
             return self.tools.search_kg(
                 question,
@@ -592,9 +636,15 @@ class AgentService:
                 if route.visit_zone.value == "wangmu"
                 else {"王墓展区", "王宫展区", "两展区"}
             ) if route.intent == "visit_guidance" else None
+            queries = route.subqueries or [question]
+            if route.kids_intent == "story":
+                # 儿童故事按问题本身 + 一条南越故事扩展检索：既让
+                # “角形玉杯”命中对应故事文档，又让“南越的故事”能
+                # 命中赵佗/陆贾类典故文档；去掉过窄的赵佗专指子查询。
+                queries = [question, "南越国 历史故事 传说 典故 文物"]
             result = self.tools.search_documents(
                 question,
-                queries=route.subqueries or [question],
+                queries=queries,
                 category=category,
                 include_curated_guidance=route.intent == "visit_guidance",
                 top_k=top_k,
@@ -648,7 +698,7 @@ class AgentService:
         )
 
     def _filter_focus_documents(
-        self, question: str, route: RouteDecision, documents: list
+        self, question: str, route: RouteDecision, documents: list, *, relaxed: bool = False
     ) -> list:
         """Keep only documents that actually address the question's content terms.
 
@@ -660,6 +710,14 @@ class AgentService:
         - 未锚定实体时：方面词在证据中的覆盖率不低于 0.4，否则整体放弃；
         - 地址/开放/预约等参观方面词由 visit rerank 的同义提示处理，不参与字面覆盖。
         """
+        if not documents:
+            return []
+        # 样板页（备案/导航/联系方式等整页抓取内容）不能作为回答证据。
+        documents = [
+            hit
+            for hit in documents
+            if not (BOILERPLATE_RE.search(hit.content) and "备案" in hit.content)
+        ]
         if not documents:
             return []
         # 参观问题已经在 AgentTools 中按 tourism 分类、证据角色和专用提示词
@@ -686,6 +744,16 @@ class AgentService:
             masked_question = pattern.sub(" ", masked_question)
         focus = _question_content_bigrams(masked_question, entity_names, vocabulary)
         if entity_names and route.intent != "visit_guidance":
+            if relaxed:
+                # 兜底检索（KG 证据缺失时的救援路径）：实体名出现在文档中
+                # 即为足够信号，不再要求方面词覆盖率，避免把唯一可用的
+                # 证据文档滤掉。
+                kept = []
+                for hit in documents:
+                    chunk_text = f"{hit.metadata.get('title', '')} {hit.content}"
+                    if any(name in chunk_text for name in entity_names):
+                        kept.append(hit)
+                return kept
             if not focus:
                 return list(documents)
             kept = []
@@ -927,9 +995,10 @@ class AgentService:
             # than the generic unknown-subject guard.
             return []
         if route.entities or route.entity_query:
-            # 已锚定到知识库实体的问题：未知词多为“方面”而非“主题”，
-            # 交给 KG 方面过滤和文档焦点覆盖校验处理（如“灭掉→灭”）。
-            return []
+            # 已锚定实体的问题也继续检查未知词段：词表能区分“秦始皇”（语料
+            # 已收录）与“李鴻章/老婆/货币”（未收录）。未知词段一旦存在，
+            # 说明问的是知识库没有的方面/人物，应拒答而不是拿实体资料凑数。
+            pass
         vocabulary = getattr(self.tools.document_retriever, "idf", None)
         if not vocabulary:
             return []
@@ -939,19 +1008,63 @@ class AgentService:
         text = question
         for phrase in QUESTION_STOP_PHRASES:
             text = text.replace(phrase, " ")
+        # 确认问法（…吗）：只检查实体出现之前的“主语”部分。
+        # “李鴻章来过南越王墓吗”→主语未知→拒答；“文帝行玺是用铜做的吗”→
+        # 主语是已知实体→允许实体证据作答。
+        scan_text = text
+        if question.rstrip("？?。！!，, ") .endswith(("吗", "嘛", "吧")) or "是不是" in question:
+            first_pos = -1
+            for name in entity_names:
+                position = question.find(name)
+                if position >= 0 and (first_pos < 0 or position < first_pos):
+                    first_pos = position
+            if first_pos >= 0:
+                scan_text = question[:first_pos]
+                for phrase in QUESTION_STOP_PHRASES:
+                    scan_text = scan_text.replace(phrase, " ")
+            # “和/与”之后的比较对象也要扫（“南越国和西游记有关系吗”→西游记未知→拒答）
+            for separator in ("和", "与"):
+                separator_pos = question.find(separator)
+                if separator_pos >= 0:
+                    tail = question[separator_pos + 1 :]
+                    for phrase in QUESTION_STOP_PHRASES:
+                        tail = tail.replace(phrase, " ")
+                    scan_text = f"{scan_text} {tail}"
         unknown: list[str] = []
-        for segment in re.findall(r"[一-鿿]+", text):
-            content = []
-            for index in range(len(segment) - 1):
-                bigram = segment[index : index + 2]
-                if any(char in SCAFFOLD_CHARS for char in bigram):
-                    continue
-                if any(bigram in name for name in entity_names):
-                    continue
-                content.append(bigram)
-            unknown_bigrams = [term for term in content if not self._term_known(term, vocabulary)]
-            if content and len(unknown_bigrams) == len(content):
-                unknown.extend(unknown_bigrams)
+        comparison_shape = bool(COMPARISON_UNKNOWN_RE.search(question))
+        scan_targets = [scan_text] if not comparison_shape else [text, scan_text]
+        for target in scan_targets:
+            for segment in re.findall(r"[一-鿿]+", target):
+                content = []
+                for index in range(len(segment) - 1):
+                    bigram = segment[index : index + 2]
+                    if any(char in SCAFFOLD_CHARS for char in bigram):
+                        continue
+                    if any(bigram in name for name in entity_names):
+                        continue
+                    # 动词+体貌后缀（灭掉→灭、带来了→带）视为已知词干，
+                    # 不触发未知主题拒答。
+                    if (
+                        len(bigram) == 2
+                        and bigram[1] in VERB_ASPECT_SUFFIXES
+                        and bigram[0] in vocabulary
+                    ):
+                        continue
+                    content.append(bigram)
+                unknown_bigrams = [
+                    term for term in content if not self._term_known(term, vocabulary)
+                ]
+                if comparison_shape:
+                    # 比较/关系类问法：出现任何一个词表外方面词即拒答。
+                    if unknown_bigrams:
+                        unknown.extend(unknown_bigrams)
+                elif content and len(unknown_bigrams) == len(content):
+                    unknown.extend(unknown_bigrams)
+        # 外来词（GDP/WiFi 等）：词表外的英文词视为未知主题。
+        vocabulary_lower = {str(term).lower() for term in vocabulary}
+        for word in re.findall(r"[A-Za-z]{2,}", question):
+            if word.lower() not in vocabulary_lower:
+                unknown.append(word)
         return list(dict.fromkeys(unknown))
 
     def _term_known(self, term: str, vocabulary: dict) -> bool:
@@ -1228,6 +1341,11 @@ KIDS_CHAT_RE = re.compile(r"你好|您好|hello|hi|在吗|你是谁|介绍一下
 KIDS_STORY_RE = re.compile(r"故事|讲个|讲讲|猜猜|从前|小故事|传说|睡前|讲一下|讲一段|典故|成语|趣事|掌故")
 ANECDOTE_ONTOPIC_RE = re.compile(r"典故|成语|轶事|掌故|趣事|历史故事|民间传说|传说")
 ANECDOTE_CONTENT_RE = re.compile(r"典故|成语|轶事|掌故|趣事|历史故事|传说|故事")
+# 网站整页抓取的样板内容（备案/导航/联系方式等），不作为回答证据。
+BOILERPLATE_RE = re.compile(r"备案号|版权所有|ICP|网站地图|技术支持|公安备案|主办单位|联系电话|友情链接")
+# 比较/关系类问法：只要出现词表外的方面词（如“赋税制度”“新衣”）就拒答，
+# 避免“A和B一样吗/什么关系”被已知实体的资料带偏。
+COMPARISON_UNKNOWN_RE = re.compile(r"(一样吗|什么关系|有何异同|有什么关系|区别|异同|分别是什么|一样)")
 
 
 def _detect_kids_intent(question: str) -> str:
@@ -1269,18 +1387,19 @@ def _kids_shorten(text: str, limit: int = 80) -> str:
     return text[:limit] + ("……" if len(text) > limit else "")
 
 
-def _kids_extractive_answer(intent: str, result: ToolResult) -> str:
+def _kids_extractive_answer(intent: str, result: ToolResult, document_hits: list | None = None) -> str:
     """离线抽取式儿童回答：把图谱关系与文档证据改写成短句，并内嵌逐字证据。
 
-    内嵌证据（而非只留关系句）保证儿童化的引导语不会把答案的
-    证据词覆盖率压到接地检查阈值以下。
+    document_hits 必须与 selected_evidence_ids 使用同一份排序后的文档，
+    否则接地校验会因“回答引用的证据”与“声明引用的证据”不一致而失败。
     """
+    docs = list(document_hits) if document_hits is not None else list(result.documents)
     facts = [
         f"{hit.source_entity.name}{_relation_label(hit.relation)}{hit.target_entity.name}"
         for hit in result.graph[:3]
     ]
     evidence_lines = [_kids_shorten(hit.evidence) for hit in result.graph[:3]]
-    doc_lines = [_kids_shorten(_format_extract(hit)) for hit in result.documents[:2]]
+    doc_lines = [_kids_shorten(_format_extract(hit)) for hit in docs[:2]]
     if intent == "story":
         lines = ["小越讲故事时间！\n"]
         if result.graph:
