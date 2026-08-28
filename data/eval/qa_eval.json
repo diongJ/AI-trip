@@ -48,5 +48,15 @@
   {"id": "refuse-domain-03", "question": "王墓展区附近有什么好吃的餐厅？", "expect": "refused", "note": "餐饮推荐超纲"},
   {"id": "refuse-domain-04", "question": "南越文王墓出土了恐龙化石吗？", "expect": "refused", "note": "荒谬主题词"},
   {"id": "refuse-poem-01", "question": "葡萄美酒夜光杯的诗意是什么？", "expect": "refused", "note": "文学问题超纲"},
-  {"id": "refuse-empty-01", "question": "怎么玩", "expect": "answered", "must_contain": ["王墓"], "note": "极简参观问法，允许回答官方攻略"}
+  {"id": "refuse-empty-01", "question": "怎么玩", "expect": "answered", "must_contain": ["王墓"], "note": "极简参观问法，允许回答官方攻略"},
+  {"id": "kids-story-01", "question": "给我讲一个文帝行玺的小故事", "audience": "kids", "expect": "answered", "must_contain": ["文帝行玺"], "note": "儿童故事：图谱事实成文"},
+  {"id": "kids-story-02", "question": "给我讲一个南越的故事", "audience": "kids", "expect": "answered", "must_contain": ["赵佗"], "note": "儿童故事：典故语料"},
+  {"id": "kids-relic-01", "question": "丝缕玉衣是做什么用的？", "audience": "kids", "expect": "answered", "must_contain": ["玉衣"], "note": "儿童讲解文物"},
+  {"id": "kids-chat-01", "question": "你是谁呀？", "audience": "kids", "expect": "answered", "must_contain": ["小越"], "note": "儿童聊天"},
+  {"id": "kids-refuse-01", "question": "今天馆内有多少游客？", "audience": "kids", "expect": "refused", "note": "儿童模式实时拒答"},
+  {"id": "kids-refuse-02", "question": "火星上的南越王墓是谁建的？", "audience": "kids", "expect": "refused", "note": "儿童模式荒谬前提拒答"},
+  {"id": "anecdote-01", "question": "南越时期有什么典故", "expect": "answered", "must_contain": ["赵佗"], "note": "典故意图：历史文化检索"},
+  {"id": "anecdote-02", "question": "赵佗和陆贾之间有什么典故？", "expect": "answered", "must_contain": ["陆贾"], "note": "典故意图：陆贾使越"},
+  {"id": "anecdote-03", "question": "文帝行玺有什么典故？", "expect": "answered", "must_contain": ["文帝行玺"], "note": "典故意图：文帝行玺僭号"},
+  {"id": "anecdote-refuse-01", "question": "南越王博物院有恐龙化石吗？", "expect": "refused", "note": "荒谬主题拒答"}
 ]

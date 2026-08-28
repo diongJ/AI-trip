@@ -402,14 +402,17 @@ class AgentService:
                     ],
                 )
             if kids_intent == "story" and (route.entity_query or route.entities):
-                # 故事意图优先使用图谱事实：避免 BM25 参观类文档
-                # 抢到高排名，导致 DeepSeek 答偏到门票/开放时间。
-                route = route.model_copy(
-                    update={
-                        "tool": ToolName.SEARCH_KG,
-                        "reason": "儿童故事意图：优先图谱事实，避免文档检索偏离主题。",
-                    }
-                )
+                focus = route.entity_query or route.entities[0]
+                if _story_entity_uses_kg(self.tools, focus):
+                    # 文物/人物类实体：故事优先使用图谱事实，避免 BM25 参观类
+                    # 文档抢到高排名导致答偏；国名、展区等宽泛实体则保留
+                    # 典故文档检索（文档里才有赵佗、陆贾等故事人物）。
+                    route = route.model_copy(
+                        update={
+                            "tool": ToolName.SEARCH_KG,
+                            "reason": "儿童故事意图：优先图谱事实，避免文档检索偏离主题。",
+                        }
+                    )
         if (
             self.planner is not None
             and route.tool != ToolName.NONE
@@ -1233,6 +1236,19 @@ def _detect_kids_intent(question: str) -> str:
     if KIDS_CHAT_RE.search(question):
         return "chat"
     return "relic"
+
+
+def _story_entity_uses_kg(tools: AgentTools, name: str) -> bool:
+    """儿童故事是否应强制走图谱：仅当实体是文物/人物等“可讲故事”的具体对象。"""
+    try:
+        matches = tools.graph_retriever.list_entities(name, limit=3)
+    except Exception:
+        return False
+    for entity in matches:
+        entity_type = str(getattr(entity, "type", "") or "")
+        if entity_type in {"Relic", "Person", "Artifact", "Material", "Object", "Tomb"}:
+            return True
+    return False
 
 
 def _kids_chat_answer(question: str) -> str:

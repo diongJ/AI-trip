@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 
 from scripts.verify_retrieval import _ensure_local_graph
+from src.agent.models import Audience
 from src.agent.service import AgentService
 from src.agent.tools import AgentTools
 from src.graph.retriever import LocalGraphRetriever
@@ -33,6 +34,10 @@ QUESTIONS = [
     {"question": "今天王墓展区还剩多少预约名额？", "category": "out_of_scope", "tool": "none", "refuse": True},
     {"question": "广州哪里停车最方便？", "category": "out_of_scope", "tool": "none", "refuse": True},
     {"question": "火星上的南越王墓是谁建的？", "category": "false_premise", "tool": "none", "refuse": True},
+    {"question": "给我讲一个文帝行玺的小故事", "category": "kids_story", "audience": "kids", "tool": "search_kg", "terms": ["文帝行玺"]},
+    {"question": "丝缕玉衣是做什么用的？", "category": "kids_relic", "audience": "kids", "tool": "search_kg", "terms": ["丝缕玉衣"]},
+    {"question": "你是谁呀？", "category": "kids_chat", "audience": "kids", "chat": True, "tool": "none", "terms": ["小越"]},
+    {"question": "今天馆内有多少游客？", "category": "kids_refuse", "audience": "kids", "tool": "none", "refuse": True},
 ]
 
 
@@ -50,13 +55,22 @@ def main() -> None:
     for index, case in enumerate(QUESTIONS, start=1):
         question = case["question"]
         started = time.perf_counter()
-        answer = service.answer(question)
+        answer = service.answer(
+            question,
+            audience=Audience.KIDS if case.get("audience") == "kids" else Audience.ADULT,
+        )
         latency_ms = round((time.perf_counter() - started) * 1000, 2)
         actual_tools = [tool.value for tool in answer.used_tools]
         expected_tool = case["tool"]
         tool_ok = actual_tools == ([] if expected_tool == "none" else [expected_tool])
         if case.get("refuse", False):
             content_ok = answer.insufficient_evidence and not answer.citations
+        elif case.get("chat", False):
+            terms = case.get("terms", [])
+            content_ok = (
+                not answer.insufficient_evidence
+                and any(term in answer.answer for term in terms)
+            )
         else:
             searchable = "\n".join(
                 [answer.answer, *[citation.evidence for citation in answer.citations]]
