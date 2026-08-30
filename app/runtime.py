@@ -157,7 +157,18 @@ class AppRuntime:
         elif prefer_llm and self.deepseek_service is not None:
             try:
                 response = _ask_service(self.deepseek_service, question, history, answer_mode, audience)
-                mode = "DeepSeek 证据综合" if response.claims_verified else "DeepSeek 智能生成"
+                # 智能生成的证据核验比离线摘录更严格。不能让一次模型输出
+                # 不合格把本来已有本地证据的基础问题直接变成“拒答”。
+                if response.insufficient_evidence:
+                    fallback = _ask_service(self.extractive_service, question, history, answer_mode, audience)
+                    if not fallback.insufficient_evidence:
+                        response = fallback
+                        mode = "离线证据摘录"
+                        warning = "智能生成未通过证据校验，本次已回退到离线证据摘录。"
+                    else:
+                        mode = "规则拒答 / 证据不足"
+                else:
+                    mode = "DeepSeek 证据综合" if response.claims_verified else "DeepSeek 智能生成"
             except AnswerGenerationError:
                 response = _ask_service(self.extractive_service, question, history, answer_mode, audience)
                 warning = "智能生成服务暂时不可用，本次已回退到离线证据摘录。"
