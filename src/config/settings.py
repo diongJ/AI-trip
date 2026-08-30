@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     deepseek_base_url: str = "https://api.deepseek.com"
     deepseek_model: str = "deepseek-v4-flash"
     deepseek_search_model: str = "deepseek-v4-flash"
+    deepseek_timeout_seconds: float = Field(default=12.0, ge=3.0, le=60.0)
     semantic_retrieval_enabled: bool = True
     semantic_embedding_model: str = "BAAI/bge-small-zh-v1.5"
     semantic_reranker_model: str = "BAAI/bge-reranker-base"

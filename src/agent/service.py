@@ -207,7 +207,7 @@ class DeepSeekAnswerGenerator:
         self.settings = settings
         self.prompt_path = Path(prompt_path)
         self._owns_client = http_client is None
-        self.client = http_client or httpx.Client(timeout=45.0)
+        self.client = http_client or httpx.Client(timeout=settings.deepseek_timeout_seconds)
 
     def close(self) -> None:
         if self._owns_client:
@@ -254,7 +254,9 @@ class DeepSeekAnswerGenerator:
                     ),
                 },
             ],
+            "thinking": {"type": "disabled"},
             "temperature": 0,
+            "max_tokens": 800,
             "response_format": {"type": "json_object"},
         }
         try:
@@ -286,7 +288,7 @@ class DeepSeekClaimVerifier:
         settings.require_deepseek()
         self.settings = settings
         self._owns_client = http_client is None
-        self.client = http_client or httpx.Client(timeout=30.0)
+        self.client = http_client or httpx.Client(timeout=settings.deepseek_timeout_seconds)
 
     def close(self) -> None:
         if self._owns_client:
@@ -316,7 +318,9 @@ class DeepSeekClaimVerifier:
                     ),
                 },
             ],
+            "thinking": {"type": "disabled"},
             "temperature": 0,
+            "max_tokens": 160,
             "response_format": {"type": "json_object"},
         }
         try:
@@ -347,7 +351,7 @@ class DeepSeekWebSearchAnswerGenerator:
         settings.require_deepseek()
         self.settings = settings
         self._owns_client = http_client is None
-        self.client = http_client or httpx.Client(timeout=45.0)
+        self.client = http_client or httpx.Client(timeout=settings.deepseek_timeout_seconds)
 
     def close(self) -> None:
         if self._owns_client:
@@ -364,8 +368,8 @@ class DeepSeekWebSearchAnswerGenerator:
             "input": question,
             "tools": [{"type": "web_search"}],
             "tool_choice": {"type": "web_search"},
-            "reasoning": {"effort": "low"},
-            "max_output_tokens": 900,
+            "reasoning": {"effort": "none"},
+            "max_output_tokens": 600,
         }
         try:
             response = self.client.post(
