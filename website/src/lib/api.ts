@@ -31,10 +31,35 @@ export interface Entity { id: string; name: string; type: string; aliases: strin
 export interface GraphRelation {
   source: Entity
   relation: string
+  relation_label: string
   target: Entity
   direction: 'outgoing' | 'incoming'
   document_id: string
   evidence: string
+  citation: Citation | null
+}
+
+export interface ExplorationStep {
+  id: string
+  question: string
+  conclusion: string
+  bridge: string
+  source_entity: string
+  relation: string
+  relation_label: string
+  target_entity: string
+  document_id: string
+  evidence: string
+  ask_prompt: string
+  citation: Citation
+}
+
+export interface ExplorationPath {
+  id: string
+  title: string
+  intro: string
+  conclusion: string
+  steps: ExplorationStep[]
 }
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') ?? ''
@@ -63,4 +88,8 @@ export function findEntities(q = '', type?: string): Promise<{ entities: Entity[
 
 export function getNeighbors(name: string): Promise<{ entity: Entity; neighbors: GraphRelation[] }> {
   return request(`/api/entities/${encodeURIComponent(name)}/neighbors`)
+}
+
+export function getExplorationPaths(): Promise<{ version: number; paths: ExplorationPath[] }> {
+  return request('/api/exploration-paths')
 }

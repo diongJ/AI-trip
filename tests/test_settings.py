@@ -9,6 +9,12 @@ def test_missing_deepseek_key_has_actionable_error() -> None:
         settings.require_deepseek()
 
 
+def test_deepseek_timeout_is_bounded_for_public_demo() -> None:
+    assert Settings(_env_file=None).deepseek_timeout_seconds == 12.0
+    with pytest.raises(ValueError):
+        Settings(_env_file=None, deepseek_timeout_seconds=2)
+
+
 def test_missing_neo4j_values_do_not_expose_secret() -> None:
     settings = Settings(
         _env_file=None,
@@ -19,4 +25,3 @@ def test_missing_neo4j_values_do_not_expose_secret() -> None:
     with pytest.raises(ConfigurationError, match="NEO4J_URI") as error:
         settings.require_neo4j()
     assert "password=" not in str(error.value).lower()
-

@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "paths": [
+    {
+      "id": "seal-identifies-tomb-owner",
+      "title": "一枚金印如何确认墓主",
+      "intro": "不从结论开始，而是沿着金印、印文和出土位置逐步核对墓主身份。",
+      "conclusion": "金印与多枚姓名、身份玺印互相印证，将南越文王墓墓主指向南越国第二代王赵眜。",
+      "steps": [
+        {
+          "id": "seal-to-zhaomo",
+          "question": "“文帝行玺”为何是确认墓主的关键证据？",
+          "conclusion": "印面刻有“文帝行玺”，且金印出土于墓主胸部，直接把帝号证据与墓主联系起来。",
+          "bridge": "先确认金印与谁相关，再用墓葬资料核对这个人的埋葬地点。",
+          "source_entity": "文帝行玺",
+          "relation": "RELATED_TO_PERSON",
+          "target_entity": "赵眜",
+          "document_id": "DOC_013",
+          "evidence": "金印出土于墓主胸部，证实墓主为南越文帝",
+          "ask_prompt": "为什么“文帝行玺”的印文和出土位置能够帮助确认墓主身份？"
+        },
+        {
+          "id": "zhaomo-to-tomb",
+          "question": "赵眜与南越文王墓是什么关系？",
+          "conclusion": "考古资料明确记载，这座墓是南越国第二代王赵眜之墓。",
+          "bridge": "金印提供身份线索，墓葬原址资料给出人物与墓葬的直接对应，二者形成交叉印证。",
+          "source_entity": "赵眜",
+          "relation": "BURIED_IN",
+          "target_entity": "南越文王墓",
+          "document_id": "DOC_008",
+          "evidence": "南越文王墓原址为1983年发掘的南越国第二代王赵眜之墓",
+          "ask_prompt": "确认南越文王墓墓主为赵眜，主要依靠了哪些相互印证的证据？"
+        }
+      ]
+    },
+    {
+      "id": "jade-suit-and-burial-culture",
+      "title": "一件玉衣如何讲述南越葬俗",
+      "intro": "从材料、穿着者与墓葬语境出发，理解丝缕玉衣为何不只是华美器物。",
+      "conclusion": "丝缕玉衣的材料与墓主身份有明确记录；把它放回敛葬组合中，才能看见南越王室的身份表达与丧葬文化。",
+      "steps": [
+        {
+          "id": "jade-suit-material",
+          "question": "丝缕玉衣由什么制成？",
+          "conclusion": "它由2291片玉片，以丝缕和麻布粘贴编缀而成，并非中原常见的金缕连接方式。",
+          "bridge": "材料回答了“它是什么”，下一步要确认“它属于谁”。",
+          "source_entity": "丝缕玉衣",
+          "relation": "MADE_OF",
+          "target_entity": "玉片",
+          "document_id": "DOC_014",
+          "evidence": "由2291片玉片、丝缕和麻布粘贴编缀而成",
+          "ask_prompt": "丝缕玉衣为什么使用丝缕和麻布，它与金缕玉衣有什么不同？"
+        },
+        {
+          "id": "jade-suit-owner",
+          "question": "这件玉衣与墓主人有什么关系？",
+          "conclusion": "资料记载南越王身着丝缕玉衣，器物因而与墓主赵眜直接关联。",
+          "bridge": "确认穿着者后，还需结合珠玉敛葬与墓内现象，才可讨论其文化含义。",
+          "source_entity": "丝缕玉衣",
+          "relation": "RELATED_TO_PERSON",
+          "target_entity": "赵眜",
+          "document_id": "DOC_007",
+          "evidence": "南越王身着丝缕玉衣",
+          "ask_prompt": "丝缕玉衣如何体现赵眜的身份与地位？"
+        },
+        {
+          "id": "jade-suit-culture",
+          "question": "玉衣为何能反映南越丧葬文化？",
+          "conclusion": "玉衣、珠玉敛葬与墓葬现象共同构成王室丧葬语境，显示墓主身份与南越独特葬俗。",
+          "bridge": "这里使用“反映”而非单一因果判断：文化结论来自多项墓葬证据的组合。",
+          "source_entity": "丝缕玉衣",
+          "relation": "REFLECTS_CULTURE",
+          "target_entity": "南越丧葬文化",
+          "document_id": "DOC_007",
+          "evidence": "南越王身着丝缕玉衣，并以珠玉敛葬，凸显南越文帝尊贵的身份与地位。南越文王墓还发现有15个殉人，体现了南越独特的丧葬文化。",
+          "ask_prompt": "除丝缕玉衣外，还有哪些证据可以帮助理解南越丧葬文化？"
+        }
+      ]
+    },
+    {
+      "id": "rise-and-fall-of-nanyue",
+      "title": "南越国为何兴起又归入汉朝版图",
+      "intro": "按时间顺序核对秦末背景、赵佗建国与汉武帝灭南越国，避免把先后关系误写成单一因果。",
+      "conclusion": "官方专题资料把南越国建立置于秦末岭南背景中，并记载汉武帝灭南越国后岭南正式纳入汉朝郡县版图。",
+      "steps": [
+        {
+          "id": "qin-background",
+          "question": "南越国建立发生在什么历史背景下？",
+          "conclusion": "资料将建国时间定位在秦朝末期，并说明赵佗以保持岭南安定为建国背景。",
+          "bridge": "时间背景确定后，再看事件中明确记载的关键人物。",
+          "source_entity": "南越国建立",
+          "relation": "OCCURRED_IN",
+          "target_entity": "秦朝",
+          "document_id": "DOC_009",
+          "evidence": "秦朝末期赵佗为保岭南地区安定建立南越国",
+          "ask_prompt": "秦末岭南的历史背景与南越国建立有什么关系？"
+        },
+        {
+          "id": "zhaotuo-founded-state",
+          "question": "谁建立了南越国？",
+          "conclusion": "南越国建立事件明确涉及赵佗，资料记载由赵佗建立南越国。",
+          "bridge": "人物与建国事件对应后，可继续确认赵佗所属的政权。",
+          "source_entity": "南越国建立",
+          "relation": "INVOLVES_PERSON",
+          "target_entity": "赵佗",
+          "document_id": "DOC_009",
+          "evidence": "赵佗为保岭南地区安定建立南越国",
+          "ask_prompt": "赵佗为什么建立南越国，官方资料给出了哪些依据？"
+        },
+        {
+          "id": "zhaotuo-to-state",
+          "question": "赵佗与南越政权如何对应？",
+          "conclusion": "图谱以人物所属政权关系，将赵佗与南越国连接起来。",
+          "bridge": "这一步确认人物与政权，不额外推导制度或动机。最后回到同一专题资料核对政权终结。",
+          "source_entity": "赵佗",
+          "relation": "BELONGS_TO_STATE",
+          "target_entity": "南越国",
+          "document_id": "DOC_010",
+          "evidence": "赵佗为保岭南地区的安定和人民的安宁建立南越国",
+          "ask_prompt": "赵佗与南越国是什么关系？"
+        },
+        {
+          "id": "han-conquest",
+          "question": "南越国后来如何归入汉朝版图？",
+          "conclusion": "专题资料记载汉武帝灭南越国，此后岭南正式纳入汉朝郡县版图。",
+          "bridge": "这条证据给出历史结果；页面不把图谱中的“涉及人物”夸大为更细的战争因果。",
+          "source_entity": "汉武帝灭南越国",
+          "relation": "INVOLVES_PERSON",
+          "target_entity": "汉武帝",
+          "document_id": "DOC_009",
+          "evidence": "汉武帝灭南越国",
+          "ask_prompt": "汉武帝灭南越国后，岭南地区发生了什么变化？"
+        }
+      ]
+    }
+  ]
+}

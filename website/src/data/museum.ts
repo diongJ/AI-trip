@@ -35,7 +35,6 @@ export const RELICS: Relic[] = [
     relationSeed: '南越文王墓', source: { docId: 'DOC_007', title: '丝缕玉衣与珠玉敛葬', url: 'https://www.nywmuseum.org.cn/', evidence: '南越王身着丝缕玉衣，并以珠玉敛葬，凸显尊贵的身份与地位。' },
   },
 ]
-
 export const TIMELINE = [
   { year: '前214', title: '秦定岭南', text: '岭南被纳入秦帝国版图，南越故事的地理与制度背景由此展开。', target: '赵佗' },
   { year: '前203', title: '赵佗建立南越国', text: '秦末，赵佗据岭南建立南越国，都番禺。', target: '赵佗' },
@@ -44,9 +43,4 @@ export const TIMELINE = [
   { year: '前111', title: '汉灭南越', text: '南越国的政治史告一段落，岭南与中原的联系进入新阶段。', target: '南越国' },
   { year: '1983', title: '王墓发现', text: '南越文王墓的发现，让两千年前的岭南王国再次被看见。', target: '南越文王墓' },
 ]
-
-export const THEMES = [
-  { title: '王权密码', intro: '从金印与墓主身份，理解南越王权的自我表达。', stops: ['赵眜', '文帝行玺', '帝印', '南越文王墓'] },
-  { title: '玉之国', intro: '沿着玉衣、玉杯与佩饰，走近南越的礼制与日常。', stops: ['丝缕玉衣', '组玉佩', '角形玉杯', '南越文王墓'] },
-  { title: '帝国与岭南', intro: '从秦统一到南越兴亡，理解岭南如何进入更广阔的历史。', stops: ['秦定岭南', '赵佗', '南越国', '汉越关系'] },
-]
+export type TimelineEntry = (typeof TIMELINE)[number]

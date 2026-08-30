@@ -22,7 +22,7 @@ jobs:
         run: python -m pytest -q
       - name: 构建 RAG 索引
         run: python -m scripts.build_rag_index --force
-      - name: 问答评测门禁（60 题，准确率 ≥ 90%）
+      - name: 问答回归门禁（120 题，准确率 ≥ 90%）
         run: python -m scripts.evaluate_qa --fail-under 0.9
       - name: Agent 冒烟测试（24 题）
         run: python -m scripts.verify_agent

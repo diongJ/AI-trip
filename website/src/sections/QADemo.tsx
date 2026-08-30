@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ask, type AnswerMode, type AskResponse } from '@/lib/api'
 
 const EXAMPLES = ['为什么赵眜墓里会出现“文帝行玺”？', '丝缕玉衣为什么不用金缕？', '第一次来最值得看的三件文物？']
@@ -6,9 +6,14 @@ const MODES: { value: AnswerMode; label: string }[] = [{ value: 'auto', label: '
 
 interface Turn { question: string; result: AskResponse }
 
-export function QADemo() {
+export function QADemo({ prefillQuestion, onPrefillConsumed }: { prefillQuestion?: string; onPrefillConsumed?: () => void }) {
   const [question, setQuestion] = useState(EXAMPLES[0]); const [mode, setMode] = useState<AnswerMode>('auto')
   const [turns, setTurns] = useState<Turn[]>([]); const [error, setError] = useState(''); const [loading, setLoading] = useState(false); const [proofOpen, setProofOpen] = useState<number | null>(null)
+  useEffect(() => {
+    if (!prefillQuestion) return
+    setQuestion(prefillQuestion)
+    onPrefillConsumed?.()
+  }, [onPrefillConsumed, prefillQuestion])
   const submit = async (value = question) => {
     if (!value.trim() || loading) return
     setQuestion(value); setLoading(true); setError(''); setProofOpen(null)

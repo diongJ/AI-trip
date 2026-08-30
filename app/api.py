@@ -9,19 +9,50 @@ from __future__ import annotations
 
 import json
 import os
+import time
+from collections import defaultdict, deque
 from functools import lru_cache
+from math import ceil
 from pathlib import Path
+from threading import Lock
 from typing import Annotated, Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from app.exploration import load_exploration_paths, relation_label
 from app.runtime import AppRuntime
 from src.agent.models import AnswerMode, Audience, ConversationTurn
+from src.config import get_settings
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class RequestRateLimiter:
+    """Small in-process per-IP limiter for the single-instance public demo."""
+
+    def __init__(self, *, limit: int, window_seconds: int = 60) -> None:
+        self.limit = limit
+        self.window_seconds = window_seconds
+        self._requests: dict[str, deque[float]] = defaultdict(deque)
+        self._lock = Lock()
+
+    def retry_after(self, client_id: str, *, now: float | None = None) -> int | None:
+        if self.limit == 0:
+            return None
+        timestamp = time.monotonic() if now is None else now
+        with self._lock:
+            requests = self._requests[client_id]
+            cutoff = timestamp - self.window_seconds
+            while requests and requests[0] <= cutoff:
+                requests.popleft()
+            if len(requests) >= self.limit:
+                return max(1, ceil(self.window_seconds - (timestamp - requests[0])))
+            requests.append(timestamp)
+            return None
 
 
 class AskRequest(BaseModel):
@@ -71,19 +102,59 @@ def _entity_payload(entity: Any) -> dict[str, Any]:
     return {"id": entity.id, "name": entity.name, "type": entity.type, "aliases": entity.aliases}
 
 
-def _graph_payload(hit: Any) -> dict[str, Any]:
+def _graph_payload(hit: Any, runtime: Any) -> dict[str, Any]:
+    citation = None
+    citation_builder = getattr(runtime, "citation_for_graph_hit", None)
+    if citation_builder is not None:
+        resolved = citation_builder(hit)
+        if resolved is not None:
+            citation = resolved.model_dump(mode="json")
     return {
         "source": _entity_payload(hit.source_entity),
         "relation": hit.relation,
+        "relation_label": relation_label(hit.relation),
         "target": _entity_payload(hit.target_entity),
         "direction": hit.direction,
         "document_id": hit.document_id,
         "evidence": hit.evidence,
+        "citation": citation,
     }
 
 
-def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
-    app = FastAPI(title="南越数字博物志 API", version="0.1.0")
+def _release_version() -> str:
+    return (
+        os.getenv("RELEASE_SHA")
+        or os.getenv("RAILWAY_GIT_COMMIT_SHA")
+        or os.getenv("GIT_COMMIT_SHA")
+        or "local"
+    )
+
+
+def _client_id(request: Request) -> str:
+    """Prefer Railway's forwarded visitor address while retaining local support."""
+    forwarded_for = request.headers.get("x-forwarded-for", "")
+    if forwarded_for:
+        forwarded_client = forwarded_for.split(",", 1)[0].strip()
+        if forwarded_client:
+            return forwarded_client
+    return request.client.host if request.client else "unknown"
+
+
+def create_app(
+    *,
+    runtime_provider: Any = get_runtime,
+    exploration_provider: Any = load_exploration_paths,
+    rate_limit_per_minute: int | None = None,
+    static_dir: Path | None = None,
+) -> FastAPI:
+    app = FastAPI(title="南越数字博物志 API", version="1.0.0")
+    limiter = RequestRateLimiter(
+        limit=get_settings().demo_rate_limit_per_minute
+        if rate_limit_per_minute is None
+        else rate_limit_per_minute
+    )
+    website_dir = static_dir or ROOT / "website" / "dist"
+    exploration_paths = exploration_provider()
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_origins(),
@@ -98,9 +169,14 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
         return {
             "status": "ok",
             "corpus_ready": runtime.status.corpus_ready,
+            "rag_ready": getattr(runtime.status, "rag_ready", False),
             "graph_ready": runtime.status.graph_ready,
+            "semantic_ready": getattr(runtime.status, "semantic_ready", False),
             "deepseek_configured": runtime.status.deepseek_configured,
+            "web_search_configured": getattr(runtime.status, "web_search_configured", False),
+            "neo4j_configured": getattr(runtime.status, "neo4j_configured", False),
             "fallback_mode": not runtime.status.deepseek_configured,
+            "release": _release_version(),
         }
 
     @app.get("/api/stats")
@@ -115,7 +191,14 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
         }
 
     @app.post("/api/ask")
-    def ask(request: AskRequest) -> dict[str, Any]:
+    def ask(request: AskRequest, http_request: Request) -> dict[str, Any]:
+        retry_after = limiter.retry_after(_client_id(http_request))
+        if retry_after is not None:
+            raise HTTPException(
+                status_code=429,
+                detail="提问过于频繁，请稍后再试。",
+                headers={"Retry-After": str(retry_after)},
+            )
         try:
             outcome = runtime_provider().ask(
                 request.question,
@@ -137,6 +220,10 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
         rows = runtime_provider().list_entities(q, entity_type=entity_type, limit=limit)
         return {"entities": [_entity_payload(entity) for entity in rows]}
 
+    @app.get("/api/exploration-paths")
+    def exploration() -> dict[str, Any]:
+        return exploration_paths
+
     @app.get("/api/entities/{entity_name}/neighbors")
     def neighbors(entity_name: str, limit: Annotated[int, Query(ge=1, le=30)] = 12) -> dict[str, Any]:
         runtime = runtime_provider()
@@ -146,8 +233,22 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
         entity = matches[0]
         return {
             "entity": _entity_payload(entity),
-            "neighbors": [_graph_payload(hit) for hit in runtime.neighbors(entity.name, limit=limit)],
+            "neighbors": [_graph_payload(hit, runtime) for hit in runtime.neighbors(entity.name, limit=limit)],
         }
+
+    @app.get("/{requested_path:path}", include_in_schema=False)
+    def website(requested_path: str) -> FileResponse:
+        """Serve the built React app and keep client-side routes refreshable."""
+        if requested_path.startswith("api/") or not website_dir.is_dir():
+            raise HTTPException(status_code=404, detail="Not found")
+        root = website_dir.resolve()
+        candidate = (root / requested_path).resolve()
+        if candidate.is_relative_to(root) and candidate.is_file():
+            return FileResponse(candidate)
+        index = root / "index.html"
+        if index.is_file():
+            return FileResponse(index)
+        raise HTTPException(status_code=404, detail="Website build is unavailable")
 
     return app
 

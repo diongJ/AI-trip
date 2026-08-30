@@ -85,6 +85,28 @@ def test_temporal_retrieval_excludes_expired_current_notices(tmp_path) -> None:
     assert "DOC_238" in {hit.metadata["doc_id"] for hit in historical}
 
 
+def test_summer_hours_notice_stops_competing_after_its_final_day(tmp_path) -> None:
+    retriever = _retriever(tmp_path)
+    last_day = retriever.search(
+        "王宫展区开放时间",
+        top_k=8,
+        category="tourism",
+        temporal_scope="current",
+        as_of="2026-08-31",
+        zones={"王宫展区"},
+    )
+    after_expiry = retriever.search(
+        "王宫展区开放时间",
+        top_k=8,
+        category="tourism",
+        temporal_scope="current",
+        as_of="2026-09-01",
+        zones={"王宫展区"},
+    )
+    assert "DOC_239" in {hit.metadata["doc_id"] for hit in last_day}
+    assert "DOC_239" not in {hit.metadata["doc_id"] for hit in after_expiry}
+
+
 def test_future_rule_and_cross_zone_route_are_explicit(tmp_path) -> None:
     retriever = _retriever(tmp_path)
     future = retriever.search(

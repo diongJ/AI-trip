@@ -12,6 +12,7 @@ from app.runtime import (
     explanation_markdown,
     safe_download_name,
 )
+from src.agent.models import AgentAnswer, AnswerStatus
 from src.agent.service import AnswerGenerationError
 from src.config.settings import Settings
 
@@ -100,6 +101,40 @@ def test_runtime_falls_back_when_deepseek_fails(offline_runtime) -> None:
     assert outcome.warning == "智能生成服务暂时不可用，本次已回退到离线证据摘录。"
     assert outcome.response.citations
     assert "sensitive" not in outcome.warning
+
+
+def test_runtime_falls_back_when_deepseek_rejects_grounded_question(offline_runtime) -> None:
+    class OverstrictService:
+        def answer(self, question: str) -> AgentAnswer:
+            return AgentAnswer(
+                answer="暂未在可靠资料中找到足够依据。",
+                citations=[],
+                web_sources=[],
+                route_reason="模拟智能生成的严格校验",
+                insufficient_evidence=True,
+                response_status=AnswerStatus.INSUFFICIENT_EVIDENCE,
+            )
+
+    original = offline_runtime.deepseek_service
+    offline_runtime.deepseek_service = OverstrictService()
+    try:
+        outcome = offline_runtime.ask("南越是什么时期？")
+    finally:
+        offline_runtime.deepseek_service = original
+
+    assert outcome.generation_mode == "离线证据摘录"
+    assert outcome.warning == "智能生成未通过证据校验，本次已回退到离线证据摘录。"
+    assert not outcome.response.insufficient_evidence
+    assert outcome.response.citations
+
+
+@pytest.mark.parametrize("question", ["南越是什么时期？", "南越是什么年代？"])
+def test_runtime_answers_nanyue_historical_period_concisely(offline_runtime, question: str) -> None:
+    outcome = offline_runtime.ask(question, prefer_llm=False)
+
+    assert not outcome.response.insufficient_evidence
+    assert "秦朝末期赵佗建立南越国" in outcome.response.answer
+    assert any(citation.doc_id == "DOC_009" for citation in outcome.response.citations)
 
 
 def test_explanation_prompt_forces_hybrid_and_validates_style(offline_runtime) -> None:

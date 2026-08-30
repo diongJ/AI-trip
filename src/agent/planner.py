@@ -25,7 +25,7 @@ class DeepSeekQueryPlanner:
         settings.require_deepseek()
         self.settings = settings
         self._owns_client = http_client is None
-        self.client = http_client or httpx.Client(timeout=30.0)
+        self.client = http_client or httpx.Client(timeout=settings.deepseek_timeout_seconds)
 
     def close(self) -> None:
         if self._owns_client:
@@ -47,7 +47,9 @@ class DeepSeekQueryPlanner:
                 },
                 {"role": "user", "content": question},
             ],
+            "thinking": {"type": "disabled"},
             "temperature": 0,
+            "max_tokens": 320,
             "response_format": {"type": "json_object"},
         }
         try:

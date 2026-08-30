@@ -211,3 +211,25 @@
 - 为避免直接推送覆盖远端 `main`，远端提交应推到独立分支后再发 PR。
 - 本地验证结果：`scripts.validate_corpus` 通过，语料 220 份；`scripts.verify_agent` 通过 24/24；`scripts.verify_demo` 通过 5/5；`pytest` 通过 115 passed。
 - 本机 `.venv` 的 Python 启动器路径已失效；可临时使用 bundled Python 并设置 `PYTHONPATH=.\\.venv\\Lib\\site-packages`。pytest 需要把 `--basetemp` 指向项目内 `.tmp-pytest`。
+
+## 2026-08-30 公开 Demo 发布准备
+
+- 发布分支：`codex/public-demo-release`，基线为 `origin/main` 的 `cc79216`。
+- 新增同域发布工件：`Dockerfile` 多阶段构建 React/Vite 与 Python/FastAPI，`railway.toml` 提供 Railway 健康检查；FastAPI 直接提供构建后的前端并支持文物详情等 SPA 刷新路由。
+- 线上默认关闭 BGE 语义模型，保留 BM25、本地图谱和 DeepSeek 异常时的离线证据回答；`DEEPSEEK_API_KEY` 只允许经 Railway Secrets 注入。
+- `/api/ask` 增加每 IP 每分钟限流（默认 12，可用 `DEMO_RATE_LIMIT_PER_MINUTE` 配置），超限返回 429 与 `Retry-After`；`/api/health` 增加 RAG、语义、DeepSeek、Neo4j 与发布版本状态。
+- 新增研究区系统架构图（SVG + Mermaid 源码），并纠正素材清单中已经接入的文物局部图状态。
+- 时效规则已覆盖：`DOC_239` 在 2026-08-31 当日可检索，2026-09-01 起自动由上海时区过滤；每次上线前仍须复核馆方开放与研学公告。
+
+### 验证记录
+
+- `pytest -q --basetemp .tmp-pytest-full` 通过。
+- `python -m scripts.evaluate_qa --fail-under 0.9`：120/120（100%）。
+- `python -m scripts.verify_agent`：24/24；`python -m scripts.verify_demo`：5/5。
+- 网站 `npm run lint` 与 `npm run build` 通过；同域首页、`/relic/wendi-seal`、架构图和未知 API 路由冒烟检查通过。
+- 缺失 DeepSeek Key 的 `/api/health` 验证为 `fallback_mode=true`；配置 Key 时状态为 `deepseek_configured=true`。
+
+### 待办线索
+
+- 本机未安装 Docker，尚未进行容器运行验收。
+- Railway 项目创建、Secrets 填写、常在线实例选择和公网 URL 验收需由拥有 Railway 账户的成员完成；步骤见 `docs/public_demo_deployment.md`。

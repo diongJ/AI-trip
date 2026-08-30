@@ -4,18 +4,52 @@ from hashlib import sha256
 import httpx
 import pytest
 
-from src.agent.models import QuestionType, RouteDecision, ToolName
+from src.agent.models import AnswerClaim, ClaimType, QuestionType, RouteDecision, ToolName, ToolResult
 from src.agent.planner import DeepSeekQueryPlanner
-from src.agent.service import AnswerGenerationError, DeepSeekWebSearchAnswerGenerator
+from src.agent.service import (
+    AnswerGenerationError,
+    DeepSeekAnswerGenerator,
+    DeepSeekClaimVerifier,
+    DeepSeekWebSearchAnswerGenerator,
+)
 from src.config.settings import Settings
 from src.preprocessing import CorpusDocument
 from src.preprocessing.sources import sync_sources
 from src.rag.index import BM25_BACKEND, build_rag_index
+from src.rag.models import RetrievalHit
 from src.rag.retriever import RagRetriever
 
 
 def _settings() -> Settings:
     return Settings(_env_file=None, deepseek_api_key="test-secret")
+
+
+def _tool_result() -> ToolResult:
+    return ToolResult(
+        documents=[
+            RetrievalHit(
+                content="文帝行玺是南越文王墓出土的金印。",
+                score=1.0,
+                rank=1,
+                backend="test",
+                metadata={
+                    "doc_id": "DOC_013",
+                    "title": "文帝行玺",
+                    "source_name": "南越王博物院",
+                    "source_url": "https://example.org/DOC_013",
+                    "category": "relic",
+                    "chunk_id": "DOC_013#0",
+                    "source_tier": "core",
+                    "source_type": "official",
+                    "evidence_role": "factual",
+                    "review_status": "approved",
+                    "content_hash": "test-hash",
+                    "retrieved_at": "2026-08-30",
+                    "fusion_score": 1.0,
+                },
+            )
+        ]
+    )
 
 
 def _write_doc(root, doc_id: str, title: str, text: str, *, tier: str = "core") -> None:
@@ -87,6 +121,9 @@ def test_bm25_multi_query_fusion_and_source_tier(tmp_path) -> None:
 def test_deepseek_planner_returns_structured_multi_query_plan() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["Authorization"] == "Bearer test-secret"
+        payload = json.loads(request.content)
+        assert payload["thinking"] == {"type": "disabled"}
+        assert payload["max_tokens"] == 320
         return httpx.Response(
             200,
             json={
@@ -124,6 +161,65 @@ def test_deepseek_planner_returns_structured_multi_query_plan() -> None:
     assert plan.entities == ["文帝行玺", "丝缕玉衣"]
     assert plan.subqueries[0] == "比较两件文物"
     assert len(plan.subqueries) == 4
+
+
+def test_deepseek_answer_and_verifier_disable_thinking(tmp_path) -> None:
+    prompt = tmp_path / "answer-prompt.txt"
+    prompt.write_text("Return grounded JSON.", encoding="utf-8")
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        payload = json.loads(request.content)
+        assert payload["thinking"] == {"type": "disabled"}
+        if calls == 1:
+            assert payload["max_tokens"] == 800
+            content = {
+                "answer": "文帝行玺是南越文王墓出土的金印。",
+                "selected_evidence_ids": ["DOC_013#0"],
+                "claims": [
+                    {
+                        "text": "文帝行玺是南越文王墓出土的金印。",
+                        "claim_type": "direct_fact",
+                        "evidence_ids": ["DOC_013#0"],
+                    }
+                ],
+                "supported": True,
+            }
+        else:
+            assert payload["max_tokens"] == 160
+            content = {"kept_claim_indexes": [0]}
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(content, ensure_ascii=False)}}]},
+        )
+
+    route = RouteDecision(
+        question_type=QuestionType.DESCRIPTION,
+        tool=ToolName.SEARCH_DOCUMENTS,
+        reason="test",
+    )
+    result = _tool_result()
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        generated = DeepSeekAnswerGenerator(
+            _settings(), prompt_path=prompt, http_client=client
+        ).generate("文帝行玺是什么？", route, result)
+        claims = DeepSeekClaimVerifier(_settings(), http_client=client).verify(
+            "文帝行玺是什么？",
+            generated.answer,
+            [
+                AnswerClaim(
+                    text="文帝行玺是南越文王墓出土的金印。",
+                    claim_type=ClaimType.DIRECT_FACT,
+                    evidence_ids=["DOC_013#0"],
+                )
+            ],
+            result,
+        )
+
+    assert calls == 2
+    assert len(claims) == 1
 
 
 def test_deepseek_planner_cannot_downgrade_a_valid_rule_route() -> None:
@@ -175,6 +271,8 @@ def test_deepseek_web_search_requires_real_search_and_traceable_source() -> None
         assert payload["model"] == "deepseek-v4-flash"
         assert payload["tools"] == [{"type": "web_search"}]
         assert payload["tool_choice"] == {"type": "web_search"}
+        assert payload["reasoning"] == {"effort": "none"}
+        assert payload["max_output_tokens"] == 600
         return httpx.Response(
             200,
             json={

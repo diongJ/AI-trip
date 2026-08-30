@@ -27,6 +27,10 @@ DOMAIN_OUT_OF_SCOPE_RE = re.compile(
 )
 ANECDOTE_RE = re.compile(r"(典故|成语|轶事|掌故|趣事|历史故事|民间传说|传说|故事)")
 RELATION_RE = re.compile(r"(关系|谁|属于|出土|材料|材质|纹饰|制作|反映|关联|葬|朝代|时期|年代)")
+NANYUE_PERIOD_RE = re.compile(
+    r"南越(?:国)?.*(?:什么|哪个|哪一|属于|是).*(?:时期|年代|朝代)|"
+    r"南越(?:国)?.*(?:时期|年代|朝代)"
+)
 DESCRIPTION_RE = re.compile(
     r"(介绍|讲讲|特点|意义|价值|如何|为什么|背景|过程|展示|展区|"
     r"自称|位于|哪里|在哪|哪个|几次|多少|放在|出土在|是什么|有什么|做什么|怎么|"
@@ -124,6 +128,22 @@ class RuleBasedRouter:
         explanation_intent = "comparison" if COMPARISON_RE.search(normalized) else (
             "explanation" if EXPLANATION_RE.search(normalized) else "description"
         )
+        if NANYUE_PERIOD_RE.search(normalized):
+            # “南越是什么时期”是展览中最基础的历史定位问题。不能让“南越”
+            # 被模糊解析为丧葬文化或展览名，再把检索带偏到泛主题材料。
+            return RouteDecision(
+                question_type=QuestionType.DESCRIPTION,
+                tool=ToolName.SEARCH_DOCUMENTS,
+                entity_query="南越国",
+                reason="问题询问南越国的时代定位，优先检索建立与灭亡的历史专题证据。",
+                intent="historical_period",
+                entities=["南越国"],
+                subqueries=[
+                    normalized,
+                    "南越国 秦朝末期 赵佗 建立 汉武帝灭南越国",
+                ],
+                answer_mode=answer_mode,
+            )
         entity_queries = _find_entity_queries(normalized, self.resolver, entity_query)
         if (
             entity_query
