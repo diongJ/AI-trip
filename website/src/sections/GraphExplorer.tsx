@@ -22,7 +22,14 @@ export function GraphExplorer({ requestedEntity, onConsumed }: { requestedEntity
   }, [])
   useEffect(() => {
     if (!query.trim()) return
-    const timer = window.setTimeout(() => { void search(query, type) }, 300)
+    const timer = window.setTimeout(() => {
+      void findEntities(query, type || undefined)
+        .then((result) => {
+          setEntities(result.entities)
+          if (!result.entities.length) setMessage('当前资料中没有找到匹配实体。')
+        })
+        .catch(() => setMessage('图谱服务暂时不可用，请稍后重试。'))
+    }, 300)
     return () => window.clearTimeout(timer)
   }, [query, type])
   useEffect(() => {

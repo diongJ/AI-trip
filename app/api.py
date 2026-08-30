@@ -9,19 +9,49 @@ from __future__ import annotations
 
 import json
 import os
+import time
+from collections import defaultdict, deque
 from functools import lru_cache
+from math import ceil
 from pathlib import Path
+from threading import Lock
 from typing import Annotated, Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from app.runtime import AppRuntime
 from src.agent.models import AnswerMode, Audience, ConversationTurn
+from src.config import get_settings
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class RequestRateLimiter:
+    """Small in-process per-IP limiter for the single-instance public demo."""
+
+    def __init__(self, *, limit: int, window_seconds: int = 60) -> None:
+        self.limit = limit
+        self.window_seconds = window_seconds
+        self._requests: dict[str, deque[float]] = defaultdict(deque)
+        self._lock = Lock()
+
+    def retry_after(self, client_id: str, *, now: float | None = None) -> int | None:
+        if self.limit == 0:
+            return None
+        timestamp = time.monotonic() if now is None else now
+        with self._lock:
+            requests = self._requests[client_id]
+            cutoff = timestamp - self.window_seconds
+            while requests and requests[0] <= cutoff:
+                requests.popleft()
+            if len(requests) >= self.limit:
+                return max(1, ceil(self.window_seconds - (timestamp - requests[0])))
+            requests.append(timestamp)
+            return None
 
 
 class AskRequest(BaseModel):
@@ -82,8 +112,38 @@ def _graph_payload(hit: Any) -> dict[str, Any]:
     }
 
 
-def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
+def _release_version() -> str:
+    return (
+        os.getenv("RELEASE_SHA")
+        or os.getenv("RAILWAY_GIT_COMMIT_SHA")
+        or os.getenv("GIT_COMMIT_SHA")
+        or "local"
+    )
+
+
+def _client_id(request: Request) -> str:
+    """Prefer Railway's forwarded visitor address while retaining local support."""
+    forwarded_for = request.headers.get("x-forwarded-for", "")
+    if forwarded_for:
+        forwarded_client = forwarded_for.split(",", 1)[0].strip()
+        if forwarded_client:
+            return forwarded_client
+    return request.client.host if request.client else "unknown"
+
+
+def create_app(
+    *,
+    runtime_provider: Any = get_runtime,
+    rate_limit_per_minute: int | None = None,
+    static_dir: Path | None = None,
+) -> FastAPI:
     app = FastAPI(title="南越数字博物志 API", version="0.1.0")
+    limiter = RequestRateLimiter(
+        limit=get_settings().demo_rate_limit_per_minute
+        if rate_limit_per_minute is None
+        else rate_limit_per_minute
+    )
+    website_dir = static_dir or ROOT / "website" / "dist"
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_origins(),
@@ -98,9 +158,14 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
         return {
             "status": "ok",
             "corpus_ready": runtime.status.corpus_ready,
+            "rag_ready": getattr(runtime.status, "rag_ready", False),
             "graph_ready": runtime.status.graph_ready,
+            "semantic_ready": getattr(runtime.status, "semantic_ready", False),
             "deepseek_configured": runtime.status.deepseek_configured,
+            "web_search_configured": getattr(runtime.status, "web_search_configured", False),
+            "neo4j_configured": getattr(runtime.status, "neo4j_configured", False),
             "fallback_mode": not runtime.status.deepseek_configured,
+            "release": _release_version(),
         }
 
     @app.get("/api/stats")
@@ -115,7 +180,14 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
         }
 
     @app.post("/api/ask")
-    def ask(request: AskRequest) -> dict[str, Any]:
+    def ask(request: AskRequest, http_request: Request) -> dict[str, Any]:
+        retry_after = limiter.retry_after(_client_id(http_request))
+        if retry_after is not None:
+            raise HTTPException(
+                status_code=429,
+                detail="提问过于频繁，请稍后再试。",
+                headers={"Retry-After": str(retry_after)},
+            )
         try:
             outcome = runtime_provider().ask(
                 request.question,
@@ -148,6 +220,20 @@ def create_app(*, runtime_provider: Any = get_runtime) -> FastAPI:
             "entity": _entity_payload(entity),
             "neighbors": [_graph_payload(hit) for hit in runtime.neighbors(entity.name, limit=limit)],
         }
+
+    @app.get("/{requested_path:path}", include_in_schema=False)
+    def website(requested_path: str) -> FileResponse:
+        """Serve the built React app and keep client-side routes refreshable."""
+        if requested_path.startswith("api/") or not website_dir.is_dir():
+            raise HTTPException(status_code=404, detail="Not found")
+        root = website_dir.resolve()
+        candidate = (root / requested_path).resolve()
+        if candidate.is_relative_to(root) and candidate.is_file():
+            return FileResponse(candidate)
+        index = root / "index.html"
+        if index.is_file():
+            return FileResponse(index)
+        raise HTTPException(status_code=404, detail="Website build is unavailable")
 
     return app
 

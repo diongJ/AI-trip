@@ -1,0 +1,35 @@
+flowchart LR
+    visitor["评委 / 访客浏览器"]
+
+    subgraph railway["Railway 常在线服务"]
+        web["React 数字博物志<br/>首页、文物页、问答与图谱"]
+        api["FastAPI 同域服务<br/>静态页面 + /api"]
+        limiter["单 IP 限流<br/>429 + Retry-After"]
+        agent["可信问答 Agent<br/>路由、证据校验、降级"]
+        rag["BM25 / RAG 索引<br/>220 份分层资料"]
+        localGraph["本地图谱 V1<br/>78 实体 / 87 关系"]
+    end
+
+    corpus["版本化可信语料<br/>来源、哈希、时效字段"]
+    deepseek["DeepSeek 服务端调用<br/>仅基于选中证据生成"]
+
+    visitor -->|"HTTPS"| web
+    web <-->|"同域 /api"| api
+    api --> limiter
+    limiter --> agent
+    agent -->|"检索"| rag
+    agent -->|"关系查询"| localGraph
+    corpus -->|"构建索引"| rag
+    corpus -->|"审核证据"| localGraph
+    agent <-->|"证据综合；异常即离线降级"| deepseek
+
+    classDef visitor fill:#eef7ef,stroke:#2f6d49,color:#173c27,stroke-width:2px
+    classDef web fill:#fff5e8,stroke:#a65325,color:#5d2e13,stroke-width:2px
+    classDef service fill:#eef3fb,stroke:#385a8b,color:#1f3559,stroke-width:2px
+    classDef data fill:#f5effa,stroke:#75528d,color:#432c56,stroke-width:2px
+    classDef external fill:#f8eeee,stroke:#9d4d4d,color:#5e2929,stroke-width:2px
+    class visitor visitor
+    class web web
+    class api,limiter,agent service
+    class rag,localGraph,corpus data
+    class deepseek external

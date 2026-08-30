@@ -1,0 +1,15 @@
+.git
+.venv
+.pytest_cache
+__pycache__
+*.py[cod]
+.env
+.npm-cache
+.pip-cache
+.tmp-pip
+.tmp-pytest
+website/node_modules
+website/dist
+data/processed/rag
+htmlcov
+coverage.xml

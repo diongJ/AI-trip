@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     semantic_retrieval_enabled: bool = True
     semantic_embedding_model: str = "BAAI/bge-small-zh-v1.5"
     semantic_reranker_model: str = "BAAI/bge-reranker-base"
+    demo_rate_limit_per_minute: int = Field(default=12, ge=0, le=120)
 
     neo4j_uri: str | None = None
     neo4j_username: str | None = None
