@@ -4,7 +4,8 @@ from types import SimpleNamespace
 from fastapi.testclient import TestClient
 
 from app.api import create_app
-from src.agent.models import AnswerStatus
+from src.agent.models import AnswerStatus, Citation
+from src.rag.models import GraphEntity, GraphHit
 
 
 class FakeRuntime:
@@ -34,8 +35,24 @@ class FakeRuntime:
         )
         return SimpleNamespace(response=response, generation_mode="离线证据摘录", warning=None, elapsed_ms=1.2)
 
-    def list_entities(self, *_args, **_kwargs):
+    def list_entities(self, query="", **_kwargs):
+        if query == "赵眜":
+            return [GraphEntity(id="person:zhao", name="赵眜", type="Person")]
         return []
+
+    def neighbors(self, *_args, **_kwargs):
+        return [GraphHit(
+            source_entity=GraphEntity(id="person:zhao", name="赵眜", type="Person"),
+            relation="BURIED_IN",
+            target_entity=GraphEntity(id="tomb:king", name="南越文王墓", type="Tomb"),
+            direction="outgoing", document_id="DOC_008", evidence="赵眜之墓", backend="test",
+        )]
+
+    def citation_for_graph_hit(self, _hit):
+        return Citation(
+            doc_id="DOC_008", title="南越文王墓原址", source_name="南越王博物院",
+            source_url="https://example.com/source", evidence="赵眜之墓",
+        )
 
 
 def test_api_health_stats_and_ask():
@@ -49,6 +66,20 @@ def test_api_health_stats_and_ask():
     payload = client.post("/api/ask", json={"question": "南越文王墓"}).json()
     assert payload["response_status"] == "insufficient_evidence"
     assert payload["suggested_questions"]
+    paths = client.get("/api/exploration-paths").json()
+    assert paths["version"] == 1
+    assert len(paths["paths"]) == 3
+
+
+def test_neighbor_api_keeps_old_fields_and_adds_chinese_label_and_citation():
+    client = TestClient(create_app(runtime_provider=FakeRuntime))
+    payload = client.get("/api/entities/%E8%B5%B5%E7%9C%9C/neighbors").json()
+    relation = payload["neighbors"][0]
+    assert relation["relation"] == "BURIED_IN"
+    assert relation["document_id"] == "DOC_008"
+    assert relation["evidence"] == "赵眜之墓"
+    assert relation["relation_label"] == "葬于"
+    assert relation["citation"]["source_name"] == "南越王博物院"
 
 
 def test_api_limits_public_questions_without_losing_other_routes():

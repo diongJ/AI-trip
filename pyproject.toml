@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nanyue-kg-agent"
-version = "0.1.0"
-description = "Traceable knowledge graph foundation for the Nanyue King Museum"
+version = "1.0.0"
+description = "Traceable knowledge graph and RAG guide for the Nanyue King Museum"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

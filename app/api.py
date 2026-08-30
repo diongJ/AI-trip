@@ -22,6 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from app.exploration import load_exploration_paths, relation_label
 from app.runtime import AppRuntime
 from src.agent.models import AnswerMode, Audience, ConversationTurn
 from src.config import get_settings
@@ -101,14 +102,22 @@ def _entity_payload(entity: Any) -> dict[str, Any]:
     return {"id": entity.id, "name": entity.name, "type": entity.type, "aliases": entity.aliases}
 
 
-def _graph_payload(hit: Any) -> dict[str, Any]:
+def _graph_payload(hit: Any, runtime: Any) -> dict[str, Any]:
+    citation = None
+    citation_builder = getattr(runtime, "citation_for_graph_hit", None)
+    if citation_builder is not None:
+        resolved = citation_builder(hit)
+        if resolved is not None:
+            citation = resolved.model_dump(mode="json")
     return {
         "source": _entity_payload(hit.source_entity),
         "relation": hit.relation,
+        "relation_label": relation_label(hit.relation),
         "target": _entity_payload(hit.target_entity),
         "direction": hit.direction,
         "document_id": hit.document_id,
         "evidence": hit.evidence,
+        "citation": citation,
     }
 
 
@@ -134,16 +143,18 @@ def _client_id(request: Request) -> str:
 def create_app(
     *,
     runtime_provider: Any = get_runtime,
+    exploration_provider: Any = load_exploration_paths,
     rate_limit_per_minute: int | None = None,
     static_dir: Path | None = None,
 ) -> FastAPI:
-    app = FastAPI(title="南越数字博物志 API", version="0.1.0")
+    app = FastAPI(title="南越数字博物志 API", version="1.0.0")
     limiter = RequestRateLimiter(
         limit=get_settings().demo_rate_limit_per_minute
         if rate_limit_per_minute is None
         else rate_limit_per_minute
     )
     website_dir = static_dir or ROOT / "website" / "dist"
+    exploration_paths = exploration_provider()
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_origins(),
@@ -209,6 +220,10 @@ def create_app(
         rows = runtime_provider().list_entities(q, entity_type=entity_type, limit=limit)
         return {"entities": [_entity_payload(entity) for entity in rows]}
 
+    @app.get("/api/exploration-paths")
+    def exploration() -> dict[str, Any]:
+        return exploration_paths
+
     @app.get("/api/entities/{entity_name}/neighbors")
     def neighbors(entity_name: str, limit: Annotated[int, Query(ge=1, le=30)] = 12) -> dict[str, Any]:
         runtime = runtime_provider()
@@ -218,7 +233,7 @@ def create_app(
         entity = matches[0]
         return {
             "entity": _entity_payload(entity),
-            "neighbors": [_graph_payload(hit) for hit in runtime.neighbors(entity.name, limit=limit)],
+            "neighbors": [_graph_payload(hit, runtime) for hit in runtime.neighbors(entity.name, limit=limit)],
         }
 
     @app.get("/{requested_path:path}", include_in_schema=False)

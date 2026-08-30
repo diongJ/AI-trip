@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 
-const NAV = [['/#top', '首页'], ['/#treasures', '镇馆之珍'], ['/#qa', '问南越'], ['/#kids', '故事屋'], ['/#timeline', '时间长卷'], ['/#relations', '关系探秘'], ['/#research', '研究与技术']]
+const NAV = [['/#top', '首页'], ['/#treasures', '镇馆之珍'], ['/#qa', '问南越'], ['/#kids', '故事屋'], ['/#timeline', '时间长卷'], ['/#relations', '循证探秘'], ['/#research', '研究与技术']]
 
 export function Navbar() {
   const [open, setOpen] = useState(false)

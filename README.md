@@ -1,383 +1,204 @@
-# 南越王博物院深度知识图谱与智慧导览
+# 南越数字博物志
 
-本项目面向南越王博物院王墓展区，将可靠资料通过大模型转换为可追溯的知识图谱，并在后续阶段结合 RAG 与 Agent，开发智能问答、AI 深度讲解和局部图谱探索功能。
+> 面向南越王博物院的可溯源知识图谱与 RAG 智慧导览：让游客得到好懂的回答，也让每个结论都能回到原始证据。
 
-Day 1 已提供以下技术底座：
+[![CI](https://github.com/diongJ/AI-trip/actions/workflows/ci.yml/badge.svg)](https://github.com/diongJ/AI-trip/actions/workflows/ci.yml)
+[![React](https://img.shields.io/badge/React-19-53695d)](website/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.12-87372d)](app/api.py)
 
-- 冻结的研究范围与知识图谱 Schema V1。
-- Pydantic 实体、关系、文档和抽取结果模型。
-- DeepSeek 严格 JSON 抽取客户端。
-- Neo4j Aura 约束、幂等写入和局部关系查询。
-- DeepSeek、Neo4j 及端到端样例验证脚本。
+**[立即体验公开 Demo](https://ai-trip-production.up.railway.app/)** · 无需登录 · 支持电脑与手机访问
 
-Day 2 与 Day 3 已在此基础上完成 36 份核心官方资料的批量抽取、人工消歧、统一图谱 V1 和 Aura 入库验收。专题升级后，RAG 语料扩展为 220 份分层可信资料（含王墓展区参观攻略、南越典故与儿童故事语料）；核心图谱证据基线保持不变。
+![南越数字博物志首页](docs/assets/readme/home-overview.png)
 
-## 环境要求
+## 三分钟体验路线
 
-- Python 3.11 或更高版本。
-- DeepSeek API Key。
-- Neo4j Aura 实例及连接凭据。
+1. 在首页浏览“镇馆之珍”，打开“文帝行玺”详情，了解文物背景与原始资料。
+2. 进入“AI 问南越”，提问：**为什么赵眜墓里会出现“文帝行玺”？** 展开“可溯”查看回答依据。
+3. 在“循证探秘”走完 **一枚金印如何确认墓主**，观察每一步的关系、原文证据与来源链接。
+4. 切换“小越故事屋”，试问：**给我讲一个文帝行玺的小故事。**
+5. 展开“研究与技术”，查看 DeepSeek、Neo4j 不可用时系统如何自动降级。
 
-本地开发不要求 Docker。本机未安装 Docker 时仍可直接运行前后端；公开 Demo 使用根目录 `Dockerfile` 将 React 页面与 FastAPI 打包为同域服务。
+推荐问题：
 
-## 安装
+- 南越是什么时期？
+- 丝缕玉衣为什么不用金缕？
+- 赵眜和南越文王墓是什么关系？
+- 第一次来最值得看的三件文物？
 
-在 PowerShell 中执行：
+## 核心体验
+
+### 有来源的智能问答
+
+成人问答支持自动、1 分钟和深入三种讲解长度，以及最多 4 轮上下文追问。答案展示生成模式、耗时和可展开的引用；证据不足时明确拒答，不用流畅措辞掩盖资料空缺。
+
+![带原始资料引用的问答](docs/assets/readme/traceable-qa.png)
+
+### 循证叙事探索
+
+三条人工策展路径把文物、人物、墓葬与历史事件组织成可逐步核对的证据链。每一步显示准确的中文关系、阶段结论、原文摘录、文档编号、来源机构与原始链接；因果表达只在资料明确支持时使用。
+
+![一枚金印如何确认墓主的循证路径](docs/assets/readme/evidence-journey.png)
+
+### 适合不同游客
+
+- **成人问答**：以证据为边界的 RAG / 图谱综合回答。
+- **儿童模式**：将可靠资料改写为 8–12 岁儿童易懂的故事，校验失败即回退离线版本。
+- **多轮追问**：保留最近对话上下文，处理指代与延伸问题。
+- **自由图谱探索**：中文关系、一跳证据、探索面包屑、返回与循环保护。
+- **文物详情**：代表文物的时代、材质、出土位置、讲解与馆方来源。
+- **离线降级**：外部模型或 Neo4j 不可用时，核心问答与关系查询仍可运行。
+
+## 可信机制与数据
+
+当前知识底座包含 **220 份分层可信资料、78 个实体、87 条证据关系**。核心馆方资料优先，扩展导览内容经过来源分层、白名单准入与逐份审核。
+
+策展路径不是另一份前端演示数据：`data/curated/exploration_paths_v1.json` 在服务启动时会校验实体、关系、文档编号、原文证据、`factual` 角色与 `approved` 状态，任何失配都会阻止错误路径上线。
+
+系统遵守四条规则：
+
+- 回答与引用来自同一份检索结果；
+- DeepSeek 负责组织语言，不替代事实来源；
+- 智能生成未通过证据核验时，回退到本地摘录；
+- 时效公告按有效日期过滤，过期参观信息不会继续参与当前问答。
+
+## 技术架构
+
+```mermaid
+flowchart LR
+    U[电脑 / 手机浏览器] --> W[React 19 单页应用]
+    W -->|同域 /api| API[FastAPI]
+    API --> L[单 IP 限流]
+    L --> A[证据约束 Agent]
+    A --> R[BM25 + 改写查询 + RRF]
+    A --> G[知识图谱检索]
+    R --> C[(220 份可信资料)]
+    G --> N[(本地 JSON 图谱)]
+    G -. 可选 .-> Neo[(Neo4j Aura)]
+    A --> D[DeepSeek 组织语言]
+    D --> V[主张与引用核验]
+    V --> O[答案 + 引用 + 来源]
+    D -. 超时 / 失败 .-> F[离线证据摘录]
+    F --> O
+    Neo -. 不可用 .-> N
+```
+
+生产镜像采用多阶段构建：Node 22 构建 Vite，Python 3.12 安装服务并预构建 BM25 索引，最终由一个 FastAPI 进程同域提供网页和 API。生产环境暂不加载约 2GB 的 BGE 语义模型，以降低冷启动和内存压力。
+
+## 技术栈
+
+| 层 | 实现 |
+|---|---|
+| 前端 | React 19、TypeScript、Vite、响应式原生 CSS |
+| API | FastAPI、Pydantic、Uvicorn |
+| 检索 | 多字段 BM25 v2、查询改写、RRF 融合、片段回文档 |
+| 图谱 | 78 实体 / 87 关系，本地 JSON 默认可用，Neo4j 可选 |
+| Agent | 结构化规划、工具路由、证据筛选、主张核验、规则拒答 |
+| 生成 | DeepSeek；失败、超时或校验不通过时离线降级 |
+| 发布 | Docker、Railway、同域静态页面与 API、按 IP 限流 |
+
+## 实测指标
+
+| 验收集 | 规模 | 当前结果 | 用途 |
+|---|---:|---:|---|
+| QA 回归集 | 120 题 | **120 / 120** | 防止多跳、比较、否定、时效、儿童与拒答能力回退 |
+| Agent 冒烟 | 24 题 | **24 / 24** | 核对路由、工具、引用与回答状态 |
+| Demo 验证 | 5 条路径 | **5 / 5** | 核对首页数据、问答、讲解和图谱演示 |
+| 离线评测 v2 | 90 题 | 回答率 **87.5%**；Hit@5 **88.75%**；引用正确率 **100%**；拒答准确率 **100%** | 独立检索与回答质量评测 |
+
+`data/evaluation/summary_v2.json` 中约 **10.6 ms** 的 P95 是本地离线评测耗时，**不代表 DeepSeek 公网响应时间**。线上生成延迟还会受到 Railway 区域、模型排队、网络往返、规划与核验调用影响。
+
+## 快速启动
+
+### Docker：最接近生产环境
+
+```bash
+docker build -t nanyue-demo .
+docker run --rm -p 8080:8080 -e SEMANTIC_RETRIEVAL_ENABLED=false nanyue-demo
+```
+
+打开 `http://localhost:8080`。不提供 DeepSeek Key 时会自动使用离线证据摘录；如需智能生成，仅通过运行环境设置 `DEEPSEEK_API_KEY`，不要写入镜像或仓库。
+
+### 本地双进程：现场网络故障兜底
+
+后端（PowerShell）：
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
-Copy-Item .env.example .env
-```
-
-如需启用本地语义检索与重排（首次运行会下载 BGE 模型）：
-
-```powershell
-python -m pip install -e ".[dev,semantic]"
-python -m scripts.build_rag_index --semantic
-```
-
-编辑 `.env`，填入真实凭据：
-
-```dotenv
-DEEPSEEK_API_KEY=your-key
-DEEPSEEK_BASE_URL=https://api.deepseek.com
-DEEPSEEK_MODEL=deepseek-v4-flash
-DEEPSEEK_SEARCH_MODEL=deepseek-v4-flash
-NEO4J_URI=neo4j+s://your-instance.databases.neo4j.io
-NEO4J_USERNAME=neo4j
-NEO4J_PASSWORD=your-password
-NEO4J_DATABASE=neo4j
-```
-
-`.env` 已被 Git 忽略。不要把真实密钥写入 `.env.example`、源代码、测试或提交记录。
-
-## 本地测试
-
-离线测试不调用 DeepSeek 或 Neo4j：
-
-```powershell
-pytest
-```
-
-测试覆盖实体与关系字段、置信度、关系方向、实体引用、配置错误和 DeepSeek 响应解析。
-
-## 问答质量评测基线
-
-`data/eval/qa_eval.json` 维护 120 题离线问答回归集，覆盖多跳、比较、否定、复合、时效、人物辨析、典故、儿童、参观与范围外拒答。评测全程离线运行（抽取式生成器，不调用 DeepSeek）：
-
-```powershell
-python -m scripts.evaluate_qa                      # 逐题结果 + 汇总指标
-python -m scripts.evaluate_qa --verbose            # 打印每题答案全文
-python -m scripts.evaluate_qa --fail-under 0.9     # 总体准确率低于 90% 时退出码为 1（CI 门禁）
-```
-
-评判标准：
-
-- `expect=answered`：未拒答，且答案包含全部 `must_contain` 子串；
-- `expect=refused`：`insufficient_evidence=True` 且无引用；
-- 汇总指标：回答正确率、拒答正确率、总体准确率、已回答用例平均答案长度。
-
-当前基线：120/120（100%）。修改提示词、检索参数、路由规则或生成逻辑后必须复跑评测，总体准确率不得低于 90%。
-
-## 云服务验证
-
-分别验证 DeepSeek 与 Neo4j：
-
-```powershell
-python -m scripts.verify_deepseek
-python -m scripts.verify_neo4j
-```
-
-Neo4j 验证脚本会写入两个带 `test:` 前缀的临时节点，验证重复写入不会产生重复节点或关系，并在结束时删除测试数据。
-
-## 运行 Day 1 完整样例
-
-```powershell
-python -m scripts.run_sample_pipeline
-```
-
-该命令执行：
-
-```text
-data/raw/sample_nanyue.txt
-  -> DeepSeek 实体与关系抽取
-  -> Pydantic Schema V1 校验
-  -> data/graph/sample_extraction.json
-  -> Neo4j 幂等写入
-  -> 查询并打印样例实体的关系路径
-```
-
-模型输出若违反 Schema、缺少证据、引用不存在的实体或使用错误关系方向，将在写入 Neo4j 之前被拒绝。
-
-## 运行 Day 2 批量抽取
-
-先验证队友整理的原始语料：
-
-```powershell
-python -m scripts.validate_corpus
-```
-
-再逐文档调用 DeepSeek；成功结果默认保存在 `data/graph/by_document/`，运行报告保存在 `data/processed/batch_extraction_report.json`：
-
-```powershell
-python -m scripts.run_batch_extraction
-```
-
-批处理会隔离单篇失败、重试临时网络错误、对 Schema 错误进行一次纠错，并在二次纠错失败时保守删除非法关系。重复运行默认跳过已有合法结果；需要重新抽取全部资料时使用 `--force`。
-
-完成后执行来源与证据审计：
-
-```powershell
-python -m scripts.audit_extractions
-```
-
-审计要求每份资料都有合法输出、实体包含当前文档来源、关系引用正确文档，并且关系证据逐字存在于原文。
-
-## 构建和写入 Day 3 图谱 V1
-
-使用受版本控制的人工消歧决策，将逐文档抽取合并为统一图谱：
-
-```powershell
-python -m scripts.build_graph_v1
-```
-
-该命令默认读取 `data/curated/entity_resolution_v1.json`，生成 `data/graph/knowledge_graph_v1.json` 和融合报告。构建过程会拒绝映射环、缺失目标、跨类型映射、删除后仍被关系引用的实体，以及来源或证据不合法的关系。
-
-将统一图谱写入当前 `.env` 配置的 Neo4j Aura：
-
-```powershell
-python -m scripts.load_graph_v1
-```
-
-入库命令不会清空数据库。它会连续执行两次幂等写入，逐项检查实体和关系是否存在，并查询赵眜、南越文王墓和文帝行玺的核心路径。验收报告保存在 `data/processed/graph_v1_load_report.json`。
-
-## Day 4 检索底座
-
-Day 4 检索底座默认使用纯 Python `multi-field-bm25-v2`，对标题、主题标签和正文分别加权，并支持多查询倒数排名融合。安装 `semantic` 可选依赖后，系统会加入 BGE 向量召回与重排；模型不可用时自动降级为 BM25。
-
-构建 RAG 索引：
-
-```powershell
-python -m scripts.build_rag_index
-```
-
-强制重建：
-
-```powershell
 python -m scripts.build_rag_index --force
+uvicorn app.api:app --reload --port 8000
 ```
 
-验证文档检索：
+前端（另一个终端）：
 
 ```powershell
-python -m scripts.verify_rag
+Set-Location website
+npm ci
+$env:VITE_API_BASE_URL="http://127.0.0.1:8000"
+npm run dev
 ```
 
-验证 RAG + KG 检索：
+打开 Vite 输出的本地地址。`.env` 已被 Git 忽略；真实 Key 只应存在于本机环境变量或 Railway Secrets。
 
-```powershell
-python -m scripts.verify_retrieval
+## API 示例
+
+```bash
+curl http://localhost:8080/api/health
+curl http://localhost:8080/api/exploration-paths
+curl "http://localhost:8080/api/entities/%E8%B5%B5%E7%9C%9C/neighbors"
+curl -X POST http://localhost:8080/api/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"文帝行玺为什么能确认墓主？","answerMode":"auto","audience":"adult"}'
 ```
 
-RAG 索引产物位于 `data/processed/rag/`，属于可重复生成文件，不提交到 Git。统一图谱 `data/graph/knowledge_graph_v1.json` 作为 Day 4～Day 8 的版本化基线随仓库分发。Neo4j Aura 不可用时，检索层可使用该本地 JSON 图返回同构 `GraphHit` 结果。
+主要接口：
 
-## Day 5 Agent MVP
+- `POST /api/ask`：问答、模式、受众与最近对话；公开环境有单 IP 限流。
+- `GET /api/exploration-paths`：经过启动校验的策展证据路径。
+- `GET /api/entities`、`GET /api/entities/{name}/neighbors`：实体与带引用的关系探索。
+- `GET /api/stats`：语料、图谱与离线评测汇总。
+- `GET /api/health`：后端能力状态与部署提交号，不暴露密钥、路径或用户问题。
 
-Day 5 提供 KG、RAG 和 Hybrid 三类工具路由，并生成带引用回答。它支持最近四轮会话的追问消歧、深入模式的两跳图谱取证，以及 DeepSeek 可用时的结论级证据核验。默认使用离线抽取式回答生成器，不需要 DeepSeek；配置 `DEEPSEEK_API_KEY` 后可用 `--llm` 让 DeepSeek 只基于检索证据组织语言。
-
-命令行提问：
-
-```powershell
-python -m scripts.ask "文帝行玺是什么材料？"
-```
-
-输出完整结构化结果：
+## 测试
 
 ```powershell
-python -m scripts.ask "赵眜是谁？" --json
-```
+# Python 全量单元与接口测试
+.\.venv\Scripts\python.exe -m pytest
 
-使用 DeepSeek 生成回答：
-
-```powershell
-python -m scripts.ask "讲讲丝缕玉衣的特点" --llm
-```
-
-运行 24 题 Agent 冒烟测试：
-
-```powershell
-python -m scripts.verify_agent
-```
-
-Agent 回答包含 `answer`、`citations`、`web_sources`、`used_tools`、`route_reason`、`insufficient_evidence`、`response_status` 和 `suggested_questions`。稳定的开放时间、预约边界、游览动线和重点文物推荐会进入参观攻略检索；实时客流、当天余票、实时天气、停车空位和路线导航等动态或范围外问题会返回对应的柔和提示。DeepSeek 首先只能根据选中的本地证据组织答案；专题内没有足够证据时，才使用 Responses API 的真实 `web_search` 补充，并标记为未审核联网内容。
-
-联网兜底只在 `--llm` 模式启用：
-
-```powershell
-python -m scripts.ask "赵眜的父亲是谁？" --llm --json
-```
-
-联网回答使用 `response_status=web_search_answered`，本地引用保持为空，来源单独放在 `web_sources`。API 必须返回已完成的 `web_search_call` 和至少一个可解析 URL，否则该回答会被丢弃并继续使用柔和提示。联网结果不会自动写入语料库或知识图谱。
-
-## Day 6 Streamlit 完整 Demo
-
-Day 6 提供首页、智能问答、AI 深度讲解和图谱探索四个可连续操作的页面。应用优先使用 DeepSeek 组织自然语言；配置缺失或调用失败时自动回退到离线证据摘录，并保留完全相同的检索与引用规则。
-
-安装依赖并启动：
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.\.venv\Scripts\python.exe -m streamlit run app/Home.py
-```
-
-请优先使用以上带 `.venv` 的完整命令。Windows 上直接执行 `streamlit run` 可能命中系统 Python 的 Streamlit，而不是本项目虚拟环境，从而出现 `No module named 'app'` 或依赖缺失错误。
-
-图谱探索默认使用仓库中的本地只读图谱，不要求 Neo4j 在线。RAG 索引缺失时会在首次启动自动构建。运行五条固定演示路径：
-
-```powershell
-python -m scripts.verify_demo
-```
-
-完整演示顺序、预期结果和屏幕宽度检查见 [Day 6 演示脚本](docs/demo_script.md)。
-
-## 儿童模式：小越的南越故事屋
-
-问答智能体内置儿童友好模式「小越的南越故事屋」：以小越（儿童讲解员）的口吻讲故事、讲解文物、日常聊天。所有回答仍来自本地可靠资料（KG + RAG），**不联网、不编造**，证据可折叠查看；实时信息与范围外问题仍会温和拒答。配置 DeepSeek 时，儿童故事会先进行证据约束生成；校验或服务失败立即回退到离线证据故事。
-
-体验入口：
-
-- 网站「故事屋」区块（`/#kids`）或导航「故事屋」；
-- Streamlit 智能问答页勾选「儿童模式（小越讲故事）」；
-- API：`POST /api/ask` 传 `"audience": "kids"`。
-
-配套知识库：新增 5 份南越典故语料（DOC_263-DOC_267，出自《史记·南越列传》《汉书·南粤传》），支持「南越时期有什么典故」「赵佗和陆贾之间有什么典故」等问答。设计文档见 [docs/kids_mode_design.md](docs/kids_mode_design.md)。
-
-## 南越专题知识库升级
-
-- 语料由 36 份核心馆方资料扩展为 220 份：核心资料 36 份、扩展可信资料与参观攻略 184 份（含 5 份南越典故语料与 5 份儿童故事语料），共 85,000 余个汉字。
-- 白名单覆盖南越王博物院、广州博物馆、政府文物与考古相关页面；无关页面会进入本地隔离目录且不参与索引。
-- 规则路由会优先识别真实实体名和别名；参观攻略问题使用 `tourism` 资料和专用查询扩展，非参观问题不再注入宽泛的南越主题查询。DeepSeek 模式先生成实体、意图和多查询检索计划，再从 BM25 与 KG 候选中选择证据；回答必须返回真实证据 ID。
-- 核心资料保持不可变，确保原有 78 个实体、87 条关系的逐字证据审计仍可复算。
-
-同步与审核扩展资料：
-
-```powershell
-python -m scripts.sync_trusted_sources --max-pages 20
-python -m scripts.audit_extended_corpus --apply
-python -m scripts.build_rag_index --force
-```
-
-运行 90 题评测：
-
-```powershell
-python -m scripts.run_evaluation_v2
-```
-
-当前 90 题结果：专题有效回答率 87.5%，Top-5 召回率 88.75%，引用正确率 100%，无答案拒答准确率 100%，离线 P95 延迟约 10.57 毫秒；全部指标达到评测集配置的验收线。
-
-> 评测口径说明：120 题“问答回归集”用于每次代码变更的确定性门禁，当前为 120/120；90 题“离线评测 v2”用于检索质量和延迟指标展示，结果记录在 `data/evaluation/summary_v2.json`。二者均不调用 DeepSeek，不能混为同一指标。
-
-## 公开 Demo（Railway）
-
-生产镜像将 React 前端和 FastAPI API 放在同一个 Railway 常在线服务中，网页与 `/api/*` 同域访问。线上启用 DeepSeek 后若外部服务不可用，回答会自动降级到离线证据摘录；BGE 语义模型在首版生产环境关闭，以控制镜像体积与冷启动时间。
-
-完整的 Railway 配置、Secrets、健康检查、限流和验收步骤见 [公开 Demo 部署说明](docs/public_demo_deployment.md)。生产环境必须仅通过 Railway Secrets 提供 `DEEPSEEK_API_KEY`，不得提交到仓库。
-
-## Day 7 与后续协作记录
-
-### Day 7：南越专题问答升级（2026-08-26）
-
-- 在 `day7` 分支将 36 份核心资料扩展到 100 份有效文档、70,011 个汉字，覆盖南越历史、人物、王墓与王宫、文物、考古、工艺、汉代背景和文化交流。
-- 建立可信来源白名单、正文校验、重复检测、审核隔离和分层索引；把字符级 TF-IDF 升级为多字段 BM25，并加入多查询、RRF、KG 快速路径和 DeepSeek 结构化检索计划。
-- 建立 90 题评测集；当日结果为有效回答率 96.25%、Top-5 召回率 88.75%、引用正确率 100%、拒答准确率 100%。
-- 使用 `.env` 中的配置完成过一次真实 DeepSeek 端到端验证，耗时约 6.7 秒；密钥和本地 RAG 缓存均未提交。
-- 启动并验收 Day 6 Streamlit 的首页、智能问答、深度讲解和图谱探索页面。
-- 交付记录：`day7` 分支提交 `56e9c8f`（功能）和 `21ad209`（操作记录），并推送到 `origin/day7`。
-
-### 队友在 `dev` 的工作（2026-08-26）
-
-- 在提交 `360f786` 中继续扩充到 220 份资料，并新增历史文化、重点文物、参观攻略、稳定馆内信息、信息边界、南越典故和儿童故事资料。
-- 增加 50 题回归评测，完善真实实体/别名识别、相关性门槛、参观问题重排、KG 跑题过滤、未知人物和未知方面保护。
-- 完善 Streamlit 内容与交互，并新增 `website/` React/Vite 展示站。
-- React 展示站现通过 `app.api` 与 Streamlit 共用 Python RAG、图谱与 DeepSeek 降级运行时，提供真实问答、来源追溯与一跳关系探索。
-
-### 当前可信度改进（2026-08-27）
-
-- 为 220 份文档持久化 `content_hash` 和显式 `review_status`，并审核为 190 份 `factual` 事实资料、30 份 `curated_guidance` 项目整理建议；迁移脚本为 `python -m scripts.migrate_corpus_trust`。
-- 未审核、哈希错误或缺少信任字段的文档不能进入索引。项目整理建议只允许进入参观攻略 RAG，不能回答历史事实、进入知识图谱或充当博物院规定。
-- 历史、人物、文物和考古查询仅检索事实资料；参观查询先返回官方稳定信息，再补充最多两条项目整理建议，并明确标记“项目整理建议”。
-- 移除无来源的 DeepSeek 通用知识兜底。问题模糊、超出范围、实时信息、错误前提，以及联网搜索失败或来源不可核验时，分别返回固定柔和提示；这些提示不附伪引用，也不生成事实结论。
-- 保留 DeepSeek 失败时的本地证据摘录回退；正常事实答案必须带有效证据 ID、来源类型、证据角色、来源层级、内容哈希和采集时间。
-- 新增 DeepSeek Responses API 真实联网搜索兜底：只处理南越专题内的本地无证据问题，强制执行 `web_search`；实时、范围外、问题模糊和错误前提不会触发。页面显示“联网搜索补充”、甄别提醒、来源 URL 和访问时间，联网结果不进入知识库。
-- 当前验证：98 项离线测试全部通过，20/20 Agent 冒烟测试通过，50/50 回归题通过，90 题全部指标达标。真实联网测试“赵眜的父亲是谁？”成功返回 `web_search_answered` 和可访问来源；测试过程未输出 API 密钥，也未向联网搜索发送本地知识库正文。
-
-推荐的后端验收命令：
-
-```powershell
-.\.venv\Scripts\python.exe -m scripts.migrate_corpus_trust
-.\.venv\Scripts\python.exe -m scripts.validate_corpus
-.\.venv\Scripts\python.exe -m scripts.build_rag_index --force
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m scripts.verify_agent
+# 120 题 QA、24 题 Agent、5 条 Demo 路径
 .\.venv\Scripts\python.exe -m scripts.evaluate_qa --fail-under 0.9
-.\.venv\Scripts\python.exe -m scripts.run_evaluation_v2
+.\.venv\Scripts\python.exe -m scripts.verify_agent
+.\.venv\Scripts\python.exe -m scripts.verify_demo
+
+# 前端静态检查与生产构建
+Set-Location website
+npm run lint
+npm run build
 ```
 
-## 项目结构
+CI 对每次 PR 执行 Python 全量测试、120 题 QA 门禁、24 题 Agent 冒烟及前端 lint/build。
+
+## 目录结构
 
 ```text
-app/                 Day 6 Streamlit 应用
-data/raw/            原始资料及 Day 1 样例
-data/curated/        受版本控制的人工消歧与审核决策
-data/processed/      清洗和切分结果
-data/graph/          经过校验的图谱数据
-docs/                项目范围与 KG Schema
-prompts/             LLM 抽取 Prompt
-scripts/             云服务与完整链路验证脚本
-src/config/          环境配置
-src/extraction/      数据模型和 DeepSeek 抽取
-src/graph/           Neo4j 入库与查询
-src/rag/             Day 4 实现
-src/agent/           Day 5 实现
-tests/               离线测试
+app/                 FastAPI、运行时与策展路径校验
+data/
+  raw/               分层可信原始资料
+  graph/             知识图谱 V1
+  curated/           实体消歧与版本化策展路径
+  eval/               120 题 QA 回归集
+  evaluation/        90 题离线评测 v2
+src/                 RAG、图谱、Agent、DeepSeek 与配置
+website/             React 前端
+scripts/             构建、评测与验收脚本
+docs/                设计、数据来源、部署与历史报告
 ```
 
-详细范围见 [docs/project_scope.md](docs/project_scope.md)，Schema 见 [docs/kg_schema.md](docs/kg_schema.md)。面向项目成员的成果解释、环境接收、分工和 Git 协作流程见 [Day 1 AI 工作交付与队友协作手册](docs/day1_handoff_manual.md)。
+进一步阅读：[公开 Demo 部署](docs/public_demo_deployment.md) · [Agent 设计](docs/agent_design.md) · [检索设计](docs/retrieval_design.md) · [知识图谱 Schema](docs/kg_schema.md) · [数据来源](docs/data_sources.md)
 
-## Day 1 验收清单
+## 发布与安全
 
-- [x] 研究范围和非目标冻结。
-- [x] Schema V1 文档与代码枚举一致。
-- [x] Git 友好的目录、依赖和环境模板。
-- [x] 非法抽取结果在入库前被拦截。
-- [x] 使用个人凭据完成 DeepSeek 实际调用。
-- [x] 使用个人 Aura 凭据完成 Neo4j 实际连接。
-- [x] 运行完整样例并检查四条目标关系。
+Railway 使用根目录 `Dockerfile` 与 `railway.toml`。生产环境设置 `SEMANTIC_RETRIEVAL_ENABLED=false`、`DEMO_RATE_LIMIT_PER_MINUTE=12`，并仅在 Railway Secrets 保存 `DEEPSEEK_API_KEY`。服务从平台注入的 `PORT` 启动，`/api/health` 返回发布提交号。
 
-云端验收已于 2026-08-24 完成：DeepSeek 样例抽取、Neo4j 连接与幂等写入、端到端关系查询均通过。
-
-## Day 2 验收结果
-
-- [x] 36 份原始资料通过格式与重复 ID 校验。
-- [x] 覆盖 25 份代表性文物资料。
-- [x] 批量抽取支持失败隔离、临时错误重试和断点续跑。
-- [x] 36 份资料全部生成 Schema V1 合法结果。
-- [x] 关系证据和文档来源审计无遗留问题。
-- [x] 人工抽查 10 份核心资料并收紧保守过滤规则。
-- [x] 29 项离线测试全部通过。
-
-详细统计和已知边界见 [Day 2 批量抽取与质量报告](docs/day2_extraction_report.md)。
-
-## Day 3 验收结果
-
-- [x] 12 个非规范实体 ID 按人工映射完成融合。
-- [x] 删除 4 个误分类展览章节实体和 2 条证据不足关系。
-- [x] 统一图谱包含 78 个实体、87 条关系，来源与证据审计问题为 0。
-- [x] 图谱实际写入 Neo4j Aura，78 个实体和 87 条关系逐项验证无缺失。
-- [x] 第二次写入前后均为 80 个节点、93 条关系，幂等性通过。
-- [x] 36 项离线测试全部通过。
-
-详细决策、验收数据和 Day 4 输入见 [Day 3 可靠知识图谱 V1 报告](docs/day3_graph_v1_report.md)。
+本项目当前为竞赛与研究 Demo。页面引用的馆方资料版权归原机构所有；公开使用时请遵守来源页面的版权与访问要求。
